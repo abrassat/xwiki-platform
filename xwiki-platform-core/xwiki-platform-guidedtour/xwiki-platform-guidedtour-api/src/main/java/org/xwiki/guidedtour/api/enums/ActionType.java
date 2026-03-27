@@ -17,26 +17,22 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.guidedtour.rest;
+package org.xwiki.guidedtour.api.enums;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-
-/**
- * Exposes the guided tours through REST.
- *
- * @version $Id$
- * @since 18.4.0RC1
- */
-@Path("/guidedTour")
-public interface GuidedTourResource
+public enum ActionType
 {
-    /**
-     * Returns the guided tours.
-     *
-     * @return the list of guided tours
-     */
-    @GET
-    @Path("/tours")
-    String getTours();
+    EDIT,
+    VIEW,
+    COMMENT,
+    CREATE;
+
+    public static ActionType fromString(String text)
+    {
+        for (ActionType s : ActionType.values()) {
+            if (s.name().equalsIgnoreCase(text)) {
+                return s;
+            }
+        }
+        return VIEW;
+    }
 }

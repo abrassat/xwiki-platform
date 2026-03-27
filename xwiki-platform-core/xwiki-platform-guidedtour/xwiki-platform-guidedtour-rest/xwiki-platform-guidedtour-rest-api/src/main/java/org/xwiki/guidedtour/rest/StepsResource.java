@@ -17,29 +17,41 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.guidedtour.internal;
+package org.xwiki.guidedtour.rest;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 
-import org.xwiki.component.annotation.Component;
-import org.xwiki.guidedtour.rest.GuidedTourResource;
 import org.xwiki.rest.XWikiRestComponent;
+import org.xwiki.rest.XWikiRestException;
+import org.xwiki.stability.Unstable;
 
 /**
- * Default implementation of {@link GuidedTourResource}.
+ * Exposes the guided tours through REST.
  *
  * @version $Id$
  * @since 18.4.0RC1
  */
-@Component
-@Named("org.xwiki.guidedtour.internal.DefaultGuidedTourResource")
-@Singleton
-public class DefaultGuidedTourResource implements GuidedTourResource, XWikiRestComponent
+@Unstable
+@Path("/guidedTour/tour/{tourId}/tasks/{taskId}")
+public interface StepsResource extends XWikiRestComponent
 {
-    @Override
-    public String getTours()
-    {
-        return "";
-    }
+    @GET
+    @Path("/steps")
+    Response getTaskSteps(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId)
+        throws XWikiRestException;
+
+    @POST
+    @Path("/steps")
+    Response createStep(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId)
+        throws XWikiRestException;
+
+    @PUT
+    @Path("/steps/{stepId}")
+    Response updateStep(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId,
+        @PathParam("stepId") String stepId) throws XWikiRestException;
 }

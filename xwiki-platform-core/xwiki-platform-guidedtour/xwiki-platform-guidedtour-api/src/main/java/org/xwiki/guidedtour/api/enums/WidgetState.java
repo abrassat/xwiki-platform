@@ -17,17 +17,21 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.guidedtour.internal;
+package org.xwiki.guidedtour.api.enums;
 
-import org.xwiki.test.junit5.mockito.ComponentTest;
-
-/**
- * Test of {@link DefaultGuidedTourResource}.
- *
- * @version $Id$
- * @since 18.4.0RC1
- */
-@ComponentTest
-class DefaultGuidedTourResourceTest
+public enum WidgetState
 {
+    HIDDEN,
+    OPEN,
+    COLLAPSED;
+
+    public static WidgetState fromString(String text)
+    {
+        for (WidgetState s : WidgetState.values()) {
+            if (s.name().equalsIgnoreCase(text)) {
+                return s;
+            }
+        }
+        return OPEN;
+    }
 }

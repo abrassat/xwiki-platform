@@ -17,8 +17,21 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.guidedtour.api;
+package org.xwiki.guidedtour.api.enums;
 
-class PlaceholderTest
+public enum Status
 {
+    TODO,
+    SKIPPED,
+    DONE;
+
+    public static Status fromString(String text)
+    {
+        for (Status s : Status.values()) {
+            if (s.name().equalsIgnoreCase(text)) {
+                return s;
+            }
+        }
+        return TODO;
+    }
 }
