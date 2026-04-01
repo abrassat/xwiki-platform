@@ -37,6 +37,7 @@
     <module>xwiki-platform-guidedtour-default</module>
     <module>xwiki-platform-guidedtour-rest</module>
     <module>xwiki-platform-guidedtour-webjar</module>
+    <module>xwiki-platform-guidedtour-node</module>
     <module>xwiki-platform-guidedtour-default-tour</module>
   </modules>
   <profiles>

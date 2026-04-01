@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.platform</groupId>
@@ -36,8 +36,31 @@
     <xwiki.extension.name>Guided Tour WebJar</xwiki.extension.name>
     <!-- Category for the Extension Manager -->
     <xwiki.extension.category>webjar</xwiki.extension.category>
+    <!-- Vite is already taking care of minification and bundling in an efficient way. -->
+    <xwiki.minification.skip>true</xwiki.minification.skip>
+    <xwiki.extension.javascript.modules.importmap>
+      {
+      "@xwiki/platform-guidedtour-ui": "org.xwiki.platform:xwiki-platform-guidedtour-node-ui/index.es.js",
+      "vue": "org.webjars.npm:vue/dist/vue.runtime.esm-browser.prod.js",
+      "vue-i18n": "org.webjars.npm:vue-i18n/dist/vue-i18n.esm-browser.prod.js"
+      }
+    </xwiki.extension.javascript.modules.importmap>
   </properties>
   <dependencies>
+    <!-- Requires xwiki-platform-node to be built first to get access to the bundled javascript packages.  -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-node</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>xwiki-platform-guidedtour-node-ui</artifactId>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>requirejs</artifactId>
@@ -46,5 +69,72 @@
       <groupId>org.webjars</groupId>
       <artifactId>jquery</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.webjars.npm</groupId>
+      <artifactId>vue</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars.npm</groupId>
+      <artifactId>vue-i18n</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- Used by the date filter. -->
+    <dependency>
+      <groupId>org.webjars.npm</groupId>
+      <artifactId>moment</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>bootstrap-daterangepicker</artifactId>
+    </dependency>
+    <!-- Used by the suggest filter. -->
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>selectize.js</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>xwiki-platform-guidedtour-rest</artifactId>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-javascript-importmap</artifactId>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- Copy the remaining less file. Can be removed once XWIKI-23080 is done. -->
+            <id>copy-less-resources</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>
+                ${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}
+              </outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/src/main/node/src</directory>
+                  <includes>
+                    <include>variables.less</include>
+                    <include>reactive.less</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

@@ -20,10 +20,8 @@
 
 import type { TranslationQuery } from "./translationQuery";
 import type { Translations } from "./translations";
-import type { Values } from "./values";
 
 export type {
   TranslationQuery,
   Translations,
-  Values,
 };

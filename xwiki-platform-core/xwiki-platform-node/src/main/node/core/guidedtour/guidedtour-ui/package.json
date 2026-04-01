@@ -34,6 +34,7 @@
     "!src/**/__tests__"
   ],
   "scripts": {
+    "dev": "vite",
     "api-extractor:ci": "api-extractor run",
     "api-extractor:local": "api-extractor run --local",
     "build": "vite build",
@@ -50,7 +51,7 @@
     "tippy.js": "catalog:",
     "u-node": "catalog:",
     "vue-tippy": "catalog:",
-    "vuedraggable": "catalog:"
+    "driver.js": "catalog:"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "catalog:",

@@ -17,8 +17,28 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-import GuidedTourWidget from "./components/widget/GuidedTourWidget.vue";
-
-export {
-  GuidedTourWidget,
-};
+import type { TourTaskStatus } from "./tourTaskStatus";
+/**
+ * Stores the entries to display (paginated) and the total count of entries.
+ *
+ * @since 18.4.0RC1
+ * @beta
+ */
+export interface TourTask {
+  /**
+   * The pretty name of the task, to be used in the UI.
+   */
+  title: string;
+  /**
+   * The task id, from the backend.
+   */
+  id: string;
+  /**
+   * Status of the task
+   */
+  status: TourTaskStatus;
+  /**
+   * Whether this Task is completable or not.
+   */
+  isActive: boolean;
+}

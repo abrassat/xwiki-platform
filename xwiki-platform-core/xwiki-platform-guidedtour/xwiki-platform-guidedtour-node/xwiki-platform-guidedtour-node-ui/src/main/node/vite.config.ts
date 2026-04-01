@@ -17,8 +17,18 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-import GuidedTourWidget from "./components/widget/GuidedTourWidget.vue";
 
-export {
-  GuidedTourWidget,
-};
+import { generateWebjarNodeConfig } from "@xwiki/platform-tool-viteconfig";
+
+export default generateWebjarNodeConfig(import.meta.url, [
+  "@xwiki/platform-guidedtour-ui",
+  "dompurify",
+  "eventemitter3",
+  "lz-string",
+  "tippy.js",
+  "u-node",
+  // lodash is a transitive dependency of u-node
+  "lodash",
+  "vue-tippy",
+  "vuedraggable",
+]);

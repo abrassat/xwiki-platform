@@ -1,0 +1,252 @@
+/* FIXME: From TourJS.xml */
+
+.guided-tour-floater {
+  z-index: 999;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  box-shadow: 0px 0px 12px 0px #00000033;
+  background-color: white;
+  width: fit-content;
+  overflow: hidden;
+  display: inline-block;
+  border-start-start-radius: 8px;
+  user-select: none;
+}
+
+.guided-tour-floater.collapsed .top-bar {
+  padding: 8px;
+}
+
+.guided-tour-floater.collapsed .icon {
+  width: 0;
+}
+
+.guided-tour-floater .tour-section.collapsed .tour-content {
+  max-height: 0;
+}
+
+.guided-tour-floater.collapsed .guides-content {
+  width: 0;
+  max-height: 0;
+}
+
+.guided-tour-floater.dragging * {
+  pointer-events: none;
+}
+
+.guided-tour-floater.collapsed:not(.dragging) .header {
+  cursor: pointer;
+}
+
+.guided-tour-floater.collapsed .header {
+  padding: 0;
+}
+
+.guided-tour-floater.collapsed .right-group button:first-child {
+  display: none;
+}
+
+.guided-tour-floater.collapsed .completeness {
+  margin: 0;
+  height: 4px;
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+
+.guided-tour-floater .header {
+  display: inline-block;
+  user-select: none;
+  padding: 14px 16px 14px 16px;
+}
+
+.tour-header {
+  font-weight: bold;
+}
+
+.guided-tour-floater .top-bar {
+  display: flex;
+  cursor: pointer;
+}
+
+.guided-tour-floater .icon {
+  align-self: flex-start;
+  margin-right: 0.5em;
+  overflow: hidden;
+  width: 30px;
+}
+
+.guided-tour-floater .title {
+  align-self: flex-start;
+  width: 100%;
+  font-weight: bold;
+}
+
+.guided-tour-floater * {
+  transition: max-height 0.45s cubic-bezier(.25, 1, .25, 1); /*, width 0.45s ease-in-out 0s*/
+}
+
+.guided-tour-floater .right-group {
+  align-self: flex-end;
+  white-space: nowrap;
+  margin-left: 0.5em;
+}
+
+.guided-tour-floater .guides-content {
+  display: flex;
+  max-height: 400px;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.guided-tour-floater .guides-container {
+  overflow-x: scroll;
+  padding: 0px 16px 14px 16px;
+  height: 100%;
+}
+
+.guided-tour-floater h2 {
+  margin: 0em;
+  padding-bottom: 0.5em;
+}
+
+/* .guided-tour-floater section::after {
+content: "";
+display: block;
+border-top: 1px solid black;
+border-bottom: 1px solid black;
+Adjust color and thickness as needed
+padding: 0.5em;
+margin: 0.5em;
+} */
+
+.guided-tour-floater .useful-link {
+  padding: 14px 16px 14px 16px;
+  border-color: #ddddddFF;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.guided-tour-floater .tour-task {
+  /* Use subgrid for this */
+  border-radius: 0.65em;
+  transition: background-color 0.1s ease;
+  padding: 0.5em;
+  cursor: pointer;
+}
+.guided-tour-floater .tour-task.task-done {
+  text-decoration: line-through;
+}
+
+.guided-tour-floater .tour-header {
+  /* Use subgrid for this */
+  cursor: pointer;
+  border-radius: 0.65em;
+  transition: background-color 0.1s ease;
+  padding: 0.5em;
+}
+
+.guided-tour-floater .tour-section .chevron {
+  cursor: pointer;
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  rotate: 0deg;
+}
+
+.guided-tour-floater .tour-section:not(.collapsed) .chevron {
+  rotate: 90deg;
+}
+
+.guided-tour-floater .tour-header:hover {
+  background: #f2f2f2FF 100%;
+  /* Display restart button. */
+}
+
+.guided-tour-floater .tour-task:hover {
+  background: #f2f2f2FF 100%;
+  /* Display restart button. */
+}
+
+.guided-tour-floater .completeness {
+  margin: 16px 0 16px 0;
+  height: 9px;
+  position: relative;
+  width: 100%;
+  background: #f2f2f2FF;
+  border-start-start-radius: 18px;
+  border-start-end-radius: 18px;
+  border-end-start-radius: 18px;
+  border-end-end-radius: 18px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.guided-tour-floater.collapsed .completeness-progress {
+  height: 4px;
+}
+.guided-tour-floater .completeness-progress {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  height: 9px;
+  background: #7698ffFF;
+}
+
+.guided-tour-floater .tour-content {
+  overflow: hidden;
+  max-height: 300px;
+}
+
+
+/* FIXME: TourJS.xml */
+/* ===== TOUR HEADER ===== */
+.tour-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.tour-header .chevron {
+  width: 20px;           /* fixed column */
+  text-align: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+/* ===== TOUR TASKS ===== */
+.tour-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+
+.tour-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pre-btn,
+.post-btn {
+  width: 20px;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.post-btn {
+  margin-left: auto;
+}
+
+.tour-task:hover .pre-btn,
+.tour-task:hover .post-btn {
+  opacity: 1;
+}
