@@ -1,5 +1,26 @@
-// FIXME: FROM PREVIOUS TourJS.xml
+/**
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+console.log("hi!");
 
+// FIXME: FROM PREVIOUS TourJS.xml
+/*
 define('guided-tour-translation-keys', {
   prefix: 'guidedtour.',
   keys: [
@@ -22,7 +43,7 @@ define('guided-tour-utils', [], function() {
   /**
    * Escape strings so they respect the Bootstrap Tour API constraints.
    * Note: This transformation is not needed anymore, but is kept for backwards compatibility with the bootstrap tour.
-   */
+   *\/
   var escapeTourName = function (tourName) {
     // The Tour API says tour name must contain only alphanumerics, underscores and hyphens.
     // So we replace any forbidden character by its ASCII value, surrounded by an underscore (that we forbid too to
@@ -35,12 +56,12 @@ define('guided-tour-utils', [], function() {
   /**
    * Some sort of easier API to update the localStorage keys?
    * TODO
-   */
+   *\/
 
   /**
    * Load the tours on the client, fetching them if needed.
    * @return: TODO: For now, it returns a Promise.
-   */
+   *\/
   function getTourData() {
     if (true) { // FIXME: Placeholder for checking cache/localStorage for the data. Otherwise, remove for the final release.
       return fetch(new XWiki.Document(XWiki.Model.resolve('TourCode.TourRESTSource', XWiki.EntityType.DOCUMENT)).getURL('view')).then(t =&gt; t.json()).then((data) =&gt; {
@@ -68,7 +89,7 @@ define('guided-tour-utils', [], function() {
 
   /**
    * For use in {waitForElement} below.
-   */
+   *\/
   function isElementVisible(element) {
     let style = window.getComputedStyle(element);
 
@@ -85,7 +106,7 @@ define('guided-tour-utils', [], function() {
    * @param probeInterval: time (in ms) to wait after a failed check for the specified element
    * @param maxIntervals: how many probe intervals to wait until rejecting
    * @return: a promise which succeeds if the element is found within the time limit, and fails otherwise
-   */
+   *\/
   var waitForElement = function(selector, probeInterval=500, maxIntervals=6) {
     // TODO: Could maybe use MutationObservers here?
     return new Promise(async (resolve, reject) =&gt; {
@@ -109,3 +130,4 @@ define('guided-tour-utils', [], function() {
     getTourData: getTourData,
   };
 });
+*/

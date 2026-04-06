@@ -25,19 +25,29 @@
 -->
 
 <template>
-  <section data-gid="Tour.DESYTour" class="tour-section">
-    <div class="tour-header"><i class="fa-solid fa-chevron-right chevron"></i>DESY Tour
+  <section :id="tour.id" class="tour-section">
+    <div class="tour-header">
+      <i class="fa-solid fa-chevron-right chevron" />Tour Title
     </div>
     <div class="tour-content">
       <GuidedTourWidgetTask
-        v-for="task in tasks"
+        v-for="(task, index) in guidedTourManager.getTasks(tour.id)"
+        :key="index"
+        :task="task"
       />
     </div>
   </section>
 </template>
 
-<script>
-export default {
-name: "GuidedTourWidgetTour",
-};
+<script setup lang="ts">
+import GuidedTourWidgetTask from "./GuidedTourWidgetTask.vue";
+import { defineProps, inject } from "vue";
+import type {
+  GuidedTourManagerApi,
+  TourTour,
+} from "@xwiki/platform-guidedtour-api";
+const { tour } = defineProps<{
+  tour: TourTour;
+}>();
+const guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager");
 </script>

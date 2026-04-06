@@ -18,28 +18,20 @@
   02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<!--
-  The GuidedTourWidget
-
-  It contains a single default slot.
--->
-
+<!--Would be nice to have a generic XWiki progressbar component maybe? idk-->
+<!--If we want a dependency for the progress bar, maybe use this: https://v3.primevue.org/progressbar/ ?-->
 <template>
-  <div :id="task.id" class="tour-task">
-    <button class="pre-btn">
-      <i class="fa fa-arrow-right" />
-    </button>
-    Title
-    <button class="post-btn">
-      <i class="fa fa-rotate-right" />
-    </button>
+  <div class="completeness">
+    <div
+      class="completeness-progress"
+      :style="{ width: progress * 100 + '%' }"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps } from "vue";
-import type { TourTask } from "@xwiki/platform-guidedtour-api";
-const { task } = defineProps<{
-  task: TourTask;
+const { progress } = defineProps<{
+  progress: number;
 }>();
 </script>

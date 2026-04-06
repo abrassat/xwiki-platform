@@ -19,7 +19,7 @@
  */
 import type { TourTaskStatus } from "./tourTaskStatus";
 /**
- * Stores the entries to display (paginated) and the total count of entries.
+ * Representation of a guidedtour Task.
  *
  * @since 18.4.0RC1
  * @beta
@@ -34,7 +34,7 @@ export interface TourTask {
    */
   id: string;
   /**
-   * Status of the task
+   * Status of the task.
    */
   status: TourTaskStatus;
   /**

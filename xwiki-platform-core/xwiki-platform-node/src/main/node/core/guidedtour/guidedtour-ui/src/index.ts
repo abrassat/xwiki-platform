@@ -19,6 +19,4 @@
  */
 import GuidedTourWidget from "./components/widget/GuidedTourWidget.vue";
 
-export {
-  GuidedTourWidget,
-};
+export { GuidedTourWidget };

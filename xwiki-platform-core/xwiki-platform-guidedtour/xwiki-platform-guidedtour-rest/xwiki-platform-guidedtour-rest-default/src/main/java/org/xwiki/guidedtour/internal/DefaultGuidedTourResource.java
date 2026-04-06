@@ -19,12 +19,7 @@
  */
 package org.xwiki.guidedtour.internal;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
 import org.xwiki.guidedtour.rest.GuidedTourResource;
-import org.xwiki.rest.XWikiRestComponent;
 
 /**
  * Default implementation of {@link GuidedTourResource}.
@@ -32,14 +27,7 @@ import org.xwiki.rest.XWikiRestComponent;
  * @version $Id$
  * @since 18.4.0RC1
  */
-@Component
-@Named("org.xwiki.guidedtour.internal.DefaultGuidedTourResource")
-@Singleton
-public class DefaultGuidedTourResource implements GuidedTourResource, XWikiRestComponent
+public class DefaultGuidedTourResource
 {
-    @Override
-    public String getTours()
-    {
-        return "";
-    }
+    private String a;
 }

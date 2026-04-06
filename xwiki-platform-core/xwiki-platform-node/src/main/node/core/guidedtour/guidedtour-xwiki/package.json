@@ -38,7 +38,8 @@
   },
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "@xwiki/platform-guidedtour-api": "workspace:*"
+    "@xwiki/platform-guidedtour-api": "workspace:*",
+    "@xwiki/platform-model-api": "workspace:*"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "catalog:",

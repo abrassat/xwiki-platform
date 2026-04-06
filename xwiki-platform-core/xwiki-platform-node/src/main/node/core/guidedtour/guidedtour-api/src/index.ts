@@ -18,10 +18,22 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+import { TourTaskStatus } from "./tourTaskStatus";
+import type { GuidedTourManagerApi } from "./GuidedTourManagerApi";
+
+import type { TourStep } from "./step";
+import type { TourTask } from "./task";
+import type { TourTour } from "./tour";
 import type { TranslationQuery } from "./translationQuery";
 import type { Translations } from "./translations";
 
 export type {
+  GuidedTourManagerApi,
+  TourStep,
+  TourTask,
+  TourTour,
   TranslationQuery,
   Translations,
 };
+
+export { TourTaskStatus };

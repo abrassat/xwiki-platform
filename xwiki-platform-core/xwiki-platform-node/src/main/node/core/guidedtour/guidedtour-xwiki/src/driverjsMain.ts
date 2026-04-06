@@ -1,5 +1,25 @@
+/**
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+console.log("hi!");
 // FIXME: From old TourJS.xml
-
+/*
 function loadCss(href) {
     var link = document.createElement("link");
     link.type = "text/css";
@@ -19,7 +39,7 @@ require(['jquery', 'xwiki-meta', 'guided-tour-utils'], function ($, xm, utils) {
 
   /**
    * Create a tour from a JSON file
-   */
+   *\/
   var createTour = function (jsonData) {
     // Add stylesheet only when needed
     loadCss();
@@ -144,7 +164,7 @@ require(['jquery', 'xwiki-meta', 'guided-tour-utils'], function ($, xm, utils) {
                 if (!beforeUnloadFired) {
                   tour.moveNext();
                 }
-              });*/
+              });*\/
             }
           });
         }
@@ -229,13 +249,13 @@ require(['jquery', 'xwiki-meta', 'guided-tour-utils'], function ($, xm, utils) {
    * Load asynchronously the list of steps concerning the current page.
    * It's done asynchronously so it does not improve the page rendering time. It's important since this code is used
    * everywhere.
-   */
+   *\/
   $(function() {
 window.guidedTourInProgress = false;
     /**
      * The tour is not adapted for little screen sizes like mobile phones have.
      * The value 768 is taken from bootstrap in order to be consistent with their media queries.
-     */
+     *\/
     if ($(window).innerWidth() &lt;= 768) {
       // return; // This is so annoying when debugging.
     }
@@ -334,7 +354,7 @@ define('guided-tour-floater', ['jquery', 'guided-tour-utils'], function($, utils
   /*
    * Function to set up a draggable element, for the floater.
    * Taken from https://www.w3schools.com/howto/howto_js_draggable.asp
-   */
+   *\/
   function dragElement(elmnt) {
     console.debug(elmnt)
     if (!elmnt.classList.contains('draggable')) {
@@ -428,3 +448,4 @@ define('guided-tour-floater', ['jquery', 'guided-tour-utils'], function($, utils
     }
   });
 });
+*/

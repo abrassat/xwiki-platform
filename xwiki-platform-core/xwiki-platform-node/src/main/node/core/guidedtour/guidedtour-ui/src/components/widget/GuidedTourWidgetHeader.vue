@@ -27,21 +27,30 @@
 <template>
   <div class="header">
     <div class="top-bar">
-      <span class="icon fa fa-compass"></span>
+      <span class="icon fa fa-compass" />
       <div class="title">Guided Tours</div>
       <div class="right-group">
-        <button id="floater-options"><span class="fa fa-cog"></span></button>
-        <button id="floater-close"><i class="fa-solid fa-x"></i></button>
+        <button id="floater-options">
+          <span class="fa fa-cog" />
+        </button>
+        <button id="floater-close">
+          <i class="fa-solid fa-x" />
+        </button>
       </div>
     </div>
-    <div class="completeness">
-      <div class="completeness-progress"></div>
-    </div>
+    <GuidedTourWidgetProgressBar :progress="progress" />
   </div>
 </template>
 
-<script>
-export default {
-  name: "GuidedTourWidgetHeader",
-};
+<script setup lang="ts">
+import GuidedTourWidgetProgressBar from "./GuidedTourWidgetProgressBar.vue";
+import { inject } from "vue";
+import type {
+  GuidedTourManagerApi,
+  TourTask,
+} from "@xwiki/platform-guidedtour-api";
+
+let guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager");
+const guidedtourTaskList: TourTask[] = guidedTourManager.getTasks() ?? [];
+const progress = 0.3 + guidedtourTaskList.length / 100;
 </script>

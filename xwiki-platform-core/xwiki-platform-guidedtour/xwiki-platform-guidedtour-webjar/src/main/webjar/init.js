@@ -17,9 +17,14 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-/* TODO: replace with CSS variables (XWIKI-23664). */
-.xwiki-livedata {
-  -/**/-table-cell-padding: @table-cell-padding;
-  -/**/-screen-xs-max: @screen-xs-max;
-  -/**/-panel-default-heading-bg: @panel-default-heading-bg;
-}
+
+import { TourPanel } from '@xwiki/platform-guidedtour-node-ui';
+import { GuidedTourManager } from '@xwiki/platform-guidedtour-xwiki';
+import { createApplication } from 'vue';
+
+console.info("Hi from init!");
+let guidedTourManager = new GuidedTourManager();
+createApplication(TourPanel, {
+    guidedTourManager: guidedTourManager,
+}).mount('#uiTourId');
+//  uiTourId = id of a div that you can create on the UIXP

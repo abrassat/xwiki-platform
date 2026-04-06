@@ -25,12 +25,10 @@
 -->
 
 <template>
-  <section class="useful-link" v-html="rawHtml">
-  </section>
+  <section class="useful-link" v-html="props.link"></section>
 </template>
 
-<script>
-export default {
-  name: "GuidedTourWidgetUsefulLink",
-};
+<script setup lang="ts">
+import { defineProps } from "vue";
+const props = defineProps(["link"]);
 </script>

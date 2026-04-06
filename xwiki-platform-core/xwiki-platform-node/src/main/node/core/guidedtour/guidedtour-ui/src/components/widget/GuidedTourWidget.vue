@@ -26,34 +26,45 @@
 
 <template>
   bababooey
-  <div class="guided-tour-floater" v-show="visible" v-draggable>
-    <GuidedTourWidgetHeader/>
+  <div class="guided-tour-floater" v-show="floaterShown" v-draggable>
+    <GuidedTourWidgetHeader />
     <div class="guides-content">
       <div class="guides-container">
         <!-- FIXME: There should be a better grouping style here, groups shouldn't be sections. -->
         <GuidedTourWidgetTour
-          v-for="tour in tours"
+          v-for="(tour, index) in guidedTourManager.getTours()"
           :tour="tour"
+          :key="index"
         />
       </div>
       <div>
-        <GuidedTourWidgetUsefulLink v-for="link in links" :rawHtml="link.rawHtml"/>
+        <GuidedTourWidgetUsefulLink
+          v-for="(link, index) in guidedTourManager.getUsefulLinks()"
+          :key="index"
+          :link="link"
+        />
       </div>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: "GuidedTourWidget",
-};
-</script>
-
 <script setup lang="ts">
+//import type { I18n } from "vue-i18n";
+// FIXME: This should be injected from somewhere else, but I have no idea from where.
+import GuidedTourWidgetHeader from "./GuidedTourWidgetHeader.vue";
+import GuidedTourWidgetTour from "./GuidedTourWidgetTour.vue";
+import GuidedTourWidgetUsefulLink from "./GuidedTourWidgetUsefulLink.vue";
+import { GuidedTourManager } from "@xwiki/platform-guidedtour-xwiki";
+import { provide } from "vue";
+import type { GuidedTourManagerApi } from "@xwiki/platform-guidedtour-api";
+
+let guidedTourManager: GuidedTourManagerApi = new GuidedTourManager();
+
+provide("GuidedTourManager", guidedTourManager);
 // FIXME
 // Fetch the tour from the API
 // Instantiate the JS objects to be used in the widget
-
+/*
 define('guided-tour-floater', ['jquery', 'guided-tour-utils'], function($, utils) {
   const guidedTourFloaterTemplate = `bababooey`;
 
@@ -99,7 +110,7 @@ define('guided-tour-floater', ['jquery', 'guided-tour-utils'], function($, utils
   /*
    * Function to set up a draggable element, for the floater.
    * Taken from https://www.w3schools.com/howto/howto_js_draggable.asp
-   */
+   *\/
   function dragElement(elmnt) {
     console.debug(elmnt)
     if (!elmnt.classList.contains('draggable')) {
@@ -193,4 +204,5 @@ define('guided-tour-floater', ['jquery', 'guided-tour-utils'], function($, utils
     }
   });
 });
+*/
 </script>
