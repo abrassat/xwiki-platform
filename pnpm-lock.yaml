@@ -402,9 +402,15 @@ importers:
 
   xwiki-platform-core/xwiki-platform-guidedtour/xwiki-platform-guidedtour-node/xwiki-platform-guidedtour-node-ui/src/main/node:
     dependencies:
+      '@xwiki/platform-guidedtour-api':
+        specifier: workspace:*
+        version: link:../../../../../../xwiki-platform-node/src/main/node/core/guidedtour/guidedtour-api
       '@xwiki/platform-guidedtour-ui':
         specifier: workspace:*
         version: link:../../../../../../xwiki-platform-node/src/main/node/core/guidedtour/guidedtour-ui
+      '@xwiki/platform-guidedtour-xwiki':
+        specifier: workspace:*
+        version: link:../../../../../../xwiki-platform-node/src/main/node/core/guidedtour/guidedtour-xwiki
     devDependencies:
       '@xwiki/platform-tool-eslintconfig':
         specifier: workspace:*

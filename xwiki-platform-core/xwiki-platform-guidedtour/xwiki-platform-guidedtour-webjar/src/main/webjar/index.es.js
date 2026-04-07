@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-import { TourPanel } from '@xwiki/platform-guidedtour-node-ui';
+import { GuidedTourWidget } from '@xwiki/platform-guidedtour-ui';
 import { GuidedTourManager } from '@xwiki/platform-guidedtour-xwiki';
 import { createApplication } from 'vue';
 
@@ -26,5 +26,5 @@ console.info("Hi from init!");
 let guidedTourManager = new GuidedTourManager();
 createApplication(TourPanel, {
     guidedTourManager: guidedTourManager,
-}).mount('#uiTourId');
+}).mount('#xdocFooter');
 //  uiTourId = id of a div that you can create on the UIXP
