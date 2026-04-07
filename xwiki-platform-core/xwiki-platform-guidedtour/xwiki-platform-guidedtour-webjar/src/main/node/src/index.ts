@@ -26,5 +26,4 @@ console.info("Hi from init!");
 const guidedTourManager = new GuidedTourManager();
 createApp(GuidedTourWidget, {
     guidedTourManager: guidedTourManager,
-}).mount('#xdocFooter');
-//  uiTourId = id of a div that you can create on the UIXP
+}).mount('#guidedtour-uix');
