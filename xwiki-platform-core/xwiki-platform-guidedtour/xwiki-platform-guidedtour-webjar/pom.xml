@@ -27,7 +27,7 @@
     <artifactId>xwiki-platform-guidedtour</artifactId>
     <version>18.2.0-SNAPSHOT</version>
   </parent>
-  <packaging>webjar</packaging>
+  <packaging>webjar-node</packaging>
   <artifactId>xwiki-platform-guidedtour-webjar</artifactId>
   <name>XWiki Platform - Guided Tour - WebJar</name>
   <description>JavaScript API that can be used to work with the Guided Tour extension</description>
@@ -41,8 +41,7 @@
     <xwiki.extension.javascript.modules.importmap>
       {
       "@xwiki/platform-guidedtour-ui": "org.xwiki.platform:xwiki-platform-guidedtour-node-ui/index.es.js",
-      "vue": "org.webjars.npm:vue/dist/vue.runtime.esm-browser.prod.js",
-      "vue-i18n": "org.webjars.npm:vue-i18n/dist/vue-i18n.esm-browser.prod.js"
+      "vue": "org.webjars.npm:vue/dist/vue.runtime.esm-browser.prod.js"
       }
     </xwiki.extension.javascript.modules.importmap>
   </properties>
@@ -68,62 +67,9 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>requirejs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>jquery</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.webjars.npm</groupId>
       <artifactId>vue</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
-      <groupId>org.webjars.npm</groupId>
-      <artifactId>vue-i18n</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <!-- Used by the date filter. -->
-    <dependency>
-      <groupId>org.webjars.npm</groupId>
-      <artifactId>moment</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>bootstrap-daterangepicker</artifactId>
-    </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <!-- Copy the remaining less file. Can be removed once XWIKI-23080 is done. -->
-            <id>copy-less-resources</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>
-                ${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}
-              </outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${basedir}/src/main/node/src</directory>
-                  <includes>
-                    <include>variables.less</include>
-                    <include>reactive.less</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>

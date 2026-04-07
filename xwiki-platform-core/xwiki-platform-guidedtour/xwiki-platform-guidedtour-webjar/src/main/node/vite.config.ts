@@ -31,13 +31,13 @@ export default defineConfig({
   build: {
     outDir: '../../../target/node-dist',
     lib: {
-      entry: resolve(__dirname, 'src/main.js'),
+      entry: resolve(__dirname, 'src/index.ts'),
       fileName: (format, entryName) => `${entryName}.${format}.js`,
       formats: ['es']
     },
     sourcemap: true,
     rollupOptions: {
-      external: ['jquery', 'vue', 'vue-i18n', '@xwiki/platform-guidedtour-ui', '@xwiki/platform-guidedtour-xwiki'],
+      external: ['jquery', 'vue', 'vue-i18n', '@xwiki/platform-guidedtour-ui'],
       output: {
         globals: {
           vue: 'Vue'
