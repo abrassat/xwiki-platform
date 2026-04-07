@@ -45,7 +45,6 @@
   "types": "./dist/index.d.ts",
   "dependencies": {
     "@xwiki/platform-guidedtour-api": "workspace:*",
-    "@xwiki/platform-guidedtour-xwiki": "workspace:*",
     "dompurify": "catalog:",
     "eventemitter3": "catalog:",
     "lz-string": "catalog:",

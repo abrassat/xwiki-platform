@@ -50,7 +50,7 @@ import type {
   TourTask,
 } from "@xwiki/platform-guidedtour-api";
 
-let guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager");
-const guidedtourTaskList: TourTask[] = guidedTourManager.getTasks() ?? [];
+let guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager")!;
+const guidedtourTaskList: TourTask[] = await guidedTourManager.getTasks();
 const progress = 0.3 + guidedtourTaskList.length / 100;
 </script>

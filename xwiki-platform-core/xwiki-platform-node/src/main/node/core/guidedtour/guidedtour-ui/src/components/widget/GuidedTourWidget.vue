@@ -26,20 +26,20 @@
 
 <template>
   bababooey
-  <div class="guided-tour-floater" v-show="floaterShown" v-draggable>
+  <div class="guided-tour-floater" v-show="isWidgetShown" v-draggable>
     <GuidedTourWidgetHeader />
     <div class="guides-content">
       <div class="guides-container">
         <!-- FIXME: There should be a better grouping style here, groups shouldn't be sections. -->
         <GuidedTourWidgetTour
-          v-for="(tour, index) in guidedTourManager.getTours()"
+          v-for="tour in tours"
+          :key="tour.id"
           :tour="tour"
-          :key="index"
         />
       </div>
       <div>
         <GuidedTourWidgetUsefulLink
-          v-for="(link, index) in guidedTourManager.getUsefulLinks()"
+          v-for="(link, index) in usefulLinks"
           :key="index"
           :link="link"
         />
@@ -54,13 +54,19 @@
 import GuidedTourWidgetHeader from "./GuidedTourWidgetHeader.vue";
 import GuidedTourWidgetTour from "./GuidedTourWidgetTour.vue";
 import GuidedTourWidgetUsefulLink from "./GuidedTourWidgetUsefulLink.vue";
-import { GuidedTourManager } from "@xwiki/platform-guidedtour-xwiki";
 import { provide } from "vue";
 import type { GuidedTourManagerApi } from "@xwiki/platform-guidedtour-api";
 
-let guidedTourManager: GuidedTourManagerApi = new GuidedTourManager();
+const { guidedTourManager } = defineProps<{
+  guidedTourManager: GuidedTourManagerApi;
+}>();
 
-provide("GuidedTourManager", guidedTourManager);
+provide<GuidedTourManagerApi>("GuidedTourManager", guidedTourManager!);
+
+const tours = await guidedTourManager.getTours();
+const usefulLinks = await guidedTourManager.getUsefulLinks();
+const isWidgetShown = await guidedTourManager.isWidgetShown();
+
 // FIXME
 // Fetch the tour from the API
 // Instantiate the JS objects to be used in the widget

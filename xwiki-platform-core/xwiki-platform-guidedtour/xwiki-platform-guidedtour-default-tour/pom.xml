@@ -38,6 +38,12 @@
 </properties>
 <dependencies>
   <!-- Runtime dependencies. -->
+  <dependency>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>xwiki-platform-guidedtour-ui</artifactId>
+    <version>${project.version}</version>
+    <type>xar</type>
+  </dependency>
   <!-- Test dependencies. -->
   <dependency>
     <groupId>org.xwiki.platform</groupId>

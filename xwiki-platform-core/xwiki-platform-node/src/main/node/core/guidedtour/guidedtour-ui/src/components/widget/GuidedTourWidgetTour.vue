@@ -30,11 +30,7 @@
       <i class="fa-solid fa-chevron-right chevron" />Tour Title
     </div>
     <div class="tour-content">
-      <GuidedTourWidgetTask
-        v-for="(task, index) in guidedTourManager.getTasks(tour.id)"
-        :key="index"
-        :task="task"
-      />
+      <GuidedTourWidgetTask v-for="task in tasks" :key="task.id" :task="task" />
     </div>
   </section>
 </template>
@@ -49,5 +45,6 @@ import type {
 const { tour } = defineProps<{
   tour: TourTour;
 }>();
-const guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager");
+const guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager")!;
+const tasks = await guidedTourManager.getTasks(tour.id);
 </script>
