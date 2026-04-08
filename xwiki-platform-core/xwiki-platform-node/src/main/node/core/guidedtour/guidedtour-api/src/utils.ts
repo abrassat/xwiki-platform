@@ -21,25 +21,25 @@ console.log("hi!");
 
 // FIXME: FROM PREVIOUS TourJS.xml
 /*
-define('guided-tour-translation-keys', {
+define('guidedtour-translation-keys', {
   prefix: 'guidedtour.',
   keys: [
     'buttons.skipAll',
     'buttons.next',
     'buttons.previous',
     'buttons.endTour',
-    'floater.title',
-    'floater.usefulLinks', // TODO: Maybe it is a json object, and parse it in js?
+    'widget.title',
+    'widget.usefulLinks', // TODO: Maybe it is a json object, and parse it in js?
   ],
 });
 
-define('guided-tour-defs-params', [], function () {
+define('guidedtour-defs-params', [], function () {
   return {
     storage: window.localStorage,
   }
 });
 
-define('guided-tour-utils', [], function() {
+define('guidedtour-utils', [], function() {
   /**
    * Escape strings so they respect the Bootstrap Tour API constraints.
    * Note: This transformation is not needed anymore, but is kept for backwards compatibility with the bootstrap tour.
@@ -78,7 +78,7 @@ define('guided-tour-utils', [], function() {
         console.log(groups)
         const completeness = Object.entries(groups).reduce((acc, el) =&gt; acc.concat(el[1]['tasks']), []).reduce((acc, el) =&gt; acc + Number(el['done']), 0);
         const completenessTotal = Object.entries(groups).reduce((acc, el) =&gt; acc.concat(el[1]['tasks']), []).length;
-        document.querySelector('.guided-tour-floater').querySelector('.completeness-progress').style.width = `${(completeness/completenessTotal) * 100}%`;
+        document.querySelector('.guidedtour-widget').querySelector('.completeness-progress').style.width = `${(completeness/completenessTotal) * 100}%`;
         data['groups'] = groups;
         data['tasks'] = Object.entries(groups).reduce((acc, el) =&gt; acc.concat(el[1]['tasks']), []);
         data['nrDoneTasks'] = completeness;

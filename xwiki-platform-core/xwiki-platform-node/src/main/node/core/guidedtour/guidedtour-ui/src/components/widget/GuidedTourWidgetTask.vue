@@ -25,7 +25,11 @@
 -->
 
 <template>
-  <div :id="task.id" class="tour-task">
+  <div
+    :id="task.id"
+    class="guidedtour-task"
+    v-bind:class="{ 'task-done': task.status == TourTaskStatus.Done }"
+  >
     <button class="pre-btn">
       <i class="fa fa-arrow-right" />
     </button>
@@ -37,9 +41,52 @@
 </template>
 
 <script setup lang="ts">
+import { TourTaskStatus } from "@xwiki/platform-guidedtour-api";
 import { defineProps } from "vue";
 import type { TourTask } from "@xwiki/platform-guidedtour-api";
 const { task } = defineProps<{
   task: TourTask;
 }>();
+console.info("In task setup.");
 </script>
+
+<style>
+.guidedtour-task:hover {
+  background: #f2f2f2ff 100%;
+}
+
+.guidedtour-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* padding: 6px 0; */
+  border-radius: 0.65em;
+  transition: background-color 0.1s ease;
+  padding: 0.5em;
+  cursor: pointer;
+}
+
+.guidedtour-task.task-done {
+  text-decoration: line-through;
+}
+
+.guidedtour-task:hover .pre-btn,
+.guidedtour-task:hover .post-btn {
+  opacity: 1;
+}
+
+.pre-btn,
+.post-btn {
+  width: 20px;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.post-btn {
+  margin-left: auto;
+}
+</style>

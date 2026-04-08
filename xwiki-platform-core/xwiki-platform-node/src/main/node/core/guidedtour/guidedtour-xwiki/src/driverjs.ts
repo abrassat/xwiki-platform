@@ -25,7 +25,7 @@ console.log("hi!");
 // FIXME: FROM PREVIOUS TourJS.xml
 
 
-define('guided-tour-driverjs-patch', ['driverjs'], function(driverjs) {
+define('guidedtour-driverjs-patch', ['driverjs'], function(driverjs) {
   var driver = function (config) {
     console.info('Called custom driver function');
     var tour = window.driver.js.driver(config);
@@ -58,7 +58,7 @@ define('guided-tour-driverjs-patch', ['driverjs'], function(driverjs) {
   return driver;
 });
 
-require(['guided-tour-driverjs-patch', 'guided-tour-floater'], function(driver) {
+require(['guidedtour-driverjs-patch', 'guidedtour-widget'], function(driver) {
   console.info('Main loaded initialized')
   //driver().drive();
 });

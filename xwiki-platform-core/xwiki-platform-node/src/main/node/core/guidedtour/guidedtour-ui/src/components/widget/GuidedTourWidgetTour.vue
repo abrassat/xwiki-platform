@@ -25,11 +25,16 @@
 -->
 
 <template>
-  <section :id="tour.id" class="tour-section">
-    <div class="tour-header">
-      <i class="fa-solid fa-chevron-right chevron" />Tour Title
+  <section
+    :id="tour.id"
+    class="guidedtour-tour"
+    v-bind:class="{ 'tour-done': tour.status == TourTaskStatus.Done }"
+  >
+    <div class="guidedtour-tour-header">
+      <!-- FIXME: Replace font-awesome with some vue component-->
+      <i class="fa-solid fa-chevron-right chevron" />{{ tour.title }}
     </div>
-    <div class="tour-content">
+    <div class="guidedtour-content">
       <GuidedTourWidgetTask v-for="task in tasks" :key="task.id" :task="task" />
     </div>
   </section>
@@ -40,6 +45,7 @@ import GuidedTourWidgetTask from "./GuidedTourWidgetTask.vue";
 import { defineProps, inject } from "vue";
 import type {
   GuidedTourManagerApi,
+  TourTaskStatus,
   TourTour,
 } from "@xwiki/platform-guidedtour-api";
 const { tour } = defineProps<{
@@ -47,4 +53,47 @@ const { tour } = defineProps<{
 }>();
 const guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager")!;
 const tasks = await guidedTourManager.getTasks(tour.id);
+console.info("In tour setup.");
 </script>
+
+<style>
+/* FIXME: guidedtour-content should be renamed to -collapsible or something. */
+.guidedtour-widget .guidedtour-tour.collapsed .guidedtour-content {
+  max-height: 0;
+}
+
+.guidedtour-tour .chevron {
+  cursor: pointer;
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  rotate: 0deg;
+}
+
+.guidedtour-tour:not(.collapsed) .chevron {
+  rotate: 90deg;
+}
+
+.guidedtour-tour-header:hover {
+  background: #f2f2f2ff 100%;
+}
+
+.guidedtour-tour-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 0.65em;
+  transition: background-color 0.1s ease;
+  padding: 0.5em;
+}
+
+.guidedtour-tour-header .chevron {
+  width: 20px;
+  /* fixed column */
+  text-align: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+</style>

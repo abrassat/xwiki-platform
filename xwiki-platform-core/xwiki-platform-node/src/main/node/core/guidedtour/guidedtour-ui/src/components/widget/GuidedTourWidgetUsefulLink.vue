@@ -31,4 +31,14 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
 const props = defineProps(["link"]);
+console.info("In useful link setup.");
 </script>
+
+<style>
+.useful-link {
+  padding: 14px 16px 14px 16px;
+  border-color: #ddddddff;
+  border-width: 1px;
+  border-style: solid;
+}
+</style>

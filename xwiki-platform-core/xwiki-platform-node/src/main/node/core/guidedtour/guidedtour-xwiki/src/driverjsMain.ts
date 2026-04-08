@@ -32,7 +32,7 @@ function loadCss(href) {
 //----------------------------------
 // Display a tour if needed
 //----------------------------------
-require(['jquery', 'xwiki-meta', 'guided-tour-utils'], function ($, xm, utils) {
+require(['jquery', 'xwiki-meta', 'guidedtour-utils'], function ($, xm, utils) {
   'use strict';
   // TODO: Check for unused translation strings at the end of development.
   // TODO: Make use of _redirect_to localStorage key somewhere in the code.
@@ -58,7 +58,7 @@ require(['jquery', 'xwiki-meta', 'guided-tour-utils'], function ($, xm, utils) {
     }
 
     // Require 'bootstrap-tour' only when needed
-    require(['guided-tour-driverjs-patch'], function(driver) {
+    require(['guidedtour-driverjs-patch'], function(driver) {
       //const driver = window.driver.js.driver;
       if (window.guidedTourInProgress) {
         console.debug(`Another Tour already in progress. Don't start ${tourName}`);
@@ -302,57 +302,57 @@ window.guidedTourInProgress = false;
           new XWiki.widgets.Notification(`Couldn't find tour ${tourId}. I think it wasn't fetched...`, 'error');
         }
       }
-      $('.guided-tour-floater').on('click', '.tour-task', createTourWrapper);
+      $('.guidedtour-widget').on('click', '.guidedtour-task', createTourWrapper);
     });
   });
 });
 
 // FIXME: From old TourJS.xml
 
-define('guided-tour-floater', ['jquery', 'guided-tour-utils'], function($, utils) {
+define('guidedtour-widget', ['jquery', 'guidedtour-utils'], function($, utils) {
   const guidedTourFloaterTemplate = `bababooey`;
 
-  // Create floater. Bind Events.
+  // Create widget. Bind Events.
   $(guidedTourFloaterTemplate).appendTo($(document.body));
 
   // Helper to bind click events, TODO: could be deleted.
   function bindFloaterClickEvent(selector, callback) {
-    $('.guided-tour-floater ' + selector).on('click', (event) =&gt; {
+    $('.guidedtour-widget ' + selector).on('click', (event) =&gt; {
       callback(event);
     });
   };
 
   bindFloaterClickEvent('.top-bar', (event) =&gt; {
-    window.localStorage.setItem('TourFloaterCollapsed', document.querySelector('.guided-tour-floater').classList.toggle('collapsed'));
+    window.localStorage.setItem('TourFloaterCollapsed', document.querySelector('.guidedtour-widget').classList.toggle('collapsed'));
   });
 
-  bindFloaterClickEvent('#floater-close', (event) =&gt; {
-    if (event.target.closest('.guided-tour-floater').classList.contains('collapsed')) {
-      event.target.closest('.guided-tour-floater').remove();
-      // window.localStorage.setItem('TourFloaterCollapsed', 'hidden') // Commented to not disable the floater completely, permanently.
+  bindFloaterClickEvent('#widget-close', (event) =&gt; {
+    if (event.target.closest('.guidedtour-widget').classList.contains('collapsed')) {
+      event.target.closest('.guidedtour-widget').remove();
+      // window.localStorage.setItem('TourFloaterCollapsed', 'hidden') // Commented to not disable the widget completely, permanently.
       event.stopPropagation();
       // TODO: Or just hide it, and set some cookie/option to not load the javascript code at all the next time.
     }
   });
 
-  bindFloaterClickEvent('#floater-options', (event) =&gt; {
+  bindFloaterClickEvent('#widget-options', (event) =&gt; {
     event.stopPropagation();
     console.info('Opened settings menu');
   });
 
   // Load localStorage state.
   if (window.localStorage.getItem('TourFloaterCollapsed') == 'true') {
-    document.querySelector('.guided-tour-floater').classList.add('collapsed');
+    document.querySelector('.guidedtour-widget').classList.add('collapsed');
   }
-  if (window.localStorage.getItem('guided-tour-floater-position-x')) {
+  if (window.localStorage.getItem('guidedtour-widget-position-x')) {
     // FIXME: Could be XSS i think, if someone edits this key. But that's how the right side panel works too.
-    // FIXME: Clamp the allowed values, so the floater is always visible on the screen. Maybe set the value as percentage of screen width? In the dragging functions I mean.
-    document.querySelector('.guided-tour-floater').style.left = window.localStorage.getItem('guided-tour-floater-position-x');
+    // FIXME: Clamp the allowed values, so the widget is always visible on the screen. Maybe set the value as percentage of screen width? In the dragging functions I mean.
+    document.querySelector('.guidedtour-widget').style.left = window.localStorage.getItem('guidedtour-widget-position-x');
   }
 
   // Definitions.
   /*
-   * Function to set up a draggable element, for the floater.
+   * Function to set up a draggable element, for the widget.
    * Taken from https://www.w3schools.com/howto/howto_js_draggable.asp
    *\/
   function dragElement(elmnt) {
@@ -391,7 +391,7 @@ define('guided-tour-floater', ['jquery', 'guided-tour-utils'], function($, utils
       pos4 = e.clientY;
       // set the element's new position:
       //elmnt.style.top = (elmnt.offsetTop - pos2) + "px"; // Commented so the drag only goes side-to-side, not up-down.
-      // TODO: Make sure the floater doesn't end up outside the window post-window-resize.
+      // TODO: Make sure the widget doesn't end up outside the window post-window-resize.
       elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
     }
 
@@ -404,7 +404,7 @@ define('guided-tour-floater', ['jquery', 'guided-tour-utils'], function($, utils
       document.onmousemove = null;
       document.body.style.cursor = "";
       elmnt.classList.remove('dragging');
-      window.localStorage.setItem('guided-tour-floater-position-x', elmnt.style.left);
+      window.localStorage.setItem('guidedtour-widget-position-x', elmnt.style.left);
     }
   }
 
@@ -416,16 +416,16 @@ define('guided-tour-floater', ['jquery', 'guided-tour-utils'], function($, utils
     for (group in groups) {
       let groupEl = document.createElement('section');
       groupEl.setAttribute('data-gid', group);
-      groupEl.classList.add('tour-section');
+      groupEl.classList.add('guidedtour-tour');
       if (window.localStorage.getItem('tour_95_' + utils.escapeTourName(groupEl['dataset'].gid) + '_TourFloaterTourCollapsed') == 'true') {
         groupEl.classList.add('collapsed');
       }
       console.debug(groups[group])
       // FIXME: Add HTML escapes (maybe use purify?)
-      groupEl.innerHTML = '&lt;div class="tour-header"&gt;&lt;i class="fa-solid fa-chevron-right chevron"&gt;&lt;/i&gt;' + groups[group]['displayTitle'] + '&lt;/div&gt;&lt;div class="tour-content"&gt;&lt;/div&gt;';
+      groupEl.innerHTML = '&lt;div class="guidedtour-tour-header"&gt;&lt;i class="fa-solid fa-chevron-right chevron"&gt;&lt;/i&gt;' + groups[group]['displayTitle'] + '&lt;/div&gt;&lt;div class="guidedtour-content"&gt;&lt;/div&gt;';
       // Chevron collapse section.
-      groupEl.getElementsByClassName('tour-header')[0].onclick = (event) =&gt; {
-        const contentElement = event.target.closest('.tour-section');
+      groupEl.getElementsByClassName('guidedtour-tour-header')[0].onclick = (event) =&gt; {
+        const contentElement = event.target.closest('.guidedtour-tour');
         window.localStorage.setItem('tour_95_' + utils.escapeTourName(contentElement['dataset'].gid) + '_TourFloaterTourCollapsed', contentElement.classList.toggle('collapsed'));
       };
       // TODO: Replace divs with actual ARIA/WCAG stuff, ul, etc
@@ -436,14 +436,14 @@ define('guided-tour-floater', ['jquery', 'guided-tour-utils'], function($, utils
         let taskEl = document.createElement('div');
         taskEl.innerHTML = '&lt;button class="pre-btn"&gt;&lt;i class="fa fa-arrow-right"&gt;&lt;/i&gt;&lt;/button&gt;' + task['title'] + '&lt;button class="post-btn"&gt;&lt;i class="fa fa-rotate-right"&gt;&lt;/i&gt;&lt;/button&gt;';
         taskEl.setAttribute('data-id', task['id']);
-        taskEl.className = 'tour-task';
+        taskEl.className = 'guidedtour-task';
         if (task['done']) {
           taskEl.classList.add('task-done')
         }
-        groupEl.querySelector('.tour-content').appendChild(taskEl);
+        groupEl.querySelector('.guidedtour-content').appendChild(taskEl);
       });
-      if (groupEl.querySelector('.tour-content').childElementCount &gt; 0) {
-        document.querySelector('.guides-container').appendChild(groupEl);
+      if (groupEl.querySelector('.guidedtour-content').childElementCount &gt; 0) {
+        document.querySelector('.guidedtour-container').appendChild(groupEl);
       }
     }
   });

@@ -30,10 +30,10 @@
       <span class="icon fa fa-compass" />
       <div class="title">Guided Tours</div>
       <div class="right-group">
-        <button id="floater-options">
+        <button id="widget-options">
           <span class="fa fa-cog" />
         </button>
-        <button id="floater-close">
+        <button id="widget-close">
           <i class="fa-solid fa-x" />
         </button>
       </div>
@@ -50,7 +50,61 @@ import type {
   TourTask,
 } from "@xwiki/platform-guidedtour-api";
 
+console.info("In header setup.");
+
 let guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager")!;
 const guidedtourTaskList: TourTask[] = await guidedTourManager.getTasks();
 const progress = 0.3 + guidedtourTaskList.length / 100;
 </script>
+
+<style>
+.top-bar {
+  display: flex;
+  cursor: pointer;
+}
+
+.guidedtour-widget.collapsed .top-bar {
+  padding: 8px;
+}
+
+.icon {
+  align-self: flex-start;
+  margin-right: 0.5em;
+  overflow: hidden;
+  width: 30px;
+}
+
+.guidedtour-widget.collapsed .icon {
+  width: 0;
+}
+
+.right-group {
+  align-self: flex-end;
+  white-space: nowrap;
+  margin-left: 0.5em;
+}
+
+.title {
+  align-self: flex-start;
+  width: 100%;
+  font-weight: bold;
+}
+
+.guidedtour-widget.collapsed:not(.dragging) .header {
+  cursor: pointer;
+}
+
+.guidedtour-widget.collapsed .right-group button:first-child {
+  display: none;
+}
+
+.guidedtour-widget.collapsed .header {
+  padding: 0;
+}
+
+.guidedtour-widget .header {
+  display: inline-block;
+  user-select: none;
+  padding: 14px 16px 14px 16px;
+}
+</style>

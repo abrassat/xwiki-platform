@@ -34,4 +34,42 @@ import { defineProps } from "vue";
 const { progress } = defineProps<{
   progress: number;
 }>();
+console.info("In pbar setup.");
 </script>
+
+<style>
+.guidedtour-widget .completeness {
+  margin: 16px 0 16px 0;
+  height: 9px;
+  position: relative;
+  width: 100%;
+  background: #f2f2f2ff;
+  border-start-start-radius: 18px;
+  border-start-end-radius: 18px;
+  border-end-start-radius: 18px;
+  border-end-end-radius: 18px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.guidedtour-widget.collapsed .completeness {
+  margin: 0;
+  height: 4px;
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+
+.guidedtour-widget.collapsed .completeness-progress {
+  height: 4px;
+}
+
+.guidedtour-widget .completeness-progress {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  height: 9px;
+  background: #7698ffff;
+}
+</style>
