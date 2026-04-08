@@ -19,13 +19,17 @@
  */
 package org.xwiki.guidedtour.rest;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.xwiki.guidedtour.api.dtos.TourDTO;
 import org.xwiki.rest.XWikiRestComponent;
 import org.xwiki.rest.XWikiRestException;
 import org.xwiki.stability.Unstable;
@@ -51,9 +55,15 @@ public interface ToursResource extends XWikiRestComponent
 
     @POST
     @Path("/tour")
-    Response createTour() throws XWikiRestException;
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response createTour(TourDTO tourDTO) throws XWikiRestException;
 
     @PUT
     @Path("/tour/{tourId}")
-    Response updateTour(@PathParam("tourId") String tourId) throws XWikiRestException;
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response updateTour(@PathParam("tourId") String tourId, TourDTO tourDTO) throws XWikiRestException;
+
+    @DELETE
+    @Path("/tour/{tourId}")
+    Response deleteTour(@PathParam("tourId") String tourId) throws XWikiRestException;
 }

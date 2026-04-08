@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,25 +16,19 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.xwiki.guidedtour.internal;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-<modelVersion>4.0.0</modelVersion>
-<parent>
-  <groupId>org.xwiki.platform</groupId>
-  <artifactId>xwiki-platform-guidedtour</artifactId>
-  <version>18.2.0-SNAPSHOT</version>
-</parent>
+import org.xwiki.test.junit5.mockito.ComponentTest;
 
-<artifactId>xwiki-platform-guidedtour-api</artifactId>
-<name>XWiki Platform - Guided Tour - API</name>
-<packaging>jar</packaging>
-<description>XWiki Platform - Guided Tour - API</description>
-<dependencies>
-  <dependency>
-    <groupId>org.xwiki.platform</groupId>
-    <artifactId>xwiki-platform-model-api</artifactId>
-    <version>18.1.0</version>
-  </dependency>
-</dependencies>
-</project>
+/**
+ * Test of {@link DefaultToursResource}.
+ *
+ * @version $Id$
+ * @since 18.4.0RC1
+ */
+@ComponentTest
+class DefaultToursResourceTest
+{
+    // TODO: Write unit tests.
+}

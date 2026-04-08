@@ -103,9 +103,9 @@ public class StepDTO
         return placement;
     }
 
-    public void setPlacement(Placement placement)
+    public void setPlacement(String placement)
     {
-        this.placement = placement;
+        this.placement = Placement.fromString(placement);
     }
 
     public boolean isBackdrop()
@@ -143,9 +143,9 @@ public class StepDTO
         return targetAction;
     }
 
-    public void setTargetAction(ActionType targetAction)
+    public void setTargetAction(String targetAction)
     {
-        this.targetAction = targetAction;
+        this.targetAction = ActionType.fromString(targetAction);
     }
 
     public String getQueryParameters()

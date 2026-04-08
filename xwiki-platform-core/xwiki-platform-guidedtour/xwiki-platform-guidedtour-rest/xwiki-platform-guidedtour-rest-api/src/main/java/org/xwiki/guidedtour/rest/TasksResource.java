@@ -19,13 +19,17 @@
  */
 package org.xwiki.guidedtour.rest;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.xwiki.guidedtour.api.dtos.TaskDTO;
 import org.xwiki.rest.XWikiRestComponent;
 import org.xwiki.rest.XWikiRestException;
 import org.xwiki.stability.Unstable;
@@ -37,24 +41,29 @@ import org.xwiki.stability.Unstable;
  * @since 18.4.0RC1
  */
 @Unstable
-@Path("/guidedTour/tour/{tourId}")
+@Path("/guidedTour/tour/{tourId}/tasks")
 public interface TasksResource extends XWikiRestComponent
 {
     @GET
-    @Path("/tasks")
     Response getTourTasks(@PathParam("tourId") String tourId) throws XWikiRestException;
 
     @GET
-    @Path("/tasks/{taskId}")
+    @Path("/{taskId}")
     Response getTourTask(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId)
         throws XWikiRestException;
 
     @POST
-    @Path("/tasks")
-    Response createTask(@PathParam("tourId") String tourId) throws XWikiRestException;
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response createTask(@PathParam("tourId") String tourId, TaskDTO taskDTO) throws XWikiRestException;
 
     @PUT
-    @Path("/task/{taskId}")
-    Response updateTask(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId)
+    @Path("/{taskId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response updateTask(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId, TaskDTO taskDTO)
+        throws XWikiRestException;
+
+    @DELETE
+    @Path("/{taskId}")
+    Response deleteTask(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId)
         throws XWikiRestException;
 }

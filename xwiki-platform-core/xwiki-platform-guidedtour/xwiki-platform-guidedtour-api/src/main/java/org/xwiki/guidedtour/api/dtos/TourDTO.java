@@ -19,7 +19,9 @@
  */
 package org.xwiki.guidedtour.api.dtos;
 
-import org.xwiki.guidedtour.api.enums.Status;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.xwiki.stability.Unstable;
 
 /**
@@ -31,26 +33,26 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public class TourDTO
 {
-    private String title;
-
     private String id;
 
-    private Status status;
+    private String title;
 
     private boolean isActive;
+
+    private List<TaskDTO> tasks;
 
     public TourDTO()
     {
         this.isActive = false;
-        this.status = Status.TODO;
+        this.tasks = new ArrayList<>();
     }
 
-    public TourDTO(String title, String id, String status, boolean isActive)
+    public TourDTO(String id, String title, boolean isActive)
     {
         this.title = title;
         this.id = id;
-        this.status = Status.fromString(status);
         this.isActive = isActive;
+        this.tasks = new ArrayList<>();
     }
 
     public boolean isActive()
@@ -83,13 +85,18 @@ public class TourDTO
         this.id = id;
     }
 
-    public Status getStatus()
+    public void addTask(TaskDTO taskDTO)
     {
-        return status;
+        tasks.add(taskDTO);
     }
 
-    public void setStatus(Status status)
+    public void setTasks(List<TaskDTO> tasks)
     {
-        this.status = status;
+        this.tasks = tasks;
+    }
+
+    public List<TaskDTO> getTasksList()
+    {
+        return tasks;
     }
 }

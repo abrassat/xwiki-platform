@@ -34,29 +34,40 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public class TaskDTO
 {
+    private String id;
+
     private String title;
 
     private int order;
 
-    private String id;
-
     private List<String> dependsOn;
 
-    private Status status;
+    private Status status = Status.TODO; // to be set depending on user tour object
+
+    private boolean isActive;
 
     public TaskDTO()
     {
         this.dependsOn = new ArrayList<>();
-        this.status = Status.TODO;
     }
 
-    public TaskDTO(String title, int order, String id, List<String> dependsOn, String status)
+    public TaskDTO(String id, String title, int order, boolean isActive, List<String> dependsOn)
     {
+        this.id = id;
         this.title = title;
         this.order = order;
-        this.id = id;
         this.dependsOn = dependsOn;
-        this.status = Status.fromString(status);
+        this.isActive = isActive;
+    }
+
+    public boolean isActive()
+    {
+        return isActive;
+    }
+
+    public void setActive(boolean active)
+    {
+        isActive = active;
     }
 
     public String getTitle()

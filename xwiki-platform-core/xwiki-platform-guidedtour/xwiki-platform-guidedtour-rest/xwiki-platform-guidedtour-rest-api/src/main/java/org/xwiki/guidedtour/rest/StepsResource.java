@@ -19,13 +19,17 @@
  */
 package org.xwiki.guidedtour.rest;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.xwiki.guidedtour.api.dtos.StepDTO;
 import org.xwiki.rest.XWikiRestComponent;
 import org.xwiki.rest.XWikiRestException;
 import org.xwiki.stability.Unstable;
@@ -37,21 +41,26 @@ import org.xwiki.stability.Unstable;
  * @since 18.4.0RC1
  */
 @Unstable
-@Path("/guidedTour/tour/{tourId}/tasks/{taskId}")
+@Path("/guidedTour/tour/{tourId}/tasks/{taskId}/steps")
 public interface StepsResource extends XWikiRestComponent
 {
     @GET
-    @Path("/steps")
     Response getTaskSteps(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId)
         throws XWikiRestException;
 
     @POST
-    @Path("/steps")
-    Response createStep(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId)
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response createStep(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId, StepDTO stepDTO)
         throws XWikiRestException;
 
     @PUT
-    @Path("/steps/{stepId}")
+    @Path("/{stepId}")
+    @Consumes(MediaType.APPLICATION_JSON)
     Response updateStep(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId,
-        @PathParam("stepId") String stepId) throws XWikiRestException;
+        @PathParam("stepId") int stepId, StepDTO stepDTO) throws XWikiRestException;
+
+    @DELETE
+    @Path("/{stepId}")
+    Response deleteStep(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId,
+        @PathParam("stepId") int stepId) throws XWikiRestException;
 }
