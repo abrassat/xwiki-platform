@@ -25,7 +25,7 @@ import java.util.List;
 import org.xwiki.stability.Unstable;
 
 /**
- * Placeholder comment.
+ * Tour DTO used to represent a tour with its properties and the list of tasks it contains.
  *
  * @version $Id$
  * @since 18.4.0RC1
@@ -41,12 +41,22 @@ public class TourDTO
 
     private List<TaskDTO> tasks;
 
+    /**
+     * Default constructor.
+     */
     public TourDTO()
     {
         this.isActive = false;
         this.tasks = new ArrayList<>();
     }
 
+    /**
+     * Constructor for TourDTO.
+     *
+     * @param id the id of the tour
+     * @param title the title of the tour
+     * @param isActive {@code true} if the tour is active, {@code false} otherwise
+     */
     public TourDTO(String id, String title, boolean isActive)
     {
         this.title = title;
@@ -55,46 +65,91 @@ public class TourDTO
         this.tasks = new ArrayList<>();
     }
 
+    /**
+     * Gets the active status of the tour.
+     *
+     * @return {@code true} if the tour is active, {@code false} otherwise
+     */
     public boolean isActive()
     {
         return isActive;
     }
 
+    /**
+     * Sets the active status of the tour.
+     *
+     * @param active {@code true} to set the tour as active, {@code false} to set it as inactive
+     */
     public void setActive(boolean active)
     {
         isActive = active;
     }
 
+    /**
+     * Gets the title of the tour.
+     *
+     * @return the title of the tour
+     */
     public String getTitle()
     {
         return title;
     }
 
+    /**
+     * Sets the title of the tour.
+     *
+     * @param title the title to set for the tour
+     */
     public void setTitle(String title)
     {
         this.title = title;
     }
 
+    /**
+     * Gets the id of the tour.
+     *
+     * @return the id of the tour
+     */
     public String getId()
     {
         return id;
     }
 
+    /**
+     * Sets the id of the tour.
+     *
+     * @param id the id to set for the tour
+     */
     public void setId(String id)
     {
         this.id = id;
     }
 
+    /**
+     * Adds a task to the tour.
+     *
+     * @param taskDTO the task to be added to the tour
+     */
     public void addTask(TaskDTO taskDTO)
     {
         tasks.add(taskDTO);
     }
 
+    /**
+     * Sets the list of tasks for the tour.
+     *
+     * @param tasks the list of tasks to set for the tour
+     */
     public void setTasks(List<TaskDTO> tasks)
     {
         this.tasks = tasks;
     }
 
+    /**
+     * Gets the list of tasks for the tour.
+     *
+     * @return the list of tasks for the tour
+     */
     public List<TaskDTO> getTasksList()
     {
         return tasks;

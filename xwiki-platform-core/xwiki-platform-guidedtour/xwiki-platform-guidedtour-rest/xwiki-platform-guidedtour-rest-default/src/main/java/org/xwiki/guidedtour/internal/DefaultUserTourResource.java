@@ -19,8 +19,6 @@
  */
 package org.xwiki.guidedtour.internal;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -28,60 +26,48 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.guidedtour.api.dtos.TourDTO;
-import org.xwiki.guidedtour.rest.ToursResource;
+import org.xwiki.guidedtour.api.dtos.UserTourStatusDTO;
+import org.xwiki.guidedtour.rest.UserTourResource;
 import org.xwiki.rest.XWikiRestException;
 
 /**
- * Default implementation of {@link ToursResource}.
+ * Default implementation of {@link UserTourResource}.
  *
  * @version $Id$
  * @since 18.4.0RC1
  */
 @Component
-@Named("org.xwiki.guidedtour.internal.DefaultToursResource")
+@Named("org.xwiki.guidedtour.internal.DefaultUserTourResource")
 @Singleton
-public class DefaultToursResource extends AbstractGuidedTourResource implements ToursResource
+public class DefaultUserTourResource extends AbstractGuidedTourResource implements UserTourResource
 {
     @Inject
-    private ToursManager toursManager;
+    private UserStatusManager userStatusManager;
 
     @Override
-    public Response getAvailableTours() throws XWikiRestException
+    public Response getUserTourStatus() throws XWikiRestException
     {
-        return execute("Tour API: retrieving all tours.", new Object[] {}, () -> {
+        return execute("User tour status API: getting user tour status object.", new Object[] {}, () -> {
             validateCSRF();
-            List<TourDTO> json = toursManager.getAllTours();
+            UserTourStatusDTO json = userStatusManager.getUserToursStatus();
             return Response.ok(json).type(MediaType.APPLICATION_JSON_TYPE).build();
         });
     }
 
     @Override
-    public Response createTour(TourDTO tourDTO) throws XWikiRestException
+    public Response createTourStatus() throws XWikiRestException
     {
-        return execute("Tour API: creating new tour.", new Object[] {}, () -> {
-            toursManager.createTour(tourDTO);
+        return execute("User tour status API: creating new user tour status object.", new Object[] {}, () -> {
+            userStatusManager.createUserTourStatus();
             return Response.status(Response.Status.CREATED).build();
         });
     }
 
     @Override
-    public Response updateTour(String tourId, TourDTO tourDTO) throws XWikiRestException
+    public Response updateTour(UserTourStatusDTO userTourStatus) throws XWikiRestException
     {
-        return execute("Tour API: updating tour with id [{}].", new Object[] { tourId }, () -> {
-            if (!tourDTO.getId().equals(tourId)) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Path ID and Body ID mismatch").build();
-            }
-            toursManager.updateTour(tourDTO);
-            return Response.ok().build();
-        });
-    }
-
-    @Override
-    public Response deleteTour(String tourId) throws XWikiRestException
-    {
-        return execute("Tour API: removing tour with id [{}].", new Object[] { tourId }, () -> {
-            toursManager.deleteTour(tourId);
+        return execute("User tour status API: updating user tour status object.", new Object[] {}, () -> {
+            userStatusManager.updateUserTourStatus(userTourStatus);
             return Response.ok().build();
         });
     }

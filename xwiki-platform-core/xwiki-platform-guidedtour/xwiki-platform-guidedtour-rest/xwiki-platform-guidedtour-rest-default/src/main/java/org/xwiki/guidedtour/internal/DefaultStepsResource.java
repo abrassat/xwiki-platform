@@ -23,112 +23,67 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Provider;
 import javax.inject.Singleton;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.container.Container;
-import org.xwiki.container.Request;
-import org.xwiki.csrf.CSRFToken;
 import org.xwiki.guidedtour.api.dtos.StepDTO;
 import org.xwiki.guidedtour.rest.StepsResource;
 import org.xwiki.rest.XWikiRestException;
-import org.xwiki.security.authorization.ContextualAuthorizationManager;
-import org.xwiki.security.authorization.Right;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+/**
+ * Default implementation of {@link StepsResource}.
+ *
+ * @version $Id$
+ * @since 18.4.0RC1
+ */
 @Component
 @Named("org.xwiki.guidedtour.internal.DefaultStepsResource")
 @Singleton
-public class DefaultStepsResource implements StepsResource
+public class DefaultStepsResource extends AbstractGuidedTourResource implements StepsResource
 {
     @Inject
-    private ContextualAuthorizationManager contextualAuthorizationManager;
-
-    @Inject
-    private Logger logger;
-
-    @Inject
-    private Provider<Container> containerProvider;
-
-    @Inject
-    private CSRFToken csrf;
-
-    @Inject
     private StepsManager stepsManager;
-
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public Response getTaskSteps(String tourId, String taskId) throws XWikiRestException
     {
-        try {
-            Container container = containerProvider.get();
-            Request request = container.getRequest();
-            if (!this.contextualAuthorizationManager.hasAccess(Right.VIEW) || !csrf.isTokenValid(
-                (String) request.getParameter("csrf")))
-            {
-                throw new SecurityException("Invalid token or view rights");
-            }
-            List<StepDTO> tasks = stepsManager.getAllSteps(tourId, taskId);
-            return Response.ok(objectMapper.writeValueAsString(tasks)).type(MediaType.APPLICATION_JSON_TYPE).build();
-        } catch (SecurityException deniedException) {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
+        return execute("Steps API: retrieving the steps for task [{}] from tour [{}].", new Object[] { taskId, tourId },
+            () -> {
+                validateCSRF();
+                List<StepDTO> tasks = stepsManager.getAllSteps(tourId, taskId);
+                return Response.ok(tasks).type(MediaType.APPLICATION_JSON_TYPE).build();
+            });
     }
 
     @Override
     public Response createStep(String tourId, String taskId, StepDTO stepDTO) throws XWikiRestException
     {
-        try {
-            if (!this.contextualAuthorizationManager.hasAccess(Right.VIEW)) {
-                throw new SecurityException("Invalid token or view rights");
-            }
-            stepsManager.createStep(tourId, taskId, stepDTO);
-            return Response.status(Response.Status.CREATED).build();
-        } catch (SecurityException deniedException) {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
+        return execute("Steps API: creating step for task [{}] from tour [{}].", new Object[] { taskId, tourId },
+            () -> {
+                stepsManager.createStep(tourId, taskId, stepDTO);
+                return Response.status(Response.Status.CREATED).build();
+            });
     }
 
     @Override
     public Response updateStep(String tourId, String taskId, int stepId, StepDTO stepDTO) throws XWikiRestException
     {
-        try {
-            if (!this.contextualAuthorizationManager.hasAccess(Right.VIEW)) {
-                throw new SecurityException("Invalid token or view rights");
-            }
-            stepsManager.updateStep(tourId, taskId, stepId, stepDTO);
-            return Response.ok().build();
-        } catch (SecurityException deniedException) {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
+        return execute("Steps API: updating step on position [{}] for task [{}] from tour [{}].",
+            new Object[] { stepId, taskId, tourId }, () -> {
+                stepsManager.updateStep(tourId, taskId, stepId, stepDTO);
+                return Response.ok().build();
+            });
     }
 
     @Override
     public Response deleteStep(String tourId, String taskId, int stepId) throws XWikiRestException
     {
-        try {
-            if (!this.contextualAuthorizationManager.hasAccess(Right.VIEW)) {
-                throw new SecurityException("Invalid token or view rights");
-            }
-            stepsManager.deleteStep(tourId, taskId, stepId);
-            return Response.ok().build();
-        } catch (SecurityException deniedException) {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
+        return execute("Steps API: removing step on position [{}] for task [{}] from tour [{}].",
+            new Object[] { stepId, taskId, tourId }, () -> {
+                stepsManager.deleteStep(tourId, taskId, stepId);
+                return Response.ok().build();
+            });
     }
 }

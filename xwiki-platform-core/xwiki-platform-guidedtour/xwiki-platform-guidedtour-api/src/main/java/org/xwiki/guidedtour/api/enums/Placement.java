@@ -19,21 +19,72 @@
  */
 package org.xwiki.guidedtour.api.enums;
 
+import org.xwiki.stability.Unstable;
+
+/**
+ * Enum representing the placement of a step in the guided tour.
+ *
+ * @version $Id$
+ * @since 18.4.0RC1
+ */
+@Unstable
 public enum Placement
 {
+    /**
+     * The step is placed on the left side of the target element, aligned to the start of the element.
+     */
     LEFT_START,
+    /**
+     * The step is placed on the left side of the target element, aligned to the center of the element.
+     */
     LEFT_CENTER,
+    /**
+     * The step is placed on the left side of the target element, aligned to the end of the element.
+     */
     LEFT_END,
+    /**
+     * The step is placed on the top side of the target element, aligned to the start of the element.
+     */
     TOP_START,
+    /**
+     * The step is placed on the top side of the target element, aligned to the center of the element.
+     */
     TOP_CENTER,
+    /**
+     * The step is placed on the top side of the target element, aligned to the end of the element.
+     */
     TOP_END,
+    /**
+     * The step is placed on the right side of the target element, aligned to the start of the element.
+     */
     RIGHT_START,
+    /**
+     * The step is placed on the right side of the target element, aligned to the center of the element.
+     */
     RIGHT_CENTER,
+    /**
+     * The step is placed on the right side of the target element, aligned to the end of the element.
+     */
     RIGHT_END,
+    /**
+     * The step is placed on the bottom side of the target element, aligned to the start of the element.
+     */
     BOTTOM_START,
+    /**
+     * The step is placed on the bottom side of the target element, aligned to the center of the element.
+     */
     BOTTOM_CENTER,
+    /**
+     * The step is placed on the bottom side of the target element, aligned to the end of the element.
+     */
     BOTTOM_END;
 
+    /**
+     * Get the Placement from a string value.
+     *
+     * @param text the string value to convert
+     * @return the corresponding Placement, or TOP_CENTER if the string does not match any placement
+     */
     public static Placement fromString(String text)
     {
         for (Placement s : Placement.values()) {

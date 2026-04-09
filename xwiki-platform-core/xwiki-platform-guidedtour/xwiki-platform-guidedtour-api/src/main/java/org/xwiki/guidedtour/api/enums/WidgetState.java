@@ -19,12 +19,36 @@
  */
 package org.xwiki.guidedtour.api.enums;
 
+import org.xwiki.stability.Unstable;
+
+/**
+ * Enum representing the state of a widget.
+ *
+ * @version $Id$
+ * @since 18.4.0RC1
+ */
+@Unstable
 public enum WidgetState
 {
+    /**
+     * Hidden state: the widget is hidden and not visible to the user.
+     */
     HIDDEN,
+    /**
+     * Open state: the widget is visible and can be interacted with by the user.
+     */
     OPEN,
+    /**
+     * Collapsed state: the widget is collapsed, but visible to the user. It can be expanded to show its content.
+     */
     COLLAPSED;
 
+    /**
+     * Get the WidgetState from a string value.
+     *
+     * @param text the string value to convert
+     * @return the corresponding WidgetState, or OPEN if the string does not match any state
+     */
     public static WidgetState fromString(String text)
     {
         for (WidgetState s : WidgetState.values()) {

@@ -32,6 +32,12 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
+/**
+ * Utility class to execute Solr queries.
+ *
+ * @version $Id$
+ * @since 18.4.0RC1
+ */
 @Component(roles = SolrQueryUtil.class)
 @Singleton
 public class SolrQueryUtil
@@ -47,6 +53,15 @@ public class SolrQueryUtil
     @Inject
     private QueryManager queryManager;
 
+    /**
+     * Executes a Solr query with the given parameters and returns the results as a {@link SolrDocumentList}.
+     *
+     * @param qs the query string to execute
+     * @param fq the filter query to apply to the results
+     * @param fl the list of fields to return in the results
+     * @return the results of the query as a {@link SolrDocumentList}
+     * @throws QueryException if there is an error executing the query
+     */
     public SolrDocumentList executeQuery(String qs, String fq, List<String> fl) throws QueryException
     {
         List<String> filteredLines = new ArrayList<>(fl);
@@ -57,7 +72,7 @@ public class SolrQueryUtil
         Query query = queryManager.createQuery(qs, "solr");
         query.bindValue("fq", fq);
         query.bindValue("fl", filteredLines);
-        query.bindValue("group", "true").bindValue("group.field", "fullname").bindValue("group.main", "true");
+        query.bindValue("group", true).bindValue("group.field", "fullname").bindValue("group.main", true);
 
         return ((QueryResponse) query.execute().get(0)).getResults();
     }

@@ -47,22 +47,45 @@ public interface ToursResource extends XWikiRestComponent
     /**
      * Returns the available guided tours.
      *
-     * @return the list of guided tours
+     * @return the list of available guided tours and 200 status code if the retrieval is successful, 401 if the user
+     *     lacks rights or if the CSRF token is invalid and 500 if any other error occurs
      */
     @GET
     @Path("/tours")
     Response getAvailableTours() throws XWikiRestException;
 
+    /**
+     * Creates a new guided tour.
+     *
+     * @param tourDTO the tour data to update
+     * @return 201 status code if the tour has been created successfully, 401 if the user lacks rights, 409 if the tour
+     *     already exists and 500 if any other error occurs
+     */
     @POST
     @Path("/tour")
     @Consumes(MediaType.APPLICATION_JSON)
     Response createTour(TourDTO tourDTO) throws XWikiRestException;
 
+    /**
+     * Updates an existing guided tour.
+     *
+     * @param tourId the id of the tour to update
+     * @param tourDTO the tour data to update
+     * @return 200 status code if the tour has been updated successfully, 401 if the user lacks rights, 404 if the tour
+     *     is not found and 500 if any other error occurs
+     */
     @PUT
     @Path("/tour/{tourId}")
     @Consumes(MediaType.APPLICATION_JSON)
     Response updateTour(@PathParam("tourId") String tourId, TourDTO tourDTO) throws XWikiRestException;
 
+    /**
+     * Deletes an existing guided tour.
+     *
+     * @param tourId the id of the tour to delete
+     * @return 200 status code if the tour has been deleted successfully, 401 if the user lacks rights, 404 if the tour
+     *     is not found and 500 if any other error occurs
+     */
     @DELETE
     @Path("/tour/{tourId}")
     Response deleteTour(@PathParam("tourId") String tourId) throws XWikiRestException;

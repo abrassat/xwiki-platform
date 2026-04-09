@@ -17,49 +17,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.guidedtour.api.enums;
+package org.xwiki.guidedtour.api.exceptions;
 
 import org.xwiki.stability.Unstable;
 
 /**
- * Enum representing the type of action.
+ * Exception thrown when an invalid id is provided.
  *
  * @version $Id$
  * @since 18.4.0RC1
  */
 @Unstable
-public enum ActionType
+public class InvalidIdException extends Exception
 {
     /**
-     * Edit action: represents an action that requires the user to edit content or settings.
-     */
-    EDIT,
-    /**
-     * View action: represents an action that requires the user to view content or settings without making any changes.
-     */
-    VIEW,
-    /**
-     * Comment action: represents an action that requires the user to add comments.
-     */
-    COMMENT,
-    /**
-     * Create action: represents an action that requires the user to create a new document.
-     */
-    CREATE;
-
-    /**
-     * Get the ActionType from a string value.
+     * Constructor for InvalidIdException.
      *
-     * @param text the string value to convert
-     * @return the corresponding ActionType, or VIEW if the string does not match any action type
+     * @param message the message to be displayed when the exception is thrown
+     * @param parameters the parameters to be used in the message
      */
-    public static ActionType fromString(String text)
+    public InvalidIdException(String message, Object... parameters)
     {
-        for (ActionType s : ActionType.values()) {
-            if (s.name().equalsIgnoreCase(text)) {
-                return s;
-            }
-        }
-        return VIEW;
+        super(String.format(message, parameters));
     }
 }

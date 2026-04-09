@@ -35,7 +35,7 @@ import org.xwiki.rest.XWikiRestException;
 import org.xwiki.stability.Unstable;
 
 /**
- * Exposes the guided tours through REST.
+ * Exposes the guided tour tasks through REST API.
  *
  * @version $Id$
  * @since 18.4.0RC1
@@ -44,24 +44,65 @@ import org.xwiki.stability.Unstable;
 @Path("/guidedTour/tour/{tourId}/tasks")
 public interface TasksResource extends XWikiRestComponent
 {
+    /**
+     * Returns the list of tasks for a given tour.
+     *
+     * @param tourId the tour id
+     * @return the list of tasks for the given tour and 200 status code if the retrieval is successful, 401 if the user
+     *     lacks rights or if the CSRF token is invalid and 500 if any other error occurs
+     * @throws XWikiRestException
+     */
     @GET
     Response getTourTasks(@PathParam("tourId") String tourId) throws XWikiRestException;
 
+    /**
+     * Returns a specific task of a given tour.
+     *
+     * @param tourId the tour id
+     * @param taskId the task id
+     * @return the task and 200 status code if the retrieval is successful, 404 if the task is not found, 401 if the
+     *     user lacks rights or if the CSRF token is invalid and 500 if any other error occurs
+     */
     @GET
     @Path("/{taskId}")
     Response getTourTask(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId)
         throws XWikiRestException;
 
+    /**
+     * Creates a new task for a given tour.
+     *
+     * @param tourId the tour id
+     * @param taskDTO the task data to create
+     * @return 201 status code if the task has been created successfully, 401 if the user lacks rights, 404 if the tour
+     *     is not found, 409 if the task already exists and 500 if any other error occurs
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     Response createTask(@PathParam("tourId") String tourId, TaskDTO taskDTO) throws XWikiRestException;
 
+    /**
+     * Updates an existing task of a given tour.
+     *
+     * @param tourId the tour id
+     * @param taskId the task id
+     * @param taskDTO the task data to update
+     * @return 200 status code if the task has been updated successfully, 401 if the user lacks rights, 404 if the tour
+     *     or the task is not found and 500 if any other error occurs
+     */
     @PUT
     @Path("/{taskId}")
     @Consumes(MediaType.APPLICATION_JSON)
     Response updateTask(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId, TaskDTO taskDTO)
         throws XWikiRestException;
 
+    /**
+     * Deletes an existing task of a given tour.
+     *
+     * @param tourId the tour id
+     * @param taskId the task id
+     * @return 200 status code if the task has been deleted successfully, 401 if the user lacks rights, 404 if the tour
+     *     or the task is not found and 500 if any other error occurs
+     */
     @DELETE
     @Path("/{taskId}")
     Response deleteTask(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId)

@@ -1,6 +1,4 @@
-<?xml version="1.1" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,23 +16,28 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.xwiki.guidedtour.api.exceptions;
 
-<xwikidoc version="1.6" reference="GuidedTour.Placeholder" locale="">
-  <web>GuidedTour</web>
-  <name>Placeholder</name>
-  <language/>
-  <defaultLanguage/>
-  <translation>0</translation>
-  <creator>xwiki:XWiki.Admin</creator>
-  <parent>GuidedTour.WebHome</parent>
-  <author>xwiki:XWiki.Admin</author>
-  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <version>1.1</version>
-  <title>Placeholder</title>
-  <comment/>
-  <minorEdit>false</minorEdit>
-  <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>true</hidden>
-  <content/>
-</xwikidoc>
+import org.xwiki.stability.Unstable;
+
+/**
+ * Exception thrown when a duplicated id is provided.
+ *
+ * @version $Id$
+ * @since 18.4.0RC1
+ */
+@Unstable
+public class DuplicatedIdException extends Exception
+{
+    /**
+     * Constructor for DuplicatedIdException.
+     *
+     * @param message the message to be displayed when the exception is thrown
+     * @param parameters the parameters to be used in the message formatting
+     */
+    public DuplicatedIdException(String message, Object... parameters)
+    {
+        super(String.format(message, parameters));
+    }
+}

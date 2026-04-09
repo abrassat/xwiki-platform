@@ -44,21 +44,57 @@ import org.xwiki.stability.Unstable;
 @Path("/guidedTour/tour/{tourId}/tasks/{taskId}/steps")
 public interface StepsResource extends XWikiRestComponent
 {
+    /**
+     * Get the steps of a task.
+     *
+     * @param tourId the id of the tour
+     * @param taskId the id of the task
+     * @return the list of steps of the task and 200 status code if the request is successful, 404 if the tour or the
+     *     task is not found and 500 if any error occurs while getting the steps
+     */
     @GET
     Response getTaskSteps(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId)
         throws XWikiRestException;
 
+    /**
+     * Create a step in a task.
+     *
+     * @param tourId the id of the tour
+     * @param taskId the id of the task
+     * @param stepDTO the step to be created
+     * @return 201 status code if the step has been created successfully, 401 if the user lacks rights, 404 if the tour
+     *     or task is not found, 409 if a step with the same order exists and 500 if any other error occurs
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     Response createStep(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId, StepDTO stepDTO)
         throws XWikiRestException;
 
+    /**
+     * Update a step of a task.
+     *
+     * @param tourId the id of the tour
+     * @param taskId the id of the task
+     * @param stepId the id of the step to be updated
+     * @param stepDTO the step data to update
+     * @return 200 status code if the step has been updated successfully, 401 if the user lacks rights, 404 if the tour,
+     *     task or step is not found and 500 if any other error occurs
+     */
     @PUT
     @Path("/{stepId}")
     @Consumes(MediaType.APPLICATION_JSON)
     Response updateStep(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId,
         @PathParam("stepId") int stepId, StepDTO stepDTO) throws XWikiRestException;
 
+    /**
+     * Delete a step of a task.
+     *
+     * @param tourId the id of the tour
+     * @param taskId the id of the task
+     * @param stepId the id of the step to be deleted
+     * @return 200 status code if the step has been deleted successfully, 401 if the user lacks rights, 404 if the tour,
+     *     task or step is not found and 500 if any other error occurs
+     */
     @DELETE
     @Path("/{stepId}")
     Response deleteStep(@PathParam("tourId") String tourId, @PathParam("taskId") String taskId,
