@@ -42,7 +42,6 @@
 
 <script setup lang="ts">
 import { TourTaskStatus } from "@xwiki/platform-guidedtour-api";
-import { defineProps } from "vue";
 import type { TourTask } from "@xwiki/platform-guidedtour-api";
 const { task } = defineProps<{
   task: TourTask;

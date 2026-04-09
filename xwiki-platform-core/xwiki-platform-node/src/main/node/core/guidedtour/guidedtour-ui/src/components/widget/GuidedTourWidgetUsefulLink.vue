@@ -29,7 +29,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
 const props = defineProps(["link"]);
 console.info("In useful link setup.");
 </script>

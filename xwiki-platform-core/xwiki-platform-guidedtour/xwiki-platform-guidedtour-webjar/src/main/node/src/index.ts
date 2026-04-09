@@ -20,28 +20,33 @@
 
 import {GuidedTourManager} from '@xwiki/platform-guidedtour-xwiki';
 import {GuidedTourWidget} from "@xwiki/platform-guidedtour-ui"
-import {createApp} from 'vue';
+import {Suspense, createApp, h} from 'vue';
 
-console.info("Hi from init 1!");
-const guidedTourManager = new GuidedTourManager();
-console.log(document.querySelector('#guidedtour-uix'));
-createApp({
-  template: '<div>Test</div>'
-}).mount('#gt2');
-const app =
-createApp(GuidedTourWidget, {
-  guidedTourManager: guidedTourManager
-});
-app.config.errorHandler = (err, instance, info) => {
-  console.error('Vue error:', err, info, instance);
-  throw err;
-};
-app.config.warnHandler = (msg, instance, trace) => {
-  console.warn('Vue warn:', msg, trace, instance);
-};
 
-// app.config.devtools = true;
-// app.config.productionTip = false;
+function init() {
+  console.info("Hi from init 1!");
+  const guidedTourManager = new GuidedTourManager();
 
-const a = app.mount('#guidedtour-uix');
-console.log(a);
+  createApp({ render: () => h('div', 'Test') }).mount('#gt2');
+  const app = createApp(GuidedTourWidget, { guidedTourManager });
+  app.config.errorHandler = (err, instance, info) => {
+    console.error('Vue error:', err, info, instance);
+    throw err;
+  };
+  app.config.warnHandler = (msg, instance, trace) => {
+    console.warn('Vue warn:', msg, trace, instance);
+  };
+
+  // app.config.devtools = true;
+  // app.config.productionTip = false;
+
+  const a = app.mount('#guidedtour-uix');
+  console.log(a);
+}
+
+if (!document.querySelector('#tourResumeContainer')) {
+  init();
+} else {
+  console.warn("Since the Tour Application is installed, not showing the GuidedTour Widget, to prevent conflicts.");
+  init(); // TODO: Remove this, this is temporary for testing.
+}

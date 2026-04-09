@@ -25,23 +25,38 @@
 -->
 
 <template>
-  <div class="guidedtour-widget" v-draggable>
-    <GuidedTourWidgetHeader />
+  <div class="guidedtour-widget" :class="widgetClass">
+    <GuidedTourWidgetHeader
+      @collapseGuidedTourWidget="onToggleCollapseTour"
+      :progress="progress"
+    />
     <div class="guidedtour-widget-content">
       <div class="guidedtour-container">
         <!-- FIXME: There should be a better grouping style here, groups shouldn't be sections. -->
-        <GuidedTourWidgetTour
-          v-for="tour in tours"
-          :key="tour.id"
-          :tour="tour"
-        />
+        <template v-if="state.tours.length">
+          <GuidedTourWidgetTour
+            v-for="tour in state.tours"
+            :key="tour.id"
+            :tour="reactive(tour)"
+            @toggleCollapseTour="
+              (tour: TourTour) => {
+                console.debug('toggleCollapseTour closeset for ', tour);
+                tour.isCollapsed = !tour.isCollapsed;
+              }
+            "
+          />
+        </template>
+        <div v-else>No tours</div>
       </div>
       <div>
-        <GuidedTourWidgetUsefulLink
-          v-for="(link, index) in usefulLinks"
-          :key="index"
-          :link="link"
-        />
+        <template v-if="state.usefulLinks.length">
+          <GuidedTourWidgetUsefulLink
+            v-for="(link, index) in state.usefulLinks"
+            :key="index"
+            :link="link"
+          />
+        </template>
+        <div v-else>No links</div>
       </div>
     </div>
   </div>
@@ -49,26 +64,60 @@
 
 <script setup lang="ts">
 //import type { I18n } from "vue-i18n";
+// All the logic should live here (TODO: Maybe move most of it to a .ts file)
 // FIXME: This should be injected from somewhere else, but I have no idea from where.
 import GuidedTourWidgetHeader from "./GuidedTourWidgetHeader.vue";
 import GuidedTourWidgetTour from "./GuidedTourWidgetTour.vue";
 import GuidedTourWidgetUsefulLink from "./GuidedTourWidgetUsefulLink.vue";
-import { provide } from "vue";
-import type { GuidedTourManagerApi } from "@xwiki/platform-guidedtour-api";
-
-console.info("In widget setup.");
-
+import { TourTaskStatus } from "@xwiki/platform-guidedtour-api";
+import { computed, onMounted, provide, reactive, ref } from "vue";
+import type {
+  GuidedTourManagerApi,
+  TourTour,
+} from "@xwiki/platform-guidedtour-api";
+console.info("In widget setup. 23");
 const { guidedTourManager } = defineProps<{
   guidedTourManager: GuidedTourManagerApi;
 }>();
 
 provide<GuidedTourManagerApi>("GuidedTourManager", guidedTourManager!);
 
-const tours = await guidedTourManager.getTours();
-const usefulLinks = await guidedTourManager.getUsefulLinks();
-const isWidgetShown = await guidedTourManager.isWidgetShown();
+// onErrorCaptured((err) => {
+//   console.error(err);
+// });
+const state = reactive({
+  isWidgetCollapsed: true,
+  tours: [] as TourTour[],
+  usefulLinks: [] as string[],
+  isWidgetShown: true,
+});
+const widgetClass = computed(() => ({ collapsed: state.isWidgetCollapsed }));
 
-console.warn(tours, usefulLinks, isWidgetShown, guidedTourManager);
+onMounted(async () => {
+  state.tours = await guidedTourManager.getTours();
+  state.usefulLinks = await guidedTourManager.getUsefulLinks();
+  state.isWidgetShown = await guidedTourManager.isWidgetShown();
+  console.log("async loaded", state.tours);
+});
+
+function onToggleCollapseTour() {
+  state.isWidgetCollapsed = !state.isWidgetCollapsed;
+  console.debug("collapseGuidedTourWidget", state.isWidgetCollapsed);
+}
+
+console.log(
+  "loaded",
+  state.tours,
+  state.usefulLinks,
+  state.isWidgetShown,
+  guidedTourManager,
+);
+let progress = ref(0.3);
+progress.value +=
+  0.3 +
+  state.tours.filter((tour: TourTour) => tour.status != TourTaskStatus.ToDo)
+    .length /
+    state.tours.length;
 // FIXME
 // Fetch the tour from the API
 // Instantiate the JS objects to be used in the widget
@@ -240,20 +289,23 @@ define('guidedtour-widget', ['jquery', 'guidedtour-utils'], function($, utils) {
 
   .guidedtour-widget-content {
     overflow: hidden;
-    max-height: 300px;
   }
 
   .guidedtour-content {
     display: flex;
-    max-height: 400px;
+    max-height: 400px; /* Placeholder so the height animates nicely. */
     flex-direction: column;
     overflow: hidden;
+  }
+
+  .collapsed .guidedtour-content {
+    max-height: 0px;
   }
 
   .guidedtour-container {
     overflow-x: scroll;
     padding: 0px 16px 14px 16px;
-    height: 100%;
+    max-height: 300px;
   }
 
   * {

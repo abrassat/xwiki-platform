@@ -52,6 +52,7 @@ export enum TourTaskStatus {
 export interface TourTour {
     id: string;
     isActive: boolean;
+    isCollapsed?: boolean;
     status: TourTaskStatus;
     title: string;
 }

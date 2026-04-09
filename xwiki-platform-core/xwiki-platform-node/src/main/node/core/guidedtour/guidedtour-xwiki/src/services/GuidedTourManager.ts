@@ -46,7 +46,10 @@ export class GuidedTourManager implements GuidedTourManagerApi {
   }
 
   getUsefulLinks(): Promise<string[]> {
-    const usefulLinks: string[] = ["<p>a</p>", "<p>b</p>"];
+    const usefulLinks: string[] = [
+      "<a>Useful link 1</a>",
+      "<a>Useful link 2</a>",
+    ];
     return Promise.resolve(usefulLinks);
   }
 
@@ -58,9 +61,21 @@ export class GuidedTourManager implements GuidedTourManagerApi {
     // TODO: fetch(getRESTUrl())
     const tourTours: TourTour[] = [
       {
-        title: "Task 1",
-        id: "GuidedTour.Task 1",
+        title: "ToDo Task",
+        id: "GuidedTour.ToDoTask",
         status: TourTaskStatus.ToDo,
+        isActive: true,
+      },
+      {
+        title: "Done Task",
+        id: "GuidedTour.DoneTask",
+        status: TourTaskStatus.Done,
+        isActive: true,
+      },
+      {
+        title: "Skipped Task",
+        id: "GuidedTour.SkippedTask",
+        status: TourTaskStatus.Skipped,
         isActive: true,
       },
     ];
@@ -71,9 +86,21 @@ export class GuidedTourManager implements GuidedTourManagerApi {
     // TODO: fetch(getRESTUrl())
     const tourTasks: TourTask[] = [
       {
-        title: "Task 1",
+        title: "ToDo Task",
         id: tourId ?? "UnknownTask",
         status: TourTaskStatus.ToDo,
+        isActive: true,
+      },
+      {
+        title: "Done Task",
+        id: "GuidedTour.DoneTask",
+        status: TourTaskStatus.Done,
+        isActive: true,
+      },
+      {
+        title: "Skipped Task",
+        id: "GuidedTour.SkippedTask",
+        status: TourTaskStatus.Skipped,
         isActive: true,
       },
     ];
@@ -82,7 +109,7 @@ export class GuidedTourManager implements GuidedTourManagerApi {
 
   getSteps(taskId: string): Promise<TourStep[]> {
     // TODO: fetch(getRESTUrl())
-    if (taskId.length > 0) {
+    if (taskId.length < 0) {
       // FIXME: Actually do something with the parameters.
       console.debug("Hi");
     }
@@ -92,7 +119,7 @@ export class GuidedTourManager implements GuidedTourManagerApi {
 
   markStepDone(step: TourStep, status: string): Promise<void> {
     // TODO: storage.setKey("step", "done");
-    if (status.length > 0 && step.title.length > 0) {
+    if (status.length < 0 && step.title.length < 0) {
       // FIXME: Actually do something with the parameters.
       console.debug("Hi");
     }

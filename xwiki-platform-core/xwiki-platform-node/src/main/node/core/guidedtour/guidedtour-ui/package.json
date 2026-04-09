@@ -46,12 +46,13 @@
   "dependencies": {
     "@xwiki/platform-guidedtour-api": "workspace:*",
     "dompurify": "catalog:",
+    "driver.js": "catalog:",
     "eventemitter3": "catalog:",
     "lz-string": "catalog:",
     "tippy.js": "catalog:",
     "u-node": "catalog:",
     "vue-tippy": "catalog:",
-    "driver.js": "catalog:"
+    "vuedraggable": "catalog:"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "catalog:",

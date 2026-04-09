@@ -26,7 +26,7 @@
 
 <template>
   <div class="header">
-    <div class="top-bar">
+    <div class="top-bar" @click="$emit('collapseGuidedTourWidget')">
       <span class="icon fa fa-compass" />
       <div class="title">Guided Tours</div>
       <div class="right-group">
@@ -44,17 +44,11 @@
 
 <script setup lang="ts">
 import GuidedTourWidgetProgressBar from "./GuidedTourWidgetProgressBar.vue";
-import { inject } from "vue";
-import type {
-  GuidedTourManagerApi,
-  TourTask,
-} from "@xwiki/platform-guidedtour-api";
 
 console.info("In header setup.");
 
-let guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager")!;
-const guidedtourTaskList: TourTask[] = await guidedTourManager.getTasks();
-const progress = 0.3 + guidedtourTaskList.length / 100;
+const { progress } = defineProps<{ progress: number }>();
+defineEmits(["collapseGuidedTourWidget"]);
 </script>
 
 <style>

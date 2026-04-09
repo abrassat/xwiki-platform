@@ -35,17 +35,6 @@ export default defineConfig({
       formats: ["es"],
     },
     sourcemap: true,
-    rollupOptions: {
-      external: [
-        "jquery",
-        "vue",
-      ],
-      output: {
-        globals: {
-          vue: "Vue",
-        },
-      },
-    },
   },
   define: {
     // define process to avoid runtime error with jquery

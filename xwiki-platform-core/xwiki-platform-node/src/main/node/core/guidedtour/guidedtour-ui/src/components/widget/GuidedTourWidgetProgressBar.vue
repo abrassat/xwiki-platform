@@ -24,15 +24,15 @@
   <div class="completeness">
     <div
       class="completeness-progress"
-      :style="{ width: progress * 100 + '%' }"
+      :style="{ width: width ? width + 'px' : progress * 100 + '%' }"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
 const { progress } = defineProps<{
   progress: number;
+  width?: number;
 }>();
 console.info("In pbar setup.");
 </script>

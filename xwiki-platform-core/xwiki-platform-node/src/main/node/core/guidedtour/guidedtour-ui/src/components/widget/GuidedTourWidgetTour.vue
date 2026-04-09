@@ -28,11 +28,22 @@
   <section
     :id="tour.id"
     class="guidedtour-tour"
-    v-bind:class="{ 'tour-done': tour.status == TourTaskStatus.Done }"
+    :class="{
+      'tour-done': () => tour.status == TourTaskStatus.Done,
+      collapsed: () => tour.isCollapsed ?? false,
+    }"
   >
-    <div class="guidedtour-tour-header">
+    <div
+      class="guidedtour-tour-header"
+      @click="
+        console.log('clicked', tour);
+        $emit('toggleCollapseTour', tour);
+      "
+    >
       <!-- FIXME: Replace font-awesome with some vue component-->
-      <i class="fa-solid fa-chevron-right chevron" />{{ tour.title }}
+      <i class="fa-solid fa-chevron-right chevron" />
+      {{ tour.title }}
+      <!-- <GuidedTourWidgetProgressBar :progress="0.5" :width="150" /> -->
     </div>
     <div class="guidedtour-content">
       <GuidedTourWidgetTask v-for="task in tasks" :key="task.id" :task="task" />
@@ -42,15 +53,15 @@
 
 <script setup lang="ts">
 import GuidedTourWidgetTask from "./GuidedTourWidgetTask.vue";
-import { defineProps, inject } from "vue";
+import { TourTaskStatus } from "@xwiki/platform-guidedtour-api";
+import { inject } from "vue";
 import type {
   GuidedTourManagerApi,
-  TourTaskStatus,
   TourTour,
 } from "@xwiki/platform-guidedtour-api";
-const { tour } = defineProps<{
-  tour: TourTour;
-}>();
+const { tour } = defineProps<{ tour: TourTour }>();
+// const tour:Ref<TourTour> = toRef(props, "tour"); // reactive read-only ref
+defineEmits(["toggleCollapseTour"]);
 const guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager")!;
 const tasks = await guidedTourManager.getTasks(tour.id);
 console.info("In tour setup.");
@@ -58,7 +69,7 @@ console.info("In tour setup.");
 
 <style>
 /* FIXME: guidedtour-content should be renamed to -collapsible or something. */
-.guidedtour-widget .guidedtour-tour.collapsed .guidedtour-content {
+.guidedtour-widget .guidedtour-tour.value.collapsed .guidedtour-content {
   max-height: 0;
 }
 

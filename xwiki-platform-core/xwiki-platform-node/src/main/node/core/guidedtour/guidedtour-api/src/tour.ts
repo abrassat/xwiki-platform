@@ -38,7 +38,11 @@ export interface TourTour {
    */
   status: TourTaskStatus;
   /**
-   * Whether this Task is completable or not.
+   * Whether this Tour is completable by the user.
    */
   isActive: boolean;
+  /**
+   * Whether this Tour is collapsed in the widget UI.
+   */
+  isCollapsed?: boolean;
 }

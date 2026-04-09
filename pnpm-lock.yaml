@@ -1094,6 +1094,9 @@ importers:
       vue-tippy:
         specifier: 'catalog:'
         version: 6.7.1(vue@3.5.29(typescript@5.9.3))
+      vuedraggable:
+        specifier: 'catalog:'
+        version: 4.1.0(vue@3.5.29(typescript@5.9.3))
     devDependencies:
       '@microsoft/api-extractor':
         specifier: 'catalog:'
