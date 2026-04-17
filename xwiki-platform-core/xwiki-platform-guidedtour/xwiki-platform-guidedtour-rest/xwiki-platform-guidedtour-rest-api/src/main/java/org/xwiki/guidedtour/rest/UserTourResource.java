@@ -60,7 +60,7 @@ public interface UserTourResource extends XWikiRestComponent
      * @throws XWikiRestException if any error occurs during the creation
      */
     @POST
-    Response createTourStatus() throws XWikiRestException;
+    Response createUserTourStatus() throws XWikiRestException;
 
     /**
      * Update the user tour status.
@@ -72,5 +72,5 @@ public interface UserTourResource extends XWikiRestComponent
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    Response updateTour(UserTourStatusDTO userTourStatus) throws XWikiRestException;
+    Response updateUserTourStatus(UserTourStatusDTO userTourStatus) throws XWikiRestException;
 }

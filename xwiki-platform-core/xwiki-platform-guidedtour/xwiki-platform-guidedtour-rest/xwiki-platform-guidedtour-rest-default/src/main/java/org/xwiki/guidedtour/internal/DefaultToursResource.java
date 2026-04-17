@@ -49,7 +49,7 @@ public class DefaultToursResource extends AbstractGuidedTourResource implements 
     @Override
     public Response getAvailableTours() throws XWikiRestException
     {
-        return execute("Tour API: retrieving all tours.", new Object[] {}, () -> {
+        return execute("Tour API: retrieving all tours.", () -> {
             validateCSRF();
             List<TourDTO> json = toursManager.getAllTours();
             return Response.ok(json).type(MediaType.APPLICATION_JSON_TYPE).build();
@@ -59,7 +59,7 @@ public class DefaultToursResource extends AbstractGuidedTourResource implements 
     @Override
     public Response createTour(TourDTO tourDTO) throws XWikiRestException
     {
-        return execute("Tour API: creating new tour.", new Object[] {}, () -> {
+        return execute("Tour API: creating new tour.", () -> {
             toursManager.createTour(tourDTO);
             return Response.status(Response.Status.CREATED).build();
         });
@@ -68,21 +68,21 @@ public class DefaultToursResource extends AbstractGuidedTourResource implements 
     @Override
     public Response updateTour(String tourId, TourDTO tourDTO) throws XWikiRestException
     {
-        return execute("Tour API: updating tour with id [{}].", new Object[] { tourId }, () -> {
+        return execute("Tour API: updating tour with id [{}].", () -> {
             if (!tourDTO.getId().equals(tourId)) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Path ID and Body ID mismatch").build();
             }
             toursManager.updateTour(tourDTO);
             return Response.ok().build();
-        });
+        }, tourId);
     }
 
     @Override
     public Response deleteTour(String tourId) throws XWikiRestException
     {
-        return execute("Tour API: removing tour with id [{}].", new Object[] { tourId }, () -> {
+        return execute("Tour API: removing tour with id [{}].", () -> {
             toursManager.deleteTour(tourId);
             return Response.ok().build();
-        });
+        }, tourId);
     }
 }

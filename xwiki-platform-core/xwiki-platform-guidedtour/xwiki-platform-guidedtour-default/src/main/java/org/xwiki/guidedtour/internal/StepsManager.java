@@ -20,6 +20,7 @@
 package org.xwiki.guidedtour.internal;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -75,17 +76,15 @@ public class StepsManager
     public void createStep(String tourId, String taskId, StepDTO stepDTO)
         throws XWikiException, DuplicatedIdException, InvalidIdException
     {
-        int highestOrder = getHighestOrder(tourId, taskId, stepDTO);
+        int highestOrder = getHighestOrder(tourId, taskId, stepDTO.getOrder());
         DocumentReference taskDocRef =
             documentReferenceResolver.resolve(taskId, documentReferenceResolver.resolve(tourId));
         XWikiContext wikiContext = wikiContextProvider.get();
         XWiki wiki = wikiContext.getWiki();
         XWikiDocument taskDoc = wiki.getDocument(taskDocRef, wikiContext);
         stepDTO.setOrder(++highestOrder);
-        BaseObject taskClassObject = new BaseObject();
-        taskClassObject.setXClassReference(STEP_CLASS);
-        populateStepObject(stepDTO, taskClassObject);
-        taskDoc.addXObject(taskClassObject);
+        BaseObject stepClassObject = taskDoc.newXObject(STEP_CLASS, wikiContext);
+        populateStepObject(stepDTO, stepClassObject);
         wiki.saveDocument(taskDoc, "Added new step.", wikiContext);
     }
 
@@ -176,7 +175,7 @@ public class StepsManager
         stepDTO.setOrder(stepObject.getIntValue(TourProperty.ORDER.getBaseKey()));
         stepDTO.setElement(stepObject.getStringValue(TourProperty.ELEMENT.getBaseKey()));
         stepDTO.setContent(stepObject.getStringValue(TourProperty.CONTENT.getBaseKey()));
-        stepDTO.setPlacement(stepObject.getStringValue(TourProperty.CONTENT.getBaseKey()));
+        stepDTO.setPlacement(stepObject.getStringValue(TourProperty.PLACEMENT.getBaseKey()));
         stepDTO.setBackdrop(stepObject.getIntValue(TourProperty.BACKDROP.getBaseKey()) == 1);
         stepDTO.setReflex(stepObject.getIntValue(TourProperty.REFLEX.getBaseKey()) == 1);
         stepDTO.setTargetPage(stepObject.getStringValue(TourProperty.TARGET_PAGE.getBaseKey()));
@@ -201,7 +200,10 @@ public class StepsManager
             DocumentReference taskDocRef = documentReferenceResolver.resolve(taskId, tourDocRef);
             if (wiki.exists(taskDocRef, wikiContext)) {
                 XWikiDocument taskDoc = wiki.getDocument(taskDocRef, wikiContext);
-                return taskDoc.getXObjects(STEP_CLASS).stream().filter(Objects::nonNull).collect(Collectors.toList());
+                return taskDoc.getXObjects(STEP_CLASS).stream()
+                    .filter(Objects::nonNull)
+                    .sorted(Comparator.comparingInt(step -> step.getIntValue(TourProperty.ORDER.getBaseKey())))
+                    .collect(Collectors.toList());
             } else {
                 throw new InvalidIdException("Task with the given id [%s] does not exists.", taskId);
             }
@@ -210,16 +212,16 @@ public class StepsManager
         }
     }
 
-    private int getHighestOrder(String tourId, String taskId, StepDTO stepDTO)
+    private int getHighestOrder(String tourId, String taskId, int stepId)
         throws XWikiException, DuplicatedIdException, InvalidIdException
     {
         List<BaseObject> existingSteps = getStepObjects(tourId, taskId);
         int highestOrder = 0;
         if (!existingSteps.isEmpty()) {
             if (existingSteps.stream()
-                .anyMatch(step -> step.getIntValue(TourProperty.ORDER.getBaseKey()) == stepDTO.getOrder()))
+                .anyMatch(step -> step.getIntValue(TourProperty.ORDER.getBaseKey()) == stepId))
             {
-                throw new DuplicatedIdException("A step with the given order already exists.");
+                throw new DuplicatedIdException("A step with the given order [%d] already exists.", stepId);
             }
             highestOrder =
                 existingSteps.stream().mapToInt(step -> step.getIntValue(TourProperty.ORDER.getBaseKey())).max()

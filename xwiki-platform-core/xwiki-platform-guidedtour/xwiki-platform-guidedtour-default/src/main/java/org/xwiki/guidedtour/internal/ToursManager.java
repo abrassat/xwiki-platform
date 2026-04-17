@@ -126,11 +126,10 @@ public class ToursManager
      */
     public List<TourDTO> getAllTours() throws QueryException, XWikiException, InvalidIdException
     {
-        String fq = "type:DOCUMENT";
         List<String> filteredLines = new ArrayList<>();
         filteredLines.add(TourProperty.TITLE.formKey(CLASS_PREFIX));
         filteredLines.add(TourProperty.IS_ACTIVE.formKey(CLASS_PREFIX));
-        SolrDocumentList solrDocuments = queryUtil.executeQuery(QS, fq, filteredLines);
+        SolrDocumentList solrDocuments = queryUtil.executeQuery(QS, "type:DOCUMENT", filteredLines);
         List<TourDTO> tours = new ArrayList<>(solrDocuments.size());
         for (SolrDocument document : solrDocuments) {
             EntityReference documentReference = solrDocumentReferenceResolver.resolve(document, EntityType.DOCUMENT);

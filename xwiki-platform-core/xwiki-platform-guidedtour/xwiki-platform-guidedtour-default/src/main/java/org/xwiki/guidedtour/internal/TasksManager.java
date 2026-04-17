@@ -20,7 +20,6 @@
 package org.xwiki.guidedtour.internal;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -44,6 +43,7 @@ import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.model.validation.EntityNameValidation;
 import org.xwiki.query.QueryException;
 
+import com.google.common.base.Splitter;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -112,7 +112,7 @@ public class TasksManager
     {
         XWikiContext wikiContext = wikiContextProvider.get();
         XWiki wiki = wikiContext.getWiki();
-        DocumentReference tourDocRef = getDocumentReference(tourId);
+        DocumentReference tourDocRef = getTourReference(tourId);
         String taskId = nameValidator.transform(taskDTO.getId());
         DocumentReference taskDocRef = documentReferenceResolver.resolve(taskId, tourDocRef);
         if (wiki.exists(taskDocRef, wikiContext)) {
@@ -140,7 +140,7 @@ public class TasksManager
      */
     public TaskDTO getTask(String tourId, String taskId) throws XWikiException, QueryException, InvalidIdException
     {
-        DocumentReference tourDocRef = getDocumentReference(tourId);
+        DocumentReference tourDocRef = getTourReference(tourId);
         String parentSpace = localSerializer.serialize(tourDocRef.getLastSpaceReference());
         String fq = String.format("{!q.op=AND} type:DOCUMENT AND space:%s AND name:%s", parentSpace, taskId);
         SolrDocumentList results = queryUtil.executeQuery(QS, fq, FILTERED_LINES);
@@ -163,8 +163,7 @@ public class TasksManager
      */
     public List<TaskDTO> getAllTasks(String tourId) throws QueryException, XWikiException, InvalidIdException
     {
-
-        DocumentReference tourDocRef = getDocumentReference(tourId);
+        DocumentReference tourDocRef = getTourReference(tourId);
         String parentSpace = localSerializer.serialize(tourDocRef.getLastSpaceReference());
         String fq = String.format("{!q.op=AND} type:DOCUMENT AND space:%s", parentSpace);
         SolrDocumentList solrDocuments = queryUtil.executeQuery(QS, fq, FILTERED_LINES);
@@ -191,11 +190,12 @@ public class TasksManager
         List<TaskDTO> existingTasks = getAllTasks(tourId);
         TaskDTO oldTask = getTaskDTOFromList(newDTO.getId(), existingTasks);
         int oldOrder = oldTask.getOrder();
+        DocumentReference tourDocRef = documentReferenceResolver.resolve(tourId);
         if (oldOrder != newDTO.getOrder()) {
             existingTasks.removeIf(task -> task.getId().equals(newDTO.getId()));
-            updateTasksOrder(tourId, newDTO.getOrder(), existingTasks, oldOrder);
+            updateTasksOrder(tourDocRef, newDTO.getOrder(), existingTasks, oldOrder);
         }
-        updateTaskObject(newDTO, tourId);
+        updateTaskObject(newDTO, tourDocRef);
     }
 
     /**
@@ -213,11 +213,13 @@ public class TasksManager
         List<TaskDTO> existingTasks = getAllTasks(tourId);
         TaskDTO targetTask = getTaskDTOFromList(taskId, existingTasks);
         existingTasks.remove(targetTask);
-        updateTasksOrder(tourId, Integer.MAX_VALUE, existingTasks, targetTask.getOrder());
-        XWikiContext wikiContext = wikiContextProvider.get();
-        XWiki wiki = wikiContext.getWiki();
+        // The existence of the tour document is already checked in the getAllTasks method.
+        DocumentReference tourDocRef = documentReferenceResolver.resolve(tourId);
+        updateTasksOrder(tourDocRef, Integer.MAX_VALUE, existingTasks, targetTask.getOrder());
         DocumentReference taskDocRef =
             documentReferenceResolver.resolve(taskId, documentReferenceResolver.resolve(tourId));
+        XWikiContext wikiContext = wikiContextProvider.get();
+        XWiki wiki = wikiContext.getWiki();
         wiki.deleteAllDocuments(wiki.getDocument(taskDocRef, wikiContext), wikiContext);
     }
 
@@ -227,7 +229,7 @@ public class TasksManager
             .orElseThrow(() -> new InvalidIdException(TASK_NOT_FOUND_ERROR, taskId));
     }
 
-    private DocumentReference getDocumentReference(String referenceString) throws XWikiException, InvalidIdException
+    private DocumentReference getTourReference(String referenceString) throws XWikiException, InvalidIdException
     {
         XWikiContext wikiContext = wikiContextProvider.get();
         DocumentReference tourDocRef = documentReferenceResolver.resolve(referenceString);
@@ -238,16 +240,16 @@ public class TasksManager
         }
     }
 
-    private void updateTasksOrder(String tourId, int modifiedOrder, List<TaskDTO> existingTasks, int oldOrder)
-        throws XWikiException
+    private void updateTasksOrder(DocumentReference tourRef, int modifiedOrder, List<TaskDTO> existingTasks,
+        int oldOrder) throws XWikiException
     {
         for (TaskDTO task : existingTasks) {
             if (task.getOrder() > oldOrder && task.getOrder() <= modifiedOrder) {
                 task.setOrder(task.getOrder() - 1);
-                updateTaskObject(task, tourId);
+                updateTaskObject(task, tourRef);
             } else if (task.getOrder() < oldOrder && task.getOrder() >= modifiedOrder) {
                 task.setOrder(task.getOrder() + 1);
-                updateTaskObject(task, tourId);
+                updateTaskObject(task, tourRef);
             }
         }
     }
@@ -258,17 +260,16 @@ public class TasksManager
         String dependsOn = (String) document.getFirstValue(TourProperty.DEPENDS_ON.formKey(CLASS_PREFIX));
         long order = (Long) document.getFirstValue(TourProperty.ORDER.formKey(CLASS_PREFIX));
         boolean isActive = (Boolean) document.getFirstValue(TourProperty.IS_ACTIVE.formKey(CLASS_PREFIX));
+
         return new TaskDTO(documentReference.getName(), title, (int) order, isActive,
-            Arrays.asList(dependsOn.split(",")));
+            Splitter.on(',').omitEmptyStrings().splitToList(dependsOn));
     }
 
-    private void updateTaskObject(TaskDTO newDTO, String tourId) throws XWikiException
+    private void updateTaskObject(TaskDTO newDTO, DocumentReference tourDocRef) throws XWikiException
     {
         XWikiContext wikiContext = wikiContextProvider.get();
         XWiki wiki = wikiContext.getWiki();
-        DocumentReference tourDocRef = documentReferenceResolver.resolve(tourId);
-        String taskId = nameValidator.transform(newDTO.getId());
-        DocumentReference taskDocRef = documentReferenceResolver.resolve(taskId, tourDocRef);
+        DocumentReference taskDocRef = documentReferenceResolver.resolve(newDTO.getId(), tourDocRef);
         XWikiDocument taskDoc = wiki.getDocument(taskDocRef, wikiContext);
         taskDoc.setTitle(newDTO.getTitle());
         BaseObject taskClassObject = taskDoc.getXObject(TASK_CLASS);

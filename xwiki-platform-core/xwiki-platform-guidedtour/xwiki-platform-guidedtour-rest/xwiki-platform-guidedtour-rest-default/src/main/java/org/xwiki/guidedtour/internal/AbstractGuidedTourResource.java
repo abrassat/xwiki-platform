@@ -45,7 +45,7 @@ import org.xwiki.security.authorization.Right;
 public abstract class AbstractGuidedTourResource
 {
     @Inject
-    private ContextualAuthorizationManager contextualAuthorizationManager;
+    protected ContextualAuthorizationManager contextualAuthorizationManager;
 
     @Inject
     private Logger logger;
@@ -64,23 +64,23 @@ public abstract class AbstractGuidedTourResource
      * @param action the action to execute, which should return a Response
      * @return the Response returned by the action if successful
      */
-    public Response execute(String logMessage, Object[] logParams, Callable<Response> action)
+    public Response execute(String logMessage, Callable<Response> action, Object... logParams)
     {
         try {
             logger.debug("Executing: " + logMessage, logParams);
             this.contextualAuthorizationManager.checkAccess(Right.VIEW);
             return action.call();
         } catch (AccessDeniedException | SecurityException e) {
-            logger.warn("Authorization error: " + logMessage, logParams, e);
+            logger.warn("Authorization error: " + logMessage, appendException(logParams, e));
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         } catch (InvalidIdException e) {
-            logger.warn("Resource not found: " + logMessage, logParams, e);
+            logger.warn("Resource not found: " + logMessage, appendException(logParams, e));
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         } catch (DuplicatedIdException e) {
-            logger.warn("Conflict: " + logMessage, logParams, e);
+            logger.warn("Conflict: " + logMessage, appendException(logParams, e));
             throw new WebApplicationException(Response.Status.CONFLICT);
         } catch (Exception e) {
-            logger.error("Internal error: " + logMessage, logParams, e);
+            logger.error("Internal error: " + logMessage, appendException(logParams, e));
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
@@ -95,5 +95,22 @@ public abstract class AbstractGuidedTourResource
         if (!csrf.isTokenValid(token)) {
             throw new SecurityException("Invalid CSRF token.");
         }
+    }
+
+    /**
+     * Appends a {@link Throwable} to the end of a parameter array. This is necessary because SLF4J cannot extract a
+     * {@code Throwable} from a nested array. It requires a single, flattened array where the exception is the final
+     * element. Otherwise, the parameters array will be treated as a single parameter, and the exception will not be
+     * logged properly.
+     */
+    private Object[] appendException(Object[] params, Throwable e)
+    {
+        if (params == null || params.length == 0) {
+            return new Object[] { e };
+        }
+        Object[] combined = new Object[params.length + 1];
+        System.arraycopy(params, 0, combined, 0, params.length);
+        combined[params.length] = e;
+        return combined;
     }
 }

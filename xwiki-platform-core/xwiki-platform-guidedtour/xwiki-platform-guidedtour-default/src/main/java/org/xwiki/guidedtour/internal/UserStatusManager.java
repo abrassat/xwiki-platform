@@ -58,10 +58,10 @@ public class UserStatusManager
 
     private static final String CALL_TO_ACTION_KEY = "callToAction";
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Inject
     private Provider<XWikiContext> wikiContextProvider;
-
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Retrieves the user tour status for the current user. It returns a JSON string representing the user tour status.

@@ -31,6 +31,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.guidedtour.api.dtos.StepDTO;
 import org.xwiki.guidedtour.rest.StepsResource;
 import org.xwiki.rest.XWikiRestException;
+import org.xwiki.security.authorization.Right;
 
 /**
  * Default implementation of {@link StepsResource}.
@@ -49,41 +50,38 @@ public class DefaultStepsResource extends AbstractGuidedTourResource implements 
     @Override
     public Response getTaskSteps(String tourId, String taskId) throws XWikiRestException
     {
-        return execute("Steps API: retrieving the steps for task [{}] from tour [{}].", new Object[] { taskId, tourId },
-            () -> {
-                validateCSRF();
-                List<StepDTO> tasks = stepsManager.getAllSteps(tourId, taskId);
-                return Response.ok(tasks).type(MediaType.APPLICATION_JSON_TYPE).build();
-            });
+        return execute("Steps API: retrieving the steps for task [{}] from tour [{}].", () -> {
+            validateCSRF();
+            List<StepDTO> tasks = stepsManager.getAllSteps(tourId, taskId);
+            return Response.ok(tasks).type(MediaType.APPLICATION_JSON_TYPE).build();
+        }, taskId, tourId);
     }
 
     @Override
     public Response createStep(String tourId, String taskId, StepDTO stepDTO) throws XWikiRestException
     {
-        return execute("Steps API: creating step for task [{}] from tour [{}].", new Object[] { taskId, tourId },
-            () -> {
-                stepsManager.createStep(tourId, taskId, stepDTO);
-                return Response.status(Response.Status.CREATED).build();
-            });
+        return execute("Steps API: creating step for task [{}] from tour [{}].", () -> {
+            stepsManager.createStep(tourId, taskId, stepDTO);
+            return Response.status(Response.Status.CREATED).build();
+        }, taskId, tourId);
     }
 
     @Override
     public Response updateStep(String tourId, String taskId, int stepId, StepDTO stepDTO) throws XWikiRestException
     {
-        return execute("Steps API: updating step on position [{}] for task [{}] from tour [{}].",
-            new Object[] { stepId, taskId, tourId }, () -> {
-                stepsManager.updateStep(tourId, taskId, stepId, stepDTO);
-                return Response.ok().build();
-            });
+        return execute("Steps API: updating step on position [{}] for task [{}] from tour [{}].", () -> {
+            stepsManager.updateStep(tourId, taskId, stepId, stepDTO);
+            return Response.ok().build();
+        }, stepId, taskId, tourId);
     }
 
     @Override
     public Response deleteStep(String tourId, String taskId, int stepId) throws XWikiRestException
     {
-        return execute("Steps API: removing step on position [{}] for task [{}] from tour [{}].",
-            new Object[] { stepId, taskId, tourId }, () -> {
-                stepsManager.deleteStep(tourId, taskId, stepId);
-                return Response.ok().build();
-            });
+        return execute("Steps API: removing step on position [{}] for task [{}] from tour [{}].", () -> {
+            contextualAuthorizationManager.checkAccess(Right.DELETE);
+            stepsManager.deleteStep(tourId, taskId, stepId);
+            return Response.ok().build();
+        }, stepId, taskId, tourId);
     }
 }

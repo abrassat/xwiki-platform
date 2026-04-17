@@ -31,6 +31,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.guidedtour.api.dtos.TaskDTO;
 import org.xwiki.guidedtour.rest.TasksResource;
 import org.xwiki.rest.XWikiRestException;
+import org.xwiki.security.authorization.Right;
 
 /**
  * Default implementation of {@link TasksResource}.
@@ -49,52 +50,52 @@ public class DefaultTasksResource extends AbstractGuidedTourResource implements 
     @Override
     public Response getTourTasks(String tourId) throws XWikiRestException
     {
-        return execute("Tasks API: retrieving the tasks for tour [{}].", new Object[] { tourId }, () -> {
+        return execute("Tasks API: retrieving the tasks for tour [{}].", () -> {
             validateCSRF();
             List<TaskDTO> tasks = tasksManager.getAllTasks(tourId);
             return Response.ok(tasks).type(MediaType.APPLICATION_JSON_TYPE).build();
-        });
+        }, tourId);
     }
 
     @Override
     public Response getTourTask(String tourId, String taskId) throws XWikiRestException
     {
-        return execute("Tasks API: retrieving the task [{}] from tour [{}].", new Object[] { taskId, tourId }, () -> {
+        return execute("Tasks API: retrieving the task [{}] from tour [{}].", () -> {
             validateCSRF();
             TaskDTO task = tasksManager.getTask(tourId, taskId);
             return Response.ok(task).type(MediaType.APPLICATION_JSON_TYPE).build();
-        });
+        }, taskId, tourId);
     }
 
     @Override
     public Response createTask(String tourId, TaskDTO taskDTO) throws XWikiRestException
     {
-        return execute("Tasks API: creating task [{}] for tour [{}].", new Object[] { taskDTO.getId(), tourId }, () -> {
+        return execute("Tasks API: creating task [{}] for tour [{}].", () -> {
             tasksManager.createTask(tourId, taskDTO);
             return Response.status(Response.Status.CREATED).build();
-        });
+        }, taskDTO.getId(), tourId);
     }
 
     @Override
     public Response updateTask(String tourId, String taskId, TaskDTO taskDTO) throws XWikiRestException
     {
-        return execute("Tasks API: updating task [{}] from tour [{}].", new Object[] { taskDTO.getId(), tourId },
-            () -> {
-                if (!taskDTO.getId().equals(taskId)) {
-                    return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Path and Body ID mismatch for given task.").build();
-                }
-                tasksManager.updateTask(tourId, taskDTO);
-                return Response.ok().build();
-            });
+        return execute("Tasks API: updating task [{}] from tour [{}].", () -> {
+            if (!taskDTO.getId().equals(taskId)) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Path and Body ID mismatch for given task.")
+                    .build();
+            }
+            tasksManager.updateTask(tourId, taskDTO);
+            return Response.ok().build();
+        }, taskDTO.getId(), tourId);
     }
 
     @Override
     public Response deleteTask(String tourId, String taskId) throws XWikiRestException
     {
-        return execute("Tasks API: removing task [{}] from tour [{}].", new Object[] { taskId, tourId }, () -> {
+        return execute("Tasks API: removing task [{}] from tour [{}].", () -> {
+            contextualAuthorizationManager.checkAccess(Right.DELETE);
             tasksManager.deleteTask(tourId, taskId);
             return Response.ok().build();
-        });
+        }, taskId, tourId);
     }
 }
