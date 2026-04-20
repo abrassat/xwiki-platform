@@ -18,6 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+import { driver, getDriverConfigForSteps } from "../driverjsMain";
 import { TourTaskStatus } from "@xwiki/platform-guidedtour-api";
 import { DocumentReference } from "@xwiki/platform-model-api";
 import type {
@@ -26,6 +27,7 @@ import type {
   TourTask,
   TourTour,
 } from "@xwiki/platform-guidedtour-api";
+import type { Driver } from "driver.js";
 
 /**
  * The main API of the GuidedTour app.
@@ -33,16 +35,24 @@ import type {
  * @beta
  */
 export class GuidedTourManager implements GuidedTourManagerApi {
+  private static _instance: GuidedTourManager;
+
+  // FIXME: This would be a singleton ideally.
+  // private constructor() {
+  //   //...
+  // }
+
+  public static getInstance() {
+    return this._instance || (this._instance = new this());
+  }
+
+  stepCache: Map<string, TourStep[]> = new Map<string, TourStep[]>();
+  activeTour?: Driver;
   getSandboxSpace(): Promise<string> {
     // TODO: Get this from the Admin Section settings.
     return Promise.resolve(
       new DocumentReference("GuidedTour.SandboxSpace").name,
     );
-  }
-
-  isWidgetShown(): Promise<boolean> {
-    // FIXME: Should be an enum.
-    return Promise.resolve(true);
   }
 
   getUsefulLinks(): Promise<string[]> {
@@ -53,8 +63,21 @@ export class GuidedTourManager implements GuidedTourManagerApi {
     return Promise.resolve(usefulLinks);
   }
 
+  async startTask(task: TourTask) {
+    const steps = await this.getSteps(task.id);
+    this.setupStep(steps[0]);
+    // Should have a way to preserve this across the page loads (aka. localStorage)
+    const tour = driver(getDriverConfigForSteps(steps, this));
+    this.activeTour = tour;
+    tour.drive();
+  }
+
   setupStep(step: TourStep): void {
-    window.location.href = step.path;
+    console.log(step);
+    // const currentPage = (XWiki.currentDocument.documentReference) as DocumentReference;
+    // if (XWiki.getURL(currentPage) != step.path) {
+    //   window.location.href = step.path;
+    // }
   }
 
   getTours(): Promise<TourTour[]> {
@@ -107,14 +130,57 @@ export class GuidedTourManager implements GuidedTourManagerApi {
     return Promise.resolve(tourTasks);
   }
 
-  getSteps(taskId: string): Promise<TourStep[]> {
-    // TODO: fetch(getRESTUrl())
-    if (taskId.length < 0) {
-      // FIXME: Actually do something with the parameters.
-      console.debug("Hi");
+  async getSteps(taskId: string): Promise<TourStep[]> {
+    if (this.stepCache.get(taskId) != undefined) {
+      return Promise.resolve(this.stepCache.get(taskId)!);
+    } else {
+      const tourSteps: TourStep[] = await this.fetchSteps(taskId);
+      this.stepCache.set(taskId, tourSteps);
+      return Promise.resolve(tourSteps);
     }
-    const tourSteps: TourStep[] = [];
-    return Promise.resolve(tourSteps);
+  }
+
+  async fetchSteps(taskId: string): Promise<TourStep[]> {
+    // TODO: fetch(getRESTUrl())
+    await fetch("" + taskId);
+    return [
+      {
+        // element: "body",
+        order: 0,
+        title: "123",
+        content: "123",
+        placement: "",
+        backdrop: false,
+        reflex: false,
+        path: "",
+        targetClass: "",
+        targetPage: "",
+      },
+      {
+        // element: "",
+        order: 1,
+        title: "1234",
+        content: "1234",
+        placement: "",
+        backdrop: false,
+        reflex: false,
+        path: "",
+        targetClass: "",
+        targetPage: "",
+      },
+      {
+        // element: "",
+        order: 2,
+        title: "12345",
+        content: "12345",
+        placement: "",
+        backdrop: false,
+        reflex: false,
+        path: "",
+        targetClass: "",
+        targetPage: "",
+      },
+    ];
   }
 
   markStepDone(step: TourStep, status: string): Promise<void> {

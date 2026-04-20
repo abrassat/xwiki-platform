@@ -18,6 +18,223 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 console.log("hi!");
+import { driver } from "driver.js";
+import type { GuidedTourManager } from "./services/GuidedTourManager";
+import type { TourStep } from "@xwiki/platform-guidedtour-api";
+import type { Config, DriveStep, Driver } from "driver.js";
+
+/**
+ * This is a function to ensure each call has it's own object, and subsequent manipulation doesn't alter the defaults.
+ */
+function XWikiDriverConfig(guidedTourManager: GuidedTourManager): Config {
+  const tour: Driver = guidedTourManager.activeTour!;
+  return {
+    nextBtnText: "Next &gt;",
+    prevBtnText: "&lt; Previous",
+    showProgress: true,
+    overlayOpacity: 0.3,
+    onPopoverRender: (popDOM, options) => {
+      console.info(tour, popDOM, options);
+    },
+  };
+}
+
+function convertToDriverStep(step: TourStep): DriveStep {
+  return {
+    element: step.element,
+    popover: {
+      title: step.title,
+      description: step.content,
+    },
+  };
+}
+
+function getDriverConfigForSteps(
+  steps: TourStep[],
+  guidedTourManager: GuidedTourManager,
+) {
+  console.log(steps);
+  const config = XWikiDriverConfig(guidedTourManager);
+  config.steps = steps.map(convertToDriverStep);
+  return config;
+}
+
+export { XWikiDriverConfig, driver, getDriverConfigForSteps };
+
+// if (activeStep.reflex) {
+//   document.querySelector(String(activeStep.element))?.addEventListener('click', (event) => {
+//     console.debug(event);
+//     if (event.target.tagName == 'INPUT' && event.target.type == 'text') {
+//       // Special case for text inputs.
+//       // Right now, the text input awaits for 5s before continuing, to allow the user to type stuff.
+//       // TODO: Maybe add a 'match text' setting for going next.
+//       const msTimeout = 5000;
+//       new Promise(resolve => setTimeout(resolve, msTimeout)).then(() => {
+//         console.debug('sloip awoked');
+//         // Increment the local storage step. (For cases when clicking the element leads to a redirect.)
+//       //debugger;
+//         window.localStorage.setItem(tour.getConfig().name + '_current_step', 1 + activeIndex);
+//         if (window.localStorage.getItem(tour.getConfig().name + '_current_step') == tour.getConfig().steps.length) {
+//           window.localStorage.setItem(tour.getConfig().name + '_end', 'yes');
+//           window.guidedTourInProgress = false;
+//         }
+//         // The localStorage item should theoretically be set to the same value in the moveNext(), so no harm done
+//         // Fire onNext ?
+//         document.fire('arrowRightPress')
+//         if (activeIndex != options.state.activeIndex) {
+//           tour.moveNext();
+//         }
+//       })
+//     } else {
+//       // Increment the local storage step. (For cases when clicking the element leads to a redirect.)
+//       //debugger;
+//       window.localStorage.setItem(tour.getConfig().name + '_current_step', 1 + activeIndex);
+//       if (window.localStorage.getItem(tour.getConfig().name + '_current_step') == tour.getConfig().steps.length) {
+//         window.localStorage.setItem(tour.getConfig().name + '_end', 'yes');
+//         window.guidedTourInProgress = false;
+//       }
+//       console.info(tour)
+//       document.fire('arrowRightPress')
+//       tour.moveNext();
+//       /* The localStorage item should theoretically be set to the same value in the moveNext(), so no harm done
+//       new Promise(resolve => setTimeout(resolve, 1500)).then(() => {
+//         // Wait a bit to see if the clicked element was actually a redirect.
+//         if (!beforeUnloadFired) {
+//           tour.moveNext();
+//         }
+//       });*/
+//     }
+//   });
+// }
+/* = {
+      // name    : tourName,
+      // storage : window.localStorage,
+    // onPopoverRender: (popDOM, options) => {
+    //     const activeIndex = (options.state.activeIndex ?? -1) + 1;
+    //     const activeStep = options.state.activeStep!;
+
+    //     // console.info(popDOM, options, window.localStorage.getItem(tour.getConfig().name + '_current_step'));
+    //     // window.localStorage.setItem(tour.getConfig().name + '_current_step', activeIndex); // This should be config.activeIndex instead.
+    //     popDOM.progress.innerHTML = '⬤ '.repeat(activeIndex) + '◯ '.repeat(stepCount - activeIndex);
+    //     popDOM.progress.style = 'display: flex; justify-content: center;';
+    //     popDOM.footer.className = '';
+    //     popDOM.footer.innerHTML = '';
+    //     const customSkipAll = new Element('a');
+    //     $(customSkipAll).on('click', () => {
+    //       window.localStorage.setItem(tour.getConfig().name + '_end', 'yes'); // Maybe add a special 'skipped' value to differentiate.
+    //       window.guidedTourInProgress = false;
+    //       tour.destroy();
+    //     });
+    //     customSkipAll.innerHTML = 'Skip All';
+    //     customSkipAll.style.cursor = 'pointer';
+    //     popDOM.footer.appendChild(customSkipAll);
+    //     if (!activeStep.reflex) {
+    //       popDOM.footer.appendChild(popDOM.footerButtons);
+    //     }
+    //     popDOM.nextButton.className = 'driver-popover-next-btn btn btn-primary btn-sm';
+    //     popDOM.previousButton.className = 'driver-popover-prev-btn btn btn-sm';
+    //     popDOM.wrapper.innerHTML = '';
+    //     [popDOM.closeButton as Node, popDOM.arrow as Node, popDOM.progress as Node, popDOM.title as Node, popDOM.description as Node, popDOM.footer as Node].forEach(element => {
+    //       popDOM.wrapper.appendChild(element);
+    //     });
+    //   },
+      
+      //overlayClickBehavior: () => {},
+      onNextClick: (highlightedElement, step, options) => {
+        console.debug(1, highlightedElement, step, options);
+        let nextStep = options.config.steps![options.state.activeIndex! + 1];
+        if (nextStep.length == 0) {
+          console.debug('No next step. We\'re probably in the last step attempting to go next.');
+          tour.moveNext();
+        } else {
+          nextStep = nextStep[0];
+          if (step.path == nextStep.path) {
+            const activeIndex = tour.getActiveIndex();
+            utils.waitForElement(nextStep.element).then((element) => {
+              if (activeIndex == tour.getActiveIndex()) {
+                // debugger;
+                tour.moveNext();
+              } else {
+                console.debug(`Tried to move from ${activeIndex} to next , but the step is actually now ${tour.getActiveIndex()}`)
+              }
+            }).catch(() => {
+              console.error("Idk what to do. Skip the step? FIXME")
+            });
+          } else {
+            console.debug('Attempted to go to next step, but that one is on another page.');
+            // TODO: Maybe add a redirect here.
+          }
+        }
+      },
+      onPrevClick: (highlightedElement, step, options) => {
+        console.debug(2, highlightedElement, step, options)
+        let previousStep = options.config.steps.filter((el) => {return el.order == step.order - 1});
+        if (previousStep.length == 0) {
+          console.debug('No previous step. We\'re probably in the first step attempting to go back.');
+          tour.movePrevious();
+        } else {
+          previousStep = previousStep[0];
+          if (step.path == previousStep.path) {
+            tour.movePrevious();
+          } else {
+            console.debug('Attempted to go to prev step, but that one is on another page.');
+            // TODO: Maybe add a redirect here.
+          }
+        }
+      },
+      
+      onDestroyed : function() {
+        if (window.localStorage.getItem(tour.getConfig().name + '_current_step') == tour.getConfig().steps.length) {
+          window.localStorage.setItem(tour.getConfig().name + '_end', 'yes');
+          window.guidedTourInProgress = false;
+        }
+        window.guidedTourInProgress = false;
+      }
+    }*/
+
+/*
+      console.info(jsonData)
+      tour.setSteps(jsonData.steps);
+      console.info(jsonData.steps, window.localStorage.getItem(tour.getConfig().name + '_current_step'));
+      console.info(tour);
+
+      // Look if the tour should be started regardless of its status on the local storage
+      var getQueryStringParameterByName = function (name) {
+        var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+        return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+      }
+      var forceStart = getQueryStringParameterByName('startTour') == 'true';
+      var tourEnded = window.localStorage.getItem(tourName + '_end') === 'yes';
+
+      // Initialize the current step index from local storage.
+      var currentStep = tour.getActiveStep();
+      var tourAutoStart = !tourEnded; // && !tourNeedsRedirect
+      if (window.localStorage.getItem(tour.getConfig().name + '_current_step') === null) {
+        // Set the current step if the tour hasn't ran.
+        window.localStorage.setItem(tour.getConfig().name + '_current_step', 1);
+      }
+      if (forceStart) {
+        // Just start at the first step, man. (I didn't test that this is the behavior on the old Tour Extension too)
+        if (!window.guidedTourInProgress) {
+          window.guidedTourInProgress = true;
+          tour.drive(0);
+        }
+      } else if (tourAutoStart) {
+        if (!(window.localStorage.getItem(tour.getConfig().name + '_end') === 'yes')) {
+          // Should probably just straigth up monkey patch the .drive function to handle persistance too, since it seems to be the common entry point for all driver.js functions.
+          let stepIndex = window.localStorage.getItem(tour.getConfig().name + '_current_step') - 1;
+          console.info(tour, stepIndex);
+          console.info("I want " + tour.getConfig().steps[stepIndex].path + ", got " + window.location.pathname)
+          if (tour.getConfig().steps[stepIndex].path == window.location.pathname && !window.guidedTourInProgress) {
+            window.guidedTourInProgress = true;
+            tour.drive(stepIndex);
+          }
+        } else {
+            window.guidedTourInProgress = false;
+        }
+      }
+*/
+
 // FIXME: From old TourJS.xml
 /*
 function loadCss(href) {
@@ -50,10 +267,10 @@ require(['jquery', 'xwiki-meta', 'guidedtour-utils'], function ($, xm, utils) {
       console.debug(`Another Tour already in progress. Don't start ${tourName}`);
       return;
     }
-    if (window.localStorage.getItem(tourName + '_current_step') &gt;= jsonData.steps.length) {
+    if (window.localStorage.getItem(tourName + '_current_step') >= jsonData.steps.length) {
       window.localStorage.setItem(tourName + '_end', 'yes');
       window.guidedTourInProgress = false;
-      console.debug(`Fixed tour done status for ${tourName}. (had step ${window.localStorage.getItem(tourName + '_current_step')} &gt;= ${jsonData.steps.length})`)
+      console.debug(`Fixed tour done status for ${tourName}. (had step ${window.localStorage.getItem(tourName + '_current_step')} >= ${jsonData.steps.length})`)
       return;
     }
 
@@ -68,181 +285,7 @@ require(['jquery', 'xwiki-meta', 'guidedtour-utils'], function ($, xm, utils) {
       //debugger;
 
       // Create the tour
-      let tour     = driver({
-        name    : tourName,
-        storage : window.localStorage,
-      nextBtnText: 'Next &gt;',
-      prevBtnText: '&lt; Previous',
-      showProgress: true,
-        overlayOpacity: 0.3,
-        //overlayClickBehavior: () =&gt; {},
-        onNextClick: (highlightedElement, step, options) =&gt; {
-          console.debug(1, highlightedElement, step, options)
-          let nextStep = options.config.steps.filter((el) =&gt; {return el.order == step.order + 1});
-          if (nextStep.length == 0) {
-            console.debug('No next step. We\'re probably in the last step attempting to go next.');
-            tour.moveNext();
-          } else {
-            nextStep = nextStep[0];
-            if (step.path == nextStep.path) {
-              const activeIndex = tour.getActiveIndex();
-              utils.waitForElement(nextStep.element).then((element) =&gt; {
-                if (activeIndex == tour.getActiveIndex()) {
-                  // debugger;
-                  tour.moveNext();
-                } else {
-                  console.debug(`Tried to move from ${activeIndex} to next , but the step is actually now ${tour.getActiveIndex()}`)
-                }
-              }).catch(() =&gt; {
-                console.error("Idk what to do. Skip the step? FIXME")
-              });
-            } else {
-              console.debug('Attempted to go to next step, but that one is on another page.');
-              // TODO: Maybe add a redirect here.
-            }
-          }
-        },
-        onPrevClick: (highlightedElement, step, options) =&gt; {
-          console.debug(2, highlightedElement, step, options)
-          let previousStep = options.config.steps.filter((el) =&gt; {return el.order == step.order - 1});
-          if (previousStep.length == 0) {
-            console.debug('No previous step. We\'re probably in the first step attempting to go back.');
-            tour.movePrevious();
-          } else {
-            previousStep = previousStep[0];
-            if (step.path == previousStep.path) {
-              tour.movePrevious();
-            } else {
-              console.debug('Attempted to go to prev step, but that one is on another page.');
-              // TODO: Maybe add a redirect here.
-            }
-          }
-        },
-      onPopoverRender: (popDOM, options) =&gt; {
-        const stepCount = options.config.steps.length;
-        const activeIndex = options.state.activeIndex + 1;
-        const activeStep = options.state.activeStep;
-        const elem = activeStep.element;
-        if (activeStep.reflex) {
-          $(activeStep.element).on('click', (event) =&gt; {
-            console.debug(event);
-            if (event.target.tagName == 'INPUT' &amp;&amp; event.target.type == 'text') {
-              // Special case for text inputs.
-              // Right now, the text input awaits for 5s before continuing, to allow the user to type stuff.
-              // TODO: Maybe add a 'match text' setting for going next.
-              const msTimeout = 5000;
-              new Promise(resolve =&gt; setTimeout(resolve, msTimeout)).then(() =&gt; {
-                console.debug('sloip awoked');
-                // Increment the local storage step. (For cases when clicking the element leads to a redirect.)
-              //debugger;
-                window.localStorage.setItem(tour.getConfig().name + '_current_step', 1 + activeIndex);
-                if (window.localStorage.getItem(tour.getConfig().name + '_current_step') == tour.getConfig().steps.length) {
-                  window.localStorage.setItem(tour.getConfig().name + '_end', 'yes');
-                  window.guidedTourInProgress = false;
-                }
-                // The localStorage item should theoretically be set to the same value in the moveNext(), so no harm done
-                // Fire onNext ?
-                document.fire('arrowRightPress')
-                if (activeIndex != options.state.activeIndex) {
-                  tour.moveNext();
-                }
-              })
-            } else {
-              // Increment the local storage step. (For cases when clicking the element leads to a redirect.)
-              //debugger;
-              window.localStorage.setItem(tour.getConfig().name + '_current_step', 1 + activeIndex);
-              if (window.localStorage.getItem(tour.getConfig().name + '_current_step') == tour.getConfig().steps.length) {
-                window.localStorage.setItem(tour.getConfig().name + '_end', 'yes');
-                window.guidedTourInProgress = false;
-              }
-              console.info(tour)
-              document.fire('arrowRightPress')
-              tour.moveNext();
-              /* The localStorage item should theoretically be set to the same value in the moveNext(), so no harm done
-              new Promise(resolve =&gt; setTimeout(resolve, 1500)).then(() =&gt; {
-                // Wait a bit to see if the clicked element was actually a redirect.
-                if (!beforeUnloadFired) {
-                  tour.moveNext();
-                }
-              });*\/
-            }
-          });
-        }
-
-        console.info(popDOM, options, window.localStorage.getItem(tour.getConfig().name + '_current_step'));
-        window.localStorage.setItem(tour.getConfig().name + '_current_step', activeIndex); // This should be config.activeIndex instead.
-        popDOM.progress.innerHTML = '⬤ '.repeat(activeIndex) + '◯ '.repeat(stepCount - activeIndex);
-        popDOM.progress.style = 'display: flex; justify-content: center;';
-        popDOM.footer.className = '';
-        popDOM.footer.innerHTML = '';
-        const customSkipAll = new Element('a');
-        $(customSkipAll).on('click', () =&gt; {
-          window.localStorage.setItem(tour.getConfig().name + '_end', 'yes'); // Maybe add a special 'skipped' value to differentiate.
-          window.guidedTourInProgress = false;
-          tour.destroy();
-        });
-        customSkipAll.innerHTML = 'Skip All';
-        customSkipAll.style.cursor = 'pointer';
-        popDOM.footer.appendChild(customSkipAll);
-        if (!activeStep.reflex) {
-          // FIXME: I don't understand, reflex is supposed to nudge you to do the action; but it should also give you a way to bypass a step if it breaks.
-          // So what to do? Hiding the buttons looks closer to what the mockups show, and you can still use the arrow keys to navigate the steps to get over broken steps.
-          popDOM.footer.appendChild(popDOM.footerButtons);
-        }
-        popDOM.nextButton.className = 'driver-popover-next-btn btn btn-primary btn-sm';
-        popDOM.previousButton.className = 'driver-popover-prev-btn btn btn-sm';
-        popDOM.wrapper.innerHTML = '';
-        $(popDOM.wrapper).append([popDOM.closeButton, popDOM.arrow, popDOM.progress, popDOM.title, popDOM.description, popDOM.footer]);
-      },
-        onDestroyed : function() {
-          if (window.localStorage.getItem(tour.getConfig().name + '_current_step') == tour.getConfig().steps.length) {
-            window.localStorage.setItem(tour.getConfig().name + '_end', 'yes');
-            window.guidedTourInProgress = false;
-          }
-          window.guidedTourInProgress = false;
-        }
-      });
-      console.info(jsonData)
-      tour.setSteps(jsonData.steps);
-      console.info(jsonData.steps, window.localStorage.getItem(tour.getConfig().name + '_current_step'));
-      console.info(tour);
-
-      // Look if the tour should be started regardless of its status on the local storage
-      var getQueryStringParameterByName = function (name) {
-        var match = RegExp('[?&amp;]' + name + '=([^&amp;]*)').exec(window.location.search);
-        return match &amp;&amp; decodeURIComponent(match[1].replace(/\+/g, ' '));
-      }
-      var forceStart = getQueryStringParameterByName('startTour') == 'true';
-      var tourEnded = window.localStorage.getItem(tourName + '_end') === 'yes';
-
-      // Initialize the current step index from local storage.
-      var currentStep = tour.getActiveStep();
-      var tourAutoStart = !tourEnded; // &amp;&amp; !tourNeedsRedirect
-      if (window.localStorage.getItem(tour.getConfig().name + '_current_step') === null) {
-        // Set the current step if the tour hasn't ran.
-        window.localStorage.setItem(tour.getConfig().name + '_current_step', 1);
-      }
-      if (forceStart) {
-        // Just start at the first step, man. (I didn't test that this is the behavior on the old Tour Extension too)
-        if (!window.guidedTourInProgress) {
-          window.guidedTourInProgress = true;
-          tour.drive(0);
-        }
-      } else if (tourAutoStart) {
-        if (!(window.localStorage.getItem(tour.getConfig().name + '_end') === 'yes')) {
-          // Should probably just straigth up monkey patch the .drive function to handle persistance too, since it seems to be the common entry point for all driver.js functions.
-          let stepIndex = window.localStorage.getItem(tour.getConfig().name + '_current_step') - 1;
-          console.info(tour, stepIndex);
-          console.info("I want " + tour.getConfig().steps[stepIndex].path + ", got " + window.location.pathname)
-          if (tour.getConfig().steps[stepIndex].path == window.location.pathname &amp;&amp; !window.guidedTourInProgress) {
-            window.guidedTourInProgress = true;
-            tour.drive(stepIndex);
-          }
-        } else {
-            window.guidedTourInProgress = false;
-        }
-      }
-    });
+      let tour     = driver(/* Tour stuff *\/);
   };
 
   /**
@@ -268,7 +311,7 @@ window.guidedTourInProgress = false;
       for (var i = 0; i &lt; json.tours.length; ++i) {
         var tour = json.tours[i];
         let tourName = utils.escapeTourName('tour_' + tour.name);
-        tour.steps = tour.steps.map(step =&gt; {
+        tour.steps = tour.steps.map(step => {
           step['popover'] = {title: step['title'], description: step['content']};
           if (step['element'] == '') {
             if (false == step['backdrop']) {
@@ -280,7 +323,7 @@ window.guidedTourInProgress = false;
           }
           return step;
         });
-        if (tour.steps.length &gt; 0) {
+        if (tour.steps.length > 0) {
           createTour(tour);
         }
       }
@@ -289,9 +332,9 @@ window.guidedTourInProgress = false;
         const tourId = event.currentTarget.dataset['id'];
         console.debug(json)
         console.debug(event, json.tours, 'at', tourId);
-        let tour = json.tours.filter(el =&gt; el.name == tourId);
-        console.debug(tour.length &gt; 0 &amp;&amp; tour[0].steps.length &gt; 0)
-        if (tour.length &gt; 0 &amp;&amp; tour[0].steps.length &gt; 0) {
+        let tour = json.tours.filter(el => el.name == tourId);
+        console.debug(tour.length > 0 && tour[0].steps.length > 0)
+        if (tour.length > 0 && tour[0].steps.length > 0) {
           tour = tour[0];
           // Reset the tour progress to restart it.
           window.localStorage.setItem(utils.escapeTourName('tour_' + tour.name) + '_current_step', 1);
@@ -317,16 +360,16 @@ define('guidedtour-widget', ['jquery', 'guidedtour-utils'], function($, utils) {
 
   // Helper to bind click events, TODO: could be deleted.
   function bindFloaterClickEvent(selector, callback) {
-    $('.guidedtour-widget ' + selector).on('click', (event) =&gt; {
+    $('.guidedtour-widget ' + selector).on('click', (event) => {
       callback(event);
     });
   };
 
-  bindFloaterClickEvent('.top-bar', (event) =&gt; {
+  bindFloaterClickEvent('.top-bar', (event) => {
     window.localStorage.setItem('TourFloaterCollapsed', document.querySelector('.guidedtour-widget').classList.toggle('collapsed'));
   });
 
-  bindFloaterClickEvent('#widget-close', (event) =&gt; {
+  bindFloaterClickEvent('#widget-close', (event) => {
     if (event.target.closest('.guidedtour-widget').classList.contains('collapsed')) {
       event.target.closest('.guidedtour-widget').remove();
       // window.localStorage.setItem('TourFloaterCollapsed', 'hidden') // Commented to not disable the widget completely, permanently.
@@ -335,7 +378,7 @@ define('guidedtour-widget', ['jquery', 'guidedtour-utils'], function($, utils) {
     }
   });
 
-  bindFloaterClickEvent('#widget-options', (event) =&gt; {
+  bindFloaterClickEvent('#widget-options', (event) => {
     event.stopPropagation();
     console.info('Opened settings menu');
   });
@@ -408,7 +451,7 @@ define('guidedtour-widget', ['jquery', 'guidedtour-utils'], function($, utils) {
     }
   }
 
-  utils.getTourData().then((data) =&gt; {
+  utils.getTourData().then((data) => {
     console.info(data);
     const groups = data['groups'];
     // TODO: Maybe re-enable this and improve the functionality.
@@ -422,19 +465,19 @@ define('guidedtour-widget', ['jquery', 'guidedtour-utils'], function($, utils) {
       }
       console.debug(groups[group])
       // FIXME: Add HTML escapes (maybe use purify?)
-      groupEl.innerHTML = '&lt;div class="guidedtour-tour-header"&gt;&lt;i class="fa-solid fa-chevron-right chevron"&gt;&lt;/i&gt;' + groups[group]['displayTitle'] + '&lt;/div&gt;&lt;div class="guidedtour-content"&gt;&lt;/div&gt;';
+      groupEl.innerHTML = '&lt;div class="guidedtour-tour-header">&lt;i class="fa-solid fa-chevron-right chevron">&lt;/i>' + groups[group]['displayTitle'] + '&lt;/div>&lt;div class="guidedtour-content">&lt;/div>';
       // Chevron collapse section.
-      groupEl.getElementsByClassName('guidedtour-tour-header')[0].onclick = (event) =&gt; {
+      groupEl.getElementsByClassName('guidedtour-tour-header')[0].onclick = (event) => {
         const contentElement = event.target.closest('.guidedtour-tour');
         window.localStorage.setItem('tour_95_' + utils.escapeTourName(contentElement['dataset'].gid) + '_TourFloaterTourCollapsed', contentElement.classList.toggle('collapsed'));
       };
       // TODO: Replace divs with actual ARIA/WCAG stuff, ul, etc
-      groups[group]['tasks'].forEach(task =&gt; {
+      groups[group]['tasks'].forEach(task => {
         if (!task.raw.isActive || task.raw.isHidden) {
           return;
         }
         let taskEl = document.createElement('div');
-        taskEl.innerHTML = '&lt;button class="pre-btn"&gt;&lt;i class="fa fa-arrow-right"&gt;&lt;/i&gt;&lt;/button&gt;' + task['title'] + '&lt;button class="post-btn"&gt;&lt;i class="fa fa-rotate-right"&gt;&lt;/i&gt;&lt;/button&gt;';
+        taskEl.innerHTML = '&lt;button class="pre-btn">&lt;i class="fa fa-arrow-right">&lt;/i>&lt;/button>' + task['title'] + '&lt;button class="post-btn">&lt;i class="fa fa-rotate-right">&lt;/i>&lt;/button>';
         taskEl.setAttribute('data-id', task['id']);
         taskEl.className = 'guidedtour-task';
         if (task['done']) {
@@ -442,7 +485,7 @@ define('guidedtour-widget', ['jquery', 'guidedtour-utils'], function($, utils) {
         }
         groupEl.querySelector('.guidedtour-content').appendChild(taskEl);
       });
-      if (groupEl.querySelector('.guidedtour-content').childElementCount &gt; 0) {
+      if (groupEl.querySelector('.guidedtour-content').childElementCount > 0) {
         document.querySelector('.guidedtour-container').appendChild(groupEl);
       }
     }

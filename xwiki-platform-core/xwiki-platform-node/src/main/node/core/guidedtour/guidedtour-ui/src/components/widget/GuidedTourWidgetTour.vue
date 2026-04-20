@@ -29,8 +29,8 @@
     :id="tour.id"
     class="guidedtour-tour"
     :class="{
-      'tour-done': () => tour.status == TourTaskStatus.Done,
-      collapsed: () => tour.isCollapsed ?? false,
+      'tour-done': tour.status == TourTaskStatus.Done,
+      collapsed: tour.isCollapsed,
     }"
   >
     <div
@@ -43,10 +43,23 @@
       <!-- FIXME: Replace font-awesome with some vue component-->
       <i class="fa-solid fa-chevron-right chevron" />
       {{ tour.title }}
+      {{ JSON.stringify(tour) }}
+      {{ tour.isCollapsed }}
       <!-- <GuidedTourWidgetProgressBar :progress="0.5" :width="150" /> -->
     </div>
     <div class="guidedtour-content">
-      <GuidedTourWidgetTask v-for="task in tasks" :key="task.id" :task="task" />
+      <Suspense>
+        <template #default>
+          <GuidedTourWidgetTask
+            v-for="task in state.tasks"
+            :key="task.id"
+            :task="task"
+          />
+        </template>
+        <template #fallback>
+          <div>Loading ...</div>
+        </template>
+      </Suspense>
     </div>
   </section>
 </template>
@@ -54,17 +67,26 @@
 <script setup lang="ts">
 import GuidedTourWidgetTask from "./GuidedTourWidgetTask.vue";
 import { TourTaskStatus } from "@xwiki/platform-guidedtour-api";
-import { inject } from "vue";
+import { inject, onMounted, reactive } from "vue";
 import type {
   GuidedTourManagerApi,
+  TourTask,
   TourTour,
 } from "@xwiki/platform-guidedtour-api";
-const { tour } = defineProps<{ tour: TourTour }>();
-// const tour:Ref<TourTour> = toRef(props, "tour"); // reactive read-only ref
+import type { Ref } from "vue";
+const props = defineProps<{ tour: Ref<TourTour> }>();
+const tour: Ref<TourTour> = props.tour; // reactive read-only ref
 defineEmits(["toggleCollapseTour"]);
 const guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager")!;
-const tasks = await guidedTourManager.getTasks(tour.id);
 console.info("In tour setup.");
+const state = reactive({
+  tasks: [] as TourTask[],
+});
+
+onMounted(async () => {
+  state.tasks = await guidedTourManager.getTasks(tour.value.id);
+  console.log("async loaded tasks", state.tasks);
+});
 </script>
 
 <style>
@@ -98,6 +120,8 @@ console.info("In tour setup.");
   border-radius: 0.65em;
   transition: background-color 0.1s ease;
   padding: 0.5em;
+  overflow: hidden;
+  overflow-wrap: break-word;
 }
 
 .guidedtour-tour-header .chevron {

@@ -25,7 +25,7 @@
  * @beta
  */
 export type TourStep = {
-  element: string;
+  element?: string;
   order: number;
   title: string;
   content: string;

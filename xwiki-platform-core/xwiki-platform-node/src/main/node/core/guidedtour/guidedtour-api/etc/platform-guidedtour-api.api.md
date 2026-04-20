@@ -6,19 +6,16 @@
 
 // @beta
 export interface GuidedTourManagerApi {
-    getSandboxSpace(): Promise<string>;
     getSteps(taskId: string): Promise<TourStep[]>;
     getTasks(tourId?: string): Promise<TourTask[]>;
     getTours(): Promise<TourTour[]>;
     getUsefulLinks(): Promise<string[]>;
-    isWidgetShown(): Promise<boolean>;
-    markStepDone(step: TourStep, status: string): Promise<void>;
-    setupStep(step: TourStep): void;
+    startTask(task: TourTask): void;
 }
 
 // @beta
 export type TourStep = {
-    element: string;
+    element?: string;
     order: number;
     title: string;
     content: string;

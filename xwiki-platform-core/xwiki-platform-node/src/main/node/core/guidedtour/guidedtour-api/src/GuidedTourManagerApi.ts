@@ -31,24 +31,9 @@ import type { TourTour } from "./tour";
  */
 export interface GuidedTourManagerApi {
   /**
-   * Get the Space where the Guided Tour tasks should be performed.
-   */
-  getSandboxSpace(): Promise<string>;
-
-  /**
-   * If to load the widget at all.
-   */
-  isWidgetShown(): Promise<boolean>;
-
-  /**
    * Get the Useful Links to display in the widget.
    */
   getUsefulLinks(): Promise<string[]>;
-
-  /**
-   * Redirects to the Space for tasks.
-   */
-  setupStep(step: TourStep): void;
 
   /**
    * Get all tours available for the user.
@@ -61,12 +46,13 @@ export interface GuidedTourManagerApi {
   getTasks(tourId?: string): Promise<TourTask[]>;
 
   /**
+   * Start the task.
+   * @param task - The task to start.
+   */
+  startTask(task: TourTask): void;
+
+  /**
    * Get all steps of a tour.
    */
   getSteps(taskId: string): Promise<TourStep[]>;
-
-  /**
-   * Redirects to the Space for tasks.
-   */
-  markStepDone(step: TourStep, status: string): Promise<void>;
 }

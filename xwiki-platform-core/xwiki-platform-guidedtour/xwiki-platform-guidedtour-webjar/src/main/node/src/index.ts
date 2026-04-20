@@ -20,7 +20,7 @@
 
 import {GuidedTourManager} from '@xwiki/platform-guidedtour-xwiki';
 import {GuidedTourWidget} from "@xwiki/platform-guidedtour-ui"
-import {Suspense, createApp, h} from 'vue';
+import {createApp} from 'vue';
 
 
 function init() {
@@ -36,12 +36,7 @@ function init() {
   app.config.warnHandler = (msg, instance, trace) => {
     console.warn('Vue warn:', msg, trace, instance);
   };
-
-  // app.config.devtools = true;
-  // app.config.productionTip = false;
-
-  const a = app.mount('#guidedtour-uix');
-  console.log(a);
+  app.mount('#guidedtour-uix');
 }
 
 if (!document.querySelector('#tourResumeContainer')) {

@@ -25,10 +25,15 @@
 -->
 
 <template>
-  {{ cptr }} <button @click="cptr++">ADD</button>
-  <div class="guidedtour-widget" :class="widgetClass">
+  <div
+    class="guidedtour-widget"
+    :class="{
+      collapsed: state.isWidgetCollapsed,
+    }"
+  >
+    <DriverCss />
     <GuidedTourWidgetHeader
-      @collapseGuidedTourWidget="onToggleCollapseTour"
+      @closeGuidedTourWidget="onCloseGuidedTourWidget"
       :progress="progress"
     />
     <div class="guidedtour-widget-content">
@@ -38,7 +43,7 @@
           <GuidedTourWidgetTour
             v-for="tour in state.tours"
             :key="tour.id"
-            :tour="reactive(tour)"
+            :tour="ref(tour)"
             @toggleCollapseTour="
               (tour: TourTour) => {
                 console.debug('toggleCollapseTour closeset for ', tour);
@@ -67,6 +72,7 @@
 //import type { I18n } from "vue-i18n";
 // All the logic should live here (TODO: Maybe move most of it to a .ts file)
 // FIXME: This should be injected from somewhere else, but I have no idea from where.
+import DriverCss from "./DriverCss.vue";
 import GuidedTourWidgetHeader from "./GuidedTourWidgetHeader.vue";
 import GuidedTourWidgetTour from "./GuidedTourWidgetTour.vue";
 import GuidedTourWidgetUsefulLink from "./GuidedTourWidgetUsefulLink.vue";
@@ -76,7 +82,7 @@ import type {
   GuidedTourManagerApi,
   TourTour,
 } from "@xwiki/platform-guidedtour-api";
-const cptr = ref(0);
+
 console.info("In widget setup. 23");
 const { guidedTourManager } = defineProps<{
   guidedTourManager: GuidedTourManagerApi;
@@ -84,42 +90,35 @@ const { guidedTourManager } = defineProps<{
 
 provide<GuidedTourManagerApi>("GuidedTourManager", guidedTourManager!);
 
-// onErrorCaptured((err) => {
-//   console.error(err);
-// });
 const state = reactive({
-  isWidgetCollapsed: true,
+  guidedTourManager: guidedTourManager,
+  isWidgetCollapsed: false,
   tours: [] as TourTour[],
   usefulLinks: [] as string[],
   isWidgetShown: true,
 });
-const widgetClass = computed(() => ({ collapsed: state.isWidgetCollapsed }));
-
+function onCloseGuidedTourWidget(buttonClicked: boolean) {
+  console.info("toggle colapse in parent", buttonClicked);
+  if (state.isWidgetCollapsed && buttonClicked) {
+    state.isWidgetShown = false;
+  } else {
+    state.isWidgetCollapsed = !state.isWidgetCollapsed;
+  }
+}
 onMounted(async () => {
   state.tours = await guidedTourManager.getTours();
   state.usefulLinks = await guidedTourManager.getUsefulLinks();
-  state.isWidgetShown = await guidedTourManager.isWidgetShown();
+  // TODO: This should come from the localStorage
+  // state.isWidgetShown = await guidedTourManager.isWidgetShown();
   console.log("async loaded", state.tours);
 });
 
-function onToggleCollapseTour() {
-  state.isWidgetCollapsed = !state.isWidgetCollapsed;
-  console.debug("collapseGuidedTourWidget", state.isWidgetCollapsed);
-}
-
-console.log(
-  "loaded",
-  state.tours,
-  state.usefulLinks,
-  state.isWidgetShown,
-  guidedTourManager,
-);
-let progress = ref(0.3);
-progress.value +=
-  0.3 +
-  state.tours.filter((tour: TourTour) => tour.status != TourTaskStatus.ToDo)
-    .length /
-    state.tours.length;
+let progress = computed(() => {
+  return (
+    state.tours.filter((tour: TourTour) => tour.status != TourTaskStatus.ToDo)
+      .length / state.tours.length
+  );
+});
 // FIXME
 // Fetch the tour from the API
 // Instantiate the JS objects to be used in the widget
@@ -274,6 +273,7 @@ define('guidedtour-widget', ['jquery', 'guidedtour-utils'], function($, utils) {
 .guidedtour-widget.collapsed .guidedtour-widget-content {
   width: 0;
   max-height: 0;
+  max-width: 0;
 }
 
 .guidedtour-widget {
@@ -291,6 +291,8 @@ define('guidedtour-widget', ['jquery', 'guidedtour-utils'], function($, utils) {
 
   .guidedtour-widget-content {
     overflow: hidden;
+    max-height: 500px; /* For nice animations, these can't be % values. */
+    max-width: 500px;
   }
 
   .guidedtour-content {
@@ -311,7 +313,9 @@ define('guidedtour-widget', ['jquery', 'guidedtour-utils'], function($, utils) {
   }
 
   * {
-    transition: max-height 0.45s cubic-bezier(0.25, 1, 0.25, 1);
+    transition:
+      max-height 0.45s cubic-bezier(0.25, 1, 0.25, 1),
+      max-width 0.45s ease-in-out;
     /*, width 0.45s ease-in-out 0s*/
   }
 }

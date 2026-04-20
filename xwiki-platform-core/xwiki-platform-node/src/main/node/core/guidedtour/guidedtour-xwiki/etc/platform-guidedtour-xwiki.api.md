@@ -4,6 +4,7 @@
 
 ```ts
 
+import { Driver } from 'driver.js';
 import { GuidedTourManagerApi } from '@xwiki/platform-guidedtour-api';
 import { TourStep } from '@xwiki/platform-guidedtour-api';
 import { TourTask } from '@xwiki/platform-guidedtour-api';
@@ -11,6 +12,12 @@ import { TourTour } from '@xwiki/platform-guidedtour-api';
 
 // @beta
 export class GuidedTourManager implements GuidedTourManagerApi {
+    // (undocumented)
+    activeTour?: Driver;
+    // (undocumented)
+    fetchSteps(taskId: string): Promise<TourStep[]>;
+    // (undocumented)
+    static getInstance(): GuidedTourManager;
     // (undocumented)
     getSandboxSpace(): Promise<string>;
     // (undocumented)
@@ -22,11 +29,13 @@ export class GuidedTourManager implements GuidedTourManagerApi {
     // (undocumented)
     getUsefulLinks(): Promise<string[]>;
     // (undocumented)
-    isWidgetShown(): Promise<boolean>;
-    // (undocumented)
     markStepDone(step: TourStep, status: string): Promise<void>;
     // (undocumented)
     setupStep(step: TourStep): void;
+    // (undocumented)
+    startTask(task: TourTask): Promise<void>;
+    // (undocumented)
+    stepCache: Map<string, TourStep[]>;
 }
 
 // (No @packageDocumentation comment for this package)

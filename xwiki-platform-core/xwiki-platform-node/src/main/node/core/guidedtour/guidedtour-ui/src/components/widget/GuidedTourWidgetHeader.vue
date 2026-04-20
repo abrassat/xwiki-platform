@@ -26,14 +26,22 @@
 
 <template>
   <div class="header">
-    <div class="top-bar" @click="$emit('collapseGuidedTourWidget')">
+    <div class="top-bar" @click="onCloseButtonClicked(false)">
       <span class="icon fa fa-compass" />
       <div class="title">Guided Tours</div>
       <div class="right-group">
-        <button id="widget-options">
+        <button
+          id="widget-options"
+          class="btn"
+          @click.stop="console.info('Options menu')"
+        >
           <span class="fa fa-cog" />
         </button>
-        <button id="widget-close">
+        <button
+          id="widget-close"
+          class="btn"
+          @click.stop="onCloseButtonClicked(true)"
+        >
           <i class="fa-solid fa-x" />
         </button>
       </div>
@@ -44,17 +52,26 @@
 
 <script setup lang="ts">
 import GuidedTourWidgetProgressBar from "./GuidedTourWidgetProgressBar.vue";
-
+const emit = defineEmits(["closeGuidedTourWidget"]);
 console.info("In header setup.");
 
+function onCloseButtonClicked(buttonClicked: boolean) {
+  console.info("Send widget close event...", buttonClicked);
+  emit("closeGuidedTourWidget", buttonClicked);
+}
+
 const { progress } = defineProps<{ progress: number }>();
-defineEmits(["collapseGuidedTourWidget"]);
 </script>
 
 <style>
 .top-bar {
   display: flex;
   cursor: pointer;
+}
+
+.right-group button {
+  font-size: inherit;
+  padding: 0.3em 0.5em 0.3em 0.5em;
 }
 
 .guidedtour-widget.collapsed .top-bar {
@@ -88,7 +105,7 @@ defineEmits(["collapseGuidedTourWidget"]);
   cursor: pointer;
 }
 
-.guidedtour-widget.collapsed .right-group button:first-child {
+.guidedtour-widget.collapsed .right-group button#widget-options {
   display: none;
 }
 
@@ -100,5 +117,7 @@ defineEmits(["collapseGuidedTourWidget"]);
   display: inline-block;
   user-select: none;
   padding: 14px 16px 14px 16px;
+  width: 100%;
+  overflow-wrap: break-word;
 }
 </style>

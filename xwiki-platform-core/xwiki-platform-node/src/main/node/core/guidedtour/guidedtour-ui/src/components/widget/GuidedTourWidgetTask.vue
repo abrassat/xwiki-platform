@@ -28,13 +28,18 @@
   <div
     :id="task.id"
     class="guidedtour-task"
-    v-bind:class="{ 'task-done': task.status == TourTaskStatus.Done }"
+    v-bind:class="{
+      'task-done': task.status == TourTaskStatus.Done,
+      'task-todo': task.status == TourTaskStatus.ToDo,
+      'task-skipped': task.status == TourTaskStatus.Skipped,
+    }"
+    @click="onStartTask"
   >
     <button class="pre-btn">
       <i class="fa fa-arrow-right" />
     </button>
     Title
-    <button class="post-btn">
+    <button class="post-btn" @click.stop="onResetTask">
       <i class="fa fa-rotate-right" />
     </button>
   </div>
@@ -42,11 +47,29 @@
 
 <script setup lang="ts">
 import { TourTaskStatus } from "@xwiki/platform-guidedtour-api";
-import type { TourTask } from "@xwiki/platform-guidedtour-api";
+import { inject } from "vue";
+import type {
+  GuidedTourManagerApi,
+  TourTask,
+} from "@xwiki/platform-guidedtour-api";
 const { task } = defineProps<{
   task: TourTask;
 }>();
 console.info("In task setup.");
+
+const guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager")!;
+
+function onResetTask() {
+  console.info("You clicked to reset this task:", task);
+}
+
+async function onStartTask() {
+  console.info("You clicked to start this task:", task);
+  const steps = await guidedTourManager.getSteps(task.id);
+  guidedTourManager.startTask(task);
+  console.log("Fetched steps:", steps);
+  // driver(getDriverConfigForSteps(steps));
+}
 </script>
 
 <style>
@@ -67,6 +90,11 @@ console.info("In task setup.");
 
 .guidedtour-task.task-done {
   text-decoration: line-through;
+  color: #b0b0b0; /* This is not WCAG-compliant, but idk how to do faded out text with good contrast. */
+}
+
+.guidedtour-task.task-skipped {
+  color: #b0b0b0;
 }
 
 .guidedtour-task:hover .pre-btn,
@@ -86,6 +114,9 @@ console.info("In task setup.");
 }
 
 .post-btn {
+  margin-left: auto;
+}
+.post-bt:hover {
   margin-left: auto;
 }
 </style>
