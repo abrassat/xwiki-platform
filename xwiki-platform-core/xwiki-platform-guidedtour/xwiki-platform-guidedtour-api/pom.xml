@@ -36,14 +36,7 @@
   <dependency>
     <groupId>org.xwiki.platform</groupId>
     <artifactId>xwiki-platform-model-api</artifactId>
-    <version>${project.version}</version>
-  </dependency>
-  <!-- Testing dependencies -->
-  <dependency>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-tool-test-simple</artifactId>
-    <version>${commons.version}</version>
-    <scope>test</scope>
+    <version>18.1.0</version>
   </dependency>
 </dependencies>
 </project>

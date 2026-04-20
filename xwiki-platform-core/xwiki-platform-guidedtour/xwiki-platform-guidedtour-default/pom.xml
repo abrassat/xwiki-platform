@@ -31,11 +31,49 @@
 <name>XWiki Platform - Guided Tour - Default Implementation</name>
 <description>XWiki Platform - Guided Tour - Default Implementation</description>
 <dependencies>
+  <!-- Testing dependencies -->
+  <dependency>
+    <groupId>org.xwiki.commons</groupId>
+    <artifactId>xwiki-commons-tool-test-simple</artifactId>
+    <version>${commons.version}</version>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.xwiki.platform</groupId>
+    <artifactId>xwiki-platform-model-api</artifactId>
+    <version>${project.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.xwiki.platform</groupId>
+    <artifactId>xwiki-platform-oldcore</artifactId>
+    <version>${project.version}</version>
+    <scope>compile</scope>
+  </dependency>
   <dependency>
     <groupId>org.xwiki.platform</groupId>
     <artifactId>xwiki-platform-guidedtour-api</artifactId>
     <version>${project.version}</version>
   </dependency>
-  <!-- Test dependencies -->
+  <dependency>
+    <groupId>org.xwiki.platform</groupId>
+    <artifactId>xwiki-platform-search-solr-api</artifactId>
+    <version>${project.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.xwiki.platform</groupId>
+    <artifactId>xwiki-platform-refactoring-api</artifactId>
+    <version>${project.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.xwiki.commons</groupId>
+    <artifactId>xwiki-commons-job-api</artifactId>
+    <version>${commons.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.xwiki.commons</groupId>
+    <artifactId>xwiki-commons-tool-test-component</artifactId>
+    <version>${commons.version}</version>
+    <scope>test</scope>
+  </dependency>
 </dependencies>
 </project>

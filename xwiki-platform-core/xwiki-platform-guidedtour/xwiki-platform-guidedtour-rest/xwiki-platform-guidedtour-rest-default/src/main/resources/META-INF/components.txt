@@ -1,1 +1,4 @@
-org.xwiki.guidedtour.internal.DefaultGuidedTourResource
+org.xwiki.guidedtour.internal.DefaultUserTourResource
+org.xwiki.guidedtour.internal.DefaultToursResource
+org.xwiki.guidedtour.internal.DefaultStepsResource
+org.xwiki.guidedtour.internal.DefaultTasksResource

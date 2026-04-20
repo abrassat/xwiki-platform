@@ -17,14 +17,45 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.guidedtour;
+package org.xwiki.guidedtour.api.enums;
+
+import org.xwiki.stability.Unstable;
 
 /**
- * Placeholder comment.
+ * Enum representing the status of a task.
  *
  * @version $Id$
  * @since 18.4.0RC1
  */
-public class Placeholder
+@Unstable
+public enum Status
 {
+    /**
+     * To do status: the task is not yet started and needs to be completed by the user.
+     */
+    TODO,
+    /**
+     * Skipped status: the task has been skipped by the user and will not be completed.
+     */
+    SKIPPED,
+    /**
+     * Done status: the task has been completed by the user.
+     */
+    DONE;
+
+    /**
+     * Get the Status from a string value.
+     *
+     * @param text the string value to convert
+     * @return the corresponding Status, or to do if the string does not match any status
+     */
+    public static Status fromString(String text)
+    {
+        for (Status s : Status.values()) {
+            if (s.name().equalsIgnoreCase(text)) {
+                return s;
+            }
+        }
+        return TODO;
+    }
 }

@@ -36,33 +36,4 @@
   <xwiki.extension.name>Guided Tour Application</xwiki.extension.name>
   <xwiki.extension.category>application</xwiki.extension.category>
 </properties>
-<dependencies>
-  <!-- Runtime dependencies. -->
-  <dependency>
-    <groupId>${project.groupId}</groupId>
-    <artifactId>xwiki-platform-guidedtour-ui</artifactId>
-    <version>${project.version}</version>
-    <type>xar</type>
-  </dependency>
-  <!-- Test dependencies. -->
-  <dependency>
-    <groupId>org.xwiki.platform</groupId>
-    <artifactId>xwiki-platform-test-page</artifactId>
-    <version>${project.version}</version>
-    <scope>test</scope>
-  </dependency>
-  <dependency>
-    <groupId>org.xwiki.platform</groupId>
-    <artifactId>xwiki-platform-web-templates</artifactId>
-    <version>${project.version}</version>
-    <scope>test</scope>
-  </dependency>
-  <dependency>
-    <groupId>org.xwiki.platform</groupId>
-    <artifactId>xwiki-platform-user-default</artifactId>
-    <version>${project.version}</version>
-    <scope>test</scope>
-    <type>test-jar</type>
-  </dependency>
-</dependencies>
 </project>

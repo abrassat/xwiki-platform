@@ -17,17 +17,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.guidedtour.internal;
+package org.xwiki.guidedtour.api.exceptions;
 
-import org.xwiki.guidedtour.rest.GuidedTourResource;
+import org.xwiki.stability.Unstable;
 
 /**
- * Default implementation of {@link GuidedTourResource}.
+ * Exception thrown when an invalid id is provided.
  *
  * @version $Id$
  * @since 18.4.0RC1
  */
-public class DefaultGuidedTourResource
+@Unstable
+public class InvalidIdException extends Exception
 {
-    private String a;
+    /**
+     * Constructor for InvalidIdException.
+     *
+     * @param message the message to be displayed when the exception is thrown
+     * @param parameters the parameters to be used in the message
+     */
+    public InvalidIdException(String message, Object... parameters)
+    {
+        super(String.format(message, parameters));
+    }
 }

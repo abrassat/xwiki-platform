@@ -17,26 +17,45 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.guidedtour.rest;
+package org.xwiki.guidedtour.api.enums;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import org.xwiki.stability.Unstable;
 
 /**
- * Exposes the guided tours through REST.
+ * Enum representing the state of a widget.
  *
  * @version $Id$
  * @since 18.4.0RC1
  */
-@Path("/guidedTour")
-public interface GuidedTourResource
+@Unstable
+public enum WidgetState
 {
     /**
-     * Returns the guided tours.
-     *
-     * @return the list of guided tours
+     * Hidden state: the widget is hidden and not visible to the user.
      */
-    @GET
-    @Path("/tours")
-    String getTours();
+    HIDDEN,
+    /**
+     * Open state: the widget is visible and can be interacted with by the user.
+     */
+    OPEN,
+    /**
+     * Collapsed state: the widget is collapsed, but visible to the user. It can be expanded to show its content.
+     */
+    COLLAPSED;
+
+    /**
+     * Get the WidgetState from a string value.
+     *
+     * @param text the string value to convert
+     * @return the corresponding WidgetState, or OPEN if the string does not match any state
+     */
+    public static WidgetState fromString(String text)
+    {
+        for (WidgetState s : WidgetState.values()) {
+            if (s.name().equalsIgnoreCase(text)) {
+                return s;
+            }
+        }
+        return OPEN;
+    }
 }
