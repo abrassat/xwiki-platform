@@ -12,18 +12,19 @@ import { TourTour } from '@xwiki/platform-guidedtour-api';
 
 // @beta
 export class GuidedTourManager implements GuidedTourManagerApi {
+    constructor(xm: any);
     // (undocumented)
     activeTour?: Driver;
     // (undocumented)
-    fetchSteps(taskId: string): Promise<TourStep[]>;
-    // (undocumented)
-    static getInstance(): GuidedTourManager;
+    fetchSteps(tourId: string, taskId: string): Promise<TourStep[]>;
     // (undocumented)
     getSandboxSpace(): Promise<string>;
     // (undocumented)
-    getSteps(taskId: string): Promise<TourStep[]>;
+    getSteps(tourId: string, taskId: string): Promise<TourStep[]>;
     // (undocumented)
-    getTasks(tourId?: string): Promise<TourTask[]>;
+    getTasks(tourId: string): Promise<TourTask[]>;
+    // (undocumented)
+    getTour(tourId: string): Promise<TourTour | undefined>;
     // (undocumented)
     getTours(): Promise<TourTour[]>;
     // (undocumented)
@@ -36,9 +37,10 @@ export class GuidedTourManager implements GuidedTourManagerApi {
     setupStep(step: TourStep): void;
     // (undocumented)
     startTask(task: TourTask): Promise<void>;
-    // (undocumented)
-    stepCache: Map<string, TourStep[]>;
 }
+
+// @beta
+export const guidedTourManager: GuidedTourManager;
 
 // (No @packageDocumentation comment for this package)
 

@@ -29,9 +29,9 @@
     :id="tour.id"
     class="guidedtour-tour"
     :class="{
-      'tour-done': tour.status == TourTaskStatus.Done,
-      'tour-skipped': tour.status == TourTaskStatus.Skipped,
-      'tour-todo': tour.status == TourTaskStatus.ToDo,
+      'tour-done': tour.status == TourTaskStatus.DONE,
+      'tour-skipped': tour.status == TourTaskStatus.SKIPPED,
+      'tour-todo': tour.status == TourTaskStatus.TODO,
       collapsed: tour.isCollapsed,
     }"
   >
@@ -54,6 +54,7 @@
             v-for="task in state.tasks"
             :key="task.id"
             :task="task"
+            :tour-id="tour.id"
           />
         </template>
         <template #fallback>

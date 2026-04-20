@@ -39,7 +39,7 @@
     <div class="guidedtour-widget-content">
       <div class="guidedtour-container">
         <!-- FIXME: There should be a better grouping style here, groups shouldn't be sections. -->
-        <template v-if="state.tours.length">
+        <template v-if="state.tours?.length">
           <GuidedTourWidgetTour
             v-for="tour in state.tours"
             :key="tour.id"
@@ -52,7 +52,15 @@
             "
           />
         </template>
-        <div v-else>No tours</div>
+        <div v-else>
+          <template v-if="state.tours?.length == 0">No tours</template>
+          <template v-else-if="state.toursLoadError.length > 0">{{
+            state.toursLoadError
+          }}</template>
+          <template v-else>
+            Something went terribly wrong. Check the console.</template
+          >
+        </div>
       </div>
       <div>
         <template v-if="state.usefulLinks.length">
@@ -83,7 +91,7 @@ import type {
   TourTour,
 } from "@xwiki/platform-guidedtour-api";
 
-console.info("In widget setup. 23");
+console.info("In widget setup. 233123213");
 const { guidedTourManager } = defineProps<{
   guidedTourManager: GuidedTourManagerApi;
 }>();
@@ -96,6 +104,7 @@ const state = reactive({
   tours: [] as TourTour[],
   usefulLinks: [] as string[],
   isWidgetShown: true,
+  toursLoadError: "",
 });
 function onCloseGuidedTourWidget(buttonClicked: boolean) {
   console.info("toggle colapse in parent", buttonClicked);
@@ -106,7 +115,11 @@ function onCloseGuidedTourWidget(buttonClicked: boolean) {
   }
 }
 onMounted(async () => {
-  state.tours = await guidedTourManager.getTours();
+  state.tours = await guidedTourManager.getTours().catch((e) => {
+    console.error(e);
+    state.toursLoadError = e;
+    return [];
+  });
   state.usefulLinks = await guidedTourManager.getUsefulLinks();
   // TODO: This should come from the localStorage
   // state.isWidgetShown = await guidedTourManager.isWidgetShown();
@@ -114,10 +127,12 @@ onMounted(async () => {
 });
 
 let progress = computed(() => {
-  return (
-    state.tours.filter((tour: TourTour) => tour.status != TourTaskStatus.ToDo)
-      .length / state.tours.length
-  );
+  return state.tours
+    ? state.tours.filter(
+        (tour: TourTour) =>
+          tour.status != undefined && tour.status != TourTaskStatus.TODO,
+      ).length / state.tours.length
+    : 0;
 });
 // FIXME
 // Fetch the tour from the API

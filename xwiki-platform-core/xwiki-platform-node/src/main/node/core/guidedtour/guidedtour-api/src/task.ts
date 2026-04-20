@@ -42,6 +42,10 @@ export interface TourTask {
    */
   active?: boolean;
   /**
+   * The id of the tour this task belongs to, from the backend. This is useful to avoid having to pass the tour id separately when updating a task status.
+   */
+  tourId?: string;
+  /**
    * The id of other tasks which must be completed before this task can be started.
    */
   dependsOn?: string[];

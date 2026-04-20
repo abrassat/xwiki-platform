@@ -25,7 +25,7 @@
  * @beta
  */
 export enum TourTaskStatus {
-  ToDo,
-  Skipped,
-  Done,
+  TODO,
+  SKIPPED,
+  DONE,
 }

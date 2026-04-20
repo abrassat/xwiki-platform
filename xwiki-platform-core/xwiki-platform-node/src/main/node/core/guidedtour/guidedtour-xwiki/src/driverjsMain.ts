@@ -19,7 +19,7 @@
  */
 console.log("hi!");
 import { driver } from "driver.js";
-import type { GuidedTourManager } from "./services/GuidedTourManager";
+import type { GuidedTourManager } from "./GuidedTourManager";
 import type { TourStep } from "@xwiki/platform-guidedtour-api";
 import type { Config, DriveStep, Driver } from "driver.js";
 

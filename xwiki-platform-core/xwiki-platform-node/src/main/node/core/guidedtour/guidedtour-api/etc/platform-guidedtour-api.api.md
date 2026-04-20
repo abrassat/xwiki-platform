@@ -6,8 +6,8 @@
 
 // @beta
 export interface GuidedTourManagerApi {
-    getSteps(taskId: string): Promise<TourStep[]>;
-    getTasks(tourId?: string): Promise<TourTask[]>;
+    getSteps(tourId: string, taskId: string): Promise<TourStep[]>;
+    getTasks(tourId: string): Promise<TourTask[]>;
     getTours(): Promise<TourTour[]>;
     getUsefulLinks(): Promise<string[]>;
     resetTask(task: TourTask): Promise<void>;
@@ -38,16 +38,17 @@ export interface TourTask {
     order?: number;
     status?: TourTaskStatus;
     title: string;
+    tourId?: string;
 }
 
 // @beta
 export enum TourTaskStatus {
     // (undocumented)
-    Done = 2,
+    DONE = 2,
     // (undocumented)
-    Skipped = 1,
+    SKIPPED = 1,
     // (undocumented)
-    ToDo = 0
+    TODO = 0
 }
 
 // @beta

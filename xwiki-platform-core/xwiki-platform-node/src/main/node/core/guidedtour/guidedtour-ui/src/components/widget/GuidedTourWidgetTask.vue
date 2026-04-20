@@ -29,9 +29,9 @@
     :id="task.id"
     class="guidedtour-task"
     v-bind:class="{
-      'task-done': task.status == TourTaskStatus.Done,
-      'task-todo': task.status == TourTaskStatus.ToDo,
-      'task-skipped': task.status == TourTaskStatus.Skipped,
+      'task-done': task.status == TourTaskStatus.DONE,
+      'task-todo': task.status == TourTaskStatus.TODO,
+      'task-skipped': task.status == TourTaskStatus.SKIPPED,
     }"
     @click="onStartTask"
   >
@@ -54,8 +54,9 @@ import type {
   TourTask,
 } from "@xwiki/platform-guidedtour-api";
 // import XWiki from "../../services/xwiki.js";
-const { task } = defineProps<{
+const { task, tourId } = defineProps<{
   task: TourTask;
+  tourId: string;
 }>();
 console.info("In task setup.");
 
@@ -76,7 +77,7 @@ async function onResetTask() {
 async function onStartTask() {
   console.info("You clicked to start this task:", task);
   state.isWaitingAsync = true;
-  const steps = await guidedTourManager.getSteps(task.id);
+  const steps = await guidedTourManager.getSteps(tourId, task.id);
   state.isWaitingAsync = false;
   guidedTourManager.startTask(task);
   console.log("Fetched steps:", steps);

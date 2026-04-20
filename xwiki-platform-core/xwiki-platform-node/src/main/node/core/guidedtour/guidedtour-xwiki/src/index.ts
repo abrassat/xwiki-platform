@@ -18,6 +18,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-import { GuidedTourManager } from "./services/GuidedTourManager";
+import { GuidedTourManager } from "./GuidedTourManager";
+// @ts-expect-error this is a JavaScript file, it is expected to not have types.
+import { loadById } from "./services/require.js";
 
-export { GuidedTourManager };
+/**
+ * The main API of the GuidedTour app.
+ * @since 18.4.0RC1
+ * @beta
+ */
+const guidedTourManager = new GuidedTourManager(loadById("xwiki-meta"));
+export { type GuidedTourManager, guidedTourManager };

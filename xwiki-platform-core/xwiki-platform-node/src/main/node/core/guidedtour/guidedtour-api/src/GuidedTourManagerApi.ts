@@ -43,7 +43,7 @@ export interface GuidedTourManagerApi {
   /**
    * Get all tasks of a tour, which are available for the user.
    */
-  getTasks(tourId?: string): Promise<TourTask[]>;
+  getTasks(tourId: string): Promise<TourTask[]>;
 
   /**
    * Start the task.
@@ -60,5 +60,5 @@ export interface GuidedTourManagerApi {
   /**
    * Get all steps of a tour.
    */
-  getSteps(taskId: string): Promise<TourStep[]>;
+  getSteps(tourId: string, taskId: string): Promise<TourStep[]>;
 }

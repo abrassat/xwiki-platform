@@ -18,14 +18,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-import {GuidedTourManager} from '@xwiki/platform-guidedtour-xwiki';
+import {guidedTourManager} from '@xwiki/platform-guidedtour-xwiki';
 import {GuidedTourWidget} from "@xwiki/platform-guidedtour-ui"
 import {createApp} from 'vue';
 
 
 function init() {
   console.info("Hi from init 1!");
-  const guidedTourManager = new GuidedTourManager();
 
   // createApp({ render: () => h('div', 'Test') }).mount('#gt2');
   const app = createApp(GuidedTourWidget, { guidedTourManager });
