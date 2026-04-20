@@ -27,14 +27,16 @@
 export type TourStep = {
   element?: string;
   order: number;
-  title: string;
+  title?: string;
   content: string;
-  placement: string;
-  backdrop: boolean;
-  reflex: boolean;
-  path: string;
-  targetClass: string;
+  placement?: string;
+  backdrop?: boolean;
+  reflex?: boolean;
+  path?: string;
+  targetClass?: string;
   // Document Reference
-  targetPage: string;
+  targetPage?: string;
+  targetAction?: string;
+  queryParameters?: string;
   // TODO: Somehow include here some driver.js style properties.
 };

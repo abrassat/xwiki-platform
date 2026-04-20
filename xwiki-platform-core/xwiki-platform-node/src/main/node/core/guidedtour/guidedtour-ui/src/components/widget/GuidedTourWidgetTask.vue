@@ -38,7 +38,8 @@
     <button class="pre-btn">
       <i class="fa fa-arrow-right" />
     </button>
-    Title
+    {{ task.title }}
+    <i class="fa-solid fa-hurricane task-spinner" v-if="state.isWaitingAsync" />
     <button class="post-btn" @click.stop="onResetTask">
       <i class="fa fa-rotate-right" />
     </button>
@@ -47,25 +48,36 @@
 
 <script setup lang="ts">
 import { TourTaskStatus } from "@xwiki/platform-guidedtour-api";
-import { inject } from "vue";
+import { inject, reactive } from "vue";
 import type {
   GuidedTourManagerApi,
   TourTask,
 } from "@xwiki/platform-guidedtour-api";
+// import XWiki from "../../services/xwiki.js";
 const { task } = defineProps<{
   task: TourTask;
 }>();
 console.info("In task setup.");
 
+const state = reactive({
+  isWaitingAsync: false,
+});
+
 const guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager")!;
 
-function onResetTask() {
+async function onResetTask() {
   console.info("You clicked to reset this task:", task);
+  state.isWaitingAsync = true;
+  await guidedTourManager.resetTask(task);
+  state.isWaitingAsync = false;
+  // new XWiki.notification("Task reset! You can start it again to retake the tour.", "success");
 }
 
 async function onStartTask() {
   console.info("You clicked to start this task:", task);
+  state.isWaitingAsync = true;
   const steps = await guidedTourManager.getSteps(task.id);
+  state.isWaitingAsync = false;
   guidedTourManager.startTask(task);
   console.log("Fetched steps:", steps);
   // driver(getDriverConfigForSteps(steps));
@@ -73,6 +85,10 @@ async function onStartTask() {
 </script>
 
 <style>
+.task-spinner {
+  animation: spin 1s ease-in-out infinite;
+}
+
 .guidedtour-task:hover {
   background: #f2f2f2ff 100%;
 }

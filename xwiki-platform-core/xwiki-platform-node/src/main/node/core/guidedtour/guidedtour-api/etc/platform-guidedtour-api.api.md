@@ -10,28 +10,33 @@ export interface GuidedTourManagerApi {
     getTasks(tourId?: string): Promise<TourTask[]>;
     getTours(): Promise<TourTour[]>;
     getUsefulLinks(): Promise<string[]>;
-    startTask(task: TourTask): void;
+    resetTask(task: TourTask): Promise<void>;
+    startTask(task: TourTask): Promise<void>;
 }
 
 // @beta
 export type TourStep = {
     element?: string;
     order: number;
-    title: string;
+    title?: string;
     content: string;
-    placement: string;
-    backdrop: boolean;
-    reflex: boolean;
-    path: string;
-    targetClass: string;
-    targetPage: string;
+    placement?: string;
+    backdrop?: boolean;
+    reflex?: boolean;
+    path?: string;
+    targetClass?: string;
+    targetPage?: string;
+    targetAction?: string;
+    queryParameters?: string;
 };
 
 // @beta
 export interface TourTask {
+    active?: boolean;
+    dependsOn?: string[];
     id: string;
-    isActive: boolean;
-    status: TourTaskStatus;
+    order?: number;
+    status?: TourTaskStatus;
     title: string;
 }
 
@@ -47,10 +52,11 @@ export enum TourTaskStatus {
 
 // @beta
 export interface TourTour {
+    active?: boolean;
     id: string;
-    isActive: boolean;
     isCollapsed?: boolean;
-    status: TourTaskStatus;
+    status?: TourTaskStatus;
+    tasksList?: TourTask[];
     title: string;
 }
 

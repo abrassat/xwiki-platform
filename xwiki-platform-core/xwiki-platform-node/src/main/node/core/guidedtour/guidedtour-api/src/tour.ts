@@ -17,6 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+import type { TourTask } from "./task";
 import type { TourTaskStatus } from "./tourTaskStatus";
 /**
  * Representation of a guidedtour Tour.
@@ -36,13 +37,17 @@ export interface TourTour {
   /**
    * Status of the tour.
    */
-  status: TourTaskStatus;
+  status?: TourTaskStatus;
   /**
    * Whether this Tour is completable by the user.
    */
-  isActive: boolean;
+  active?: boolean;
   /**
    * Whether this Tour is collapsed in the widget UI.
    */
   isCollapsed?: boolean;
+  /**
+   * The tasks of the tour, if already fetched. Otherwise, they should be fetched with the GuidedTourManagerApi.getTasks(tourId) method.
+   */
+  tasksList?: TourTask[];
 }

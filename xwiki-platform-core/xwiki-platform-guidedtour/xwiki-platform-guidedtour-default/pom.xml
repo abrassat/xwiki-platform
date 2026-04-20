@@ -33,6 +33,26 @@
 <dependencies>
   <!-- Testing dependencies -->
   <dependency>
+    <groupId>joda-time</groupId>
+    <artifactId>joda-time</artifactId>
+    <version>2.14.1</version>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.pdfbox</groupId>
+    <artifactId>fontbox</artifactId>
+    <version>3.0.7</version>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.pdfbox</groupId>
+    <artifactId>pdfbox</artifactId>
+    <version>3.0.7</version>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.pdfbox</groupId>
+    <artifactId>pdfbox-tools</artifactId>
+    <version>3.0.7</version>
+  </dependency>
+  <dependency>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-tool-test-simple</artifactId>
     <version>${commons.version}</version>

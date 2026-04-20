@@ -63,13 +63,21 @@ export class GuidedTourManager implements GuidedTourManagerApi {
     return Promise.resolve(usefulLinks);
   }
 
-  async startTask(task: TourTask) {
+  async startTask(task: TourTask): Promise<void> {
     const steps = await this.getSteps(task.id);
     this.setupStep(steps[0]);
     // Should have a way to preserve this across the page loads (aka. localStorage)
     const tour = driver(getDriverConfigForSteps(steps, this));
     this.activeTour = tour;
     tour.drive();
+  }
+
+  async resetTask(task: TourTask): Promise<void> {
+    await fetch("/resetTask", {
+      method: "POST",
+      body: JSON.stringify(task),
+    });
+    this.stepCache.delete(task.id);
   }
 
   setupStep(step: TourStep): void {
@@ -82,27 +90,32 @@ export class GuidedTourManager implements GuidedTourManagerApi {
 
   getTours(): Promise<TourTour[]> {
     // TODO: fetch(getRESTUrl())
-    const tourTours: TourTour[] = [
-      {
-        title: "ToDo Task",
-        id: "GuidedTour.ToDoTask",
-        status: TourTaskStatus.ToDo,
-        isActive: true,
-      },
-      {
-        title: "Done Task",
-        id: "GuidedTour.DoneTask",
-        status: TourTaskStatus.Done,
-        isActive: true,
-      },
-      {
-        title: "Skipped Task",
-        id: "GuidedTour.SkippedTask",
-        status: TourTaskStatus.Skipped,
-        isActive: true,
-      },
-    ];
-    return Promise.resolve(tourTours);
+    return fetch(`/xwiki/rest/guidedTour/tours`)
+      .then((response) => response.json())
+      .then((data) => {
+        return data as TourTour[];
+      });
+    // const tourTours: TourTour[] = [
+    //   {
+    //     title: "ToDo Task",
+    //     id: "GuidedTour.ToDoTask",
+    //     status: TourTaskStatus.ToDo,
+    //     isActive: true,
+    //   },
+    //   {
+    //     title: "Done Task",
+    //     id: "GuidedTour.DoneTask",
+    //     status: TourTaskStatus.Done,
+    //     isActive: true,
+    //   },
+    //   {
+    //     title: "Skipped Task",
+    //     id: "GuidedTour.SkippedTask",
+    //     status: TourTaskStatus.Skipped,
+    //     isActive: true,
+    //   },
+    // ];
+    // return Promise.resolve(tourTours);
   }
 
   getTasks(tourId?: string): Promise<TourTask[]> {

@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:xwiki-platform-core/xwiki-platform-guidedtour/xwiki-platform-guidedtour-node/xwiki-platform-guidedtour-node-ui/src/main/node/vite.config.ts
-/**
-========
 /*
->>>>>>>> guided-tour-rest:xwiki-platform-core/xwiki-platform-guidedtour/xwiki-platform-guidedtour-api/src/main/java/org/xwiki/guidedtour/api/exceptions/DuplicatedIdException.java
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -21,15 +17,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-<<<<<<<< HEAD:xwiki-platform-core/xwiki-platform-guidedtour/xwiki-platform-guidedtour-node/xwiki-platform-guidedtour-node-ui/src/main/node/vite.config.ts
-
-import { generateWebjarNodeConfig } from "@xwiki/platform-tool-viteconfig";
-
-export default generateWebjarNodeConfig(import.meta.url, [
-  "@xwiki/platform-guidedtour-ui",
-  "@xwiki/platform-guidedtour-api",
-]);
-========
 package org.xwiki.guidedtour.api.exceptions;
 
 import org.xwiki.stability.Unstable;
@@ -54,4 +41,3 @@ public class DuplicatedIdException extends Exception
         super(String.format(message, parameters));
     }
 }
->>>>>>>> guided-tour-rest:xwiki-platform-core/xwiki-platform-guidedtour/xwiki-platform-guidedtour-api/src/main/java/org/xwiki/guidedtour/api/exceptions/DuplicatedIdException.java

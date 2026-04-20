@@ -36,9 +36,17 @@ export interface TourTask {
   /**
    * Status of the task.
    */
-  status: TourTaskStatus;
+  status?: TourTaskStatus;
   /**
    * Whether this Task is completable or not.
    */
-  isActive: boolean;
+  active?: boolean;
+  /**
+   * The id of other tasks which must be completed before this task can be started.
+   */
+  dependsOn?: string[];
+  /**
+   * The order of the task in the tour.
+   */
+  order?: number;
 }

@@ -30,6 +30,8 @@
     class="guidedtour-tour"
     :class="{
       'tour-done': tour.status == TourTaskStatus.Done,
+      'tour-skipped': tour.status == TourTaskStatus.Skipped,
+      'tour-todo': tour.status == TourTaskStatus.ToDo,
       collapsed: tour.isCollapsed,
     }"
   >
@@ -43,8 +45,6 @@
       <!-- FIXME: Replace font-awesome with some vue component-->
       <i class="fa-solid fa-chevron-right chevron" />
       {{ tour.title }}
-      {{ JSON.stringify(tour) }}
-      {{ tour.isCollapsed }}
       <!-- <GuidedTourWidgetProgressBar :progress="0.5" :width="150" /> -->
     </div>
     <div class="guidedtour-content">
@@ -90,6 +90,15 @@ onMounted(async () => {
 </script>
 
 <style>
+.guidedtour-tour.tour-done {
+  text-decoration: line-through;
+  color: #b0b0b0; /* This is not WCAG-compliant, but idk how to do faded out text with good contrast. */
+}
+
+.guidedtour-tour.tour-skipped {
+  color: #b0b0b0;
+}
+
 /* FIXME: guidedtour-content should be renamed to -collapsible or something. */
 .guidedtour-widget .guidedtour-tour.value.collapsed .guidedtour-content {
   max-height: 0;

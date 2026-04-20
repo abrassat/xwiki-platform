@@ -49,7 +49,13 @@ export interface GuidedTourManagerApi {
    * Start the task.
    * @param task - The task to start.
    */
-  startTask(task: TourTask): void;
+  startTask(task: TourTask): Promise<void>;
+
+  /**
+   * Reset the task progress of the current user.
+   * @param task - The task to reset.
+   */
+  resetTask(task: TourTask): Promise<void>;
 
   /**
    * Get all steps of a tour.

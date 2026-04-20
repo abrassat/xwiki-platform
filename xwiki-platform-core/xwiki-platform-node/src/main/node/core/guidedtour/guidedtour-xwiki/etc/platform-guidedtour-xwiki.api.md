@@ -31,6 +31,8 @@ export class GuidedTourManager implements GuidedTourManagerApi {
     // (undocumented)
     markStepDone(step: TourStep, status: string): Promise<void>;
     // (undocumented)
+    resetTask(task: TourTask): Promise<void>;
+    // (undocumented)
     setupStep(step: TourStep): void;
     // (undocumented)
     startTask(task: TourTask): Promise<void>;
