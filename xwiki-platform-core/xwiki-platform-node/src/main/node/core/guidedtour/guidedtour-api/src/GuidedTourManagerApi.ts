@@ -21,6 +21,7 @@
 import type { TourStep } from "./step";
 import type { TourTask } from "./task";
 import type { TourTour } from "./tour";
+import type { TourTaskStatus } from "./tourTaskStatus";
 
 /**
  * Present the public API of the logic used inside the Guided Tour UI.
@@ -34,31 +35,31 @@ export interface GuidedTourManagerApi {
    * Get the Useful Links to display in the widget.
    */
   getUsefulLinks(): Promise<string[]>;
-
   /**
    * Get all tours available for the user.
    */
   getTours(): Promise<TourTour[]>;
-
+  /**
+   * Set the status of a task.
+   * @param task - The task to set the status of
+   * @param status - The new status
+   */
+  setTaskStatus(task: TourTask, status: TourTaskStatus): Promise<void>;
   /**
    * Get all tasks of a tour, which are available for the user.
    */
-  getTasks(tourId: string): Promise<TourTask[]>;
-
+  getTask(taskId: string, tourId?: string): Promise<TourTask | undefined>;
+  /**
+   * Get all tasks of a tour, which are available for the user.
+   */
+  getTasks(tourId: string): Promise<TourTask[] | undefined>;
   /**
    * Start the task.
    * @param task - The task to start.
    */
   startTask(task: TourTask): Promise<void>;
-
-  /**
-   * Reset the task progress of the current user.
-   * @param task - The task to reset.
-   */
-  resetTask(task: TourTask): Promise<void>;
-
   /**
    * Get all steps of a tour.
    */
-  getSteps(tourId: string, taskId: string): Promise<TourStep[]>;
+  getSteps(tourId: string, taskId: string): Promise<TourStep[] | undefined>;
 }

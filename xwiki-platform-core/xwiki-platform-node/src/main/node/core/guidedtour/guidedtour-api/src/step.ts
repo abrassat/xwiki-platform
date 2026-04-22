@@ -31,7 +31,7 @@ export type TourStep = {
   content: string;
   placement?: string;
   backdrop?: boolean;
-  reflex?: boolean;
+  reflex: boolean;
   path?: string;
   targetClass?: string;
   // Document Reference

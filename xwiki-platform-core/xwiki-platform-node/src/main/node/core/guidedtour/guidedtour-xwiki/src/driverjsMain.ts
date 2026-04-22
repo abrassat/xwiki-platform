@@ -17,33 +17,272 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-console.log("hi!");
+import { TourTaskStatus } from "@xwiki/platform-guidedtour-api";
 import { driver } from "driver.js";
 import type { GuidedTourManager } from "./GuidedTourManager";
-import type { TourStep } from "@xwiki/platform-guidedtour-api";
-import type { Config, DriveStep, Driver } from "driver.js";
+import type { TourStep, TourTask } from "@xwiki/platform-guidedtour-api";
+import type { Config, DriveStep } from "driver.js";
+
+/* eslint-disable max-statements */
+const util = {
+  /**
+   * Do the necessary setup for rendering the `Skip All` link.
+   * @param guidedTourManager - API
+   * @param task - the task to make the button for
+   * @returns The `Skip All` element
+   */
+  makeSkipAllButton(
+    guidedTourManager: GuidedTourManager,
+    task: TourTask,
+  ): Element {
+    const customSkipAll = document.createElement("a");
+    customSkipAll.classList.add("driver-xwiki-skip-all-button");
+    function onSkipAll() {
+      guidedTourManager.setTaskStatus(task, TourTaskStatus.SKIPPED);
+      guidedTourManager.activeTask?.destroy();
+    }
+    customSkipAll.onclick = onSkipAll;
+    customSkipAll.innerHTML = "Skip All"; // TODO: Add translation.
+    return customSkipAll;
+  },
+  /**
+   * For use in `waitForElement` below.
+   *
+   * @param element - The element to check
+   * @returns true if the element is visible on the page, false otherwise.
+   */
+  isElementVisible(element: Element): boolean {
+    const style = window.getComputedStyle(element);
+    if (style.display == "none") {
+      return false;
+    } else {
+      return true;
+    }
+  },
+  /**
+   * Wait until an element is visible on the page.
+   *
+   * @param selector - css selector for the element to wait for (should be compatible with document.querySelector)
+   * @param probeInterval - time (in ms) to wait after a failed check for the specified element
+   * @param maxIntervals - how many probe intervals to wait until rejecting
+   * @returns a promise which succeeds if the element is found within the time limit, and fails otherwise
+   */
+  async waitForElement(
+    selector: string,
+    probeInterval = 500,
+    maxIntervals = 6,
+  ): Promise<Element | undefined> {
+    // TODO: Could maybe use MutationObservers here?
+    console.debug(`waiting for ${selector!}...`);
+    for (let i = 0; i < maxIntervals; i += 1) {
+      const queriedElement = document.querySelector(selector);
+      if (queriedElement && util.isElementVisible(queriedElement)) {
+        return queriedElement;
+      }
+      console.debug(`(${i}/${maxIntervals}) waiting for ${selector}...`);
+      await new Promise((resolve) => setTimeout(resolve, probeInterval));
+    }
+    console.debug(
+      `Failed to find element <${selector}> in the page after waiting ${probeInterval * maxIntervals} (${probeInterval} * ${maxIntervals}) ms.`,
+    );
+    return undefined;
+  },
+};
 
 /**
  * This is a function to ensure each call has it's own object, and subsequent manipulation doesn't alter the defaults.
  */
-function XWikiDriverConfig(guidedTourManager: GuidedTourManager): Config {
-  const tour: Driver = guidedTourManager.activeTour!;
+function XWikiDriverConfig(
+  guidedTourManager: GuidedTourManager,
+  task: TourTask,
+): Config {
+  console.log("Setting up", task);
+  // Old code calls this variable `tour`.
   return {
-    nextBtnText: "Next &gt;",
-    prevBtnText: "&lt; Previous",
+    nextBtnText: "Next >", // TODO: Add translation.
+    prevBtnText: "< Previous", // TODO: Add translation.
     showProgress: true,
+    showButtons: task.steps![0].reflex
+      ? ["close"]
+      : ["previous", "next", "close"], // FIXME: Idk about this
     overlayOpacity: 0.3,
     onPopoverRender: (popDOM, options) => {
-      console.info(tour, popDOM, options);
+      // TODO: Need to handle this better
+      const activeIndex = options.state.activeIndex ?? -1;
+      // const activeStep = options.state.activeStep!;
+      // console.info(popDOM, options, window.localStorage.getItem(tour.getConfig().name + '_current_step'));
+      // window.localStorage.setItem(tour.getConfig().name + '_current_step', activeIndex); // This should be config.activeIndex instead.
+      console.log(
+        `Reflex is ${task.steps![activeIndex].reflex} for step ${activeIndex}`,
+        task.steps![activeIndex],
+        options.config.steps![activeIndex],
+        options.config.showButtons,
+      );
+      popDOM.progress.style.display = "";
+      popDOM.progress.innerText =
+        "⬤ ".repeat(activeIndex + 1) +
+        "◯ ".repeat(options.config.steps!.length - activeIndex - 1);
+      options.config.overlayOpacity = task.steps![activeIndex].backdrop
+        ? 0.3
+        : 0;
+      popDOM.footer.appendChild(
+        util.makeSkipAllButton(guidedTourManager, task),
+      );
+      popDOM.nextButton.classList.add("btn", "btn-sm", "btn-primary"); // TODO: Make this an <a> instead of <button>
+      popDOM.previousButton.classList.add("btn", "btn-sm"); // TODO: Make this an <a> instead of <button>
+      // To ensure the order is consistent, re-build the entire modal.
+      popDOM.wrapper.insertBefore(popDOM.progress, popDOM.title);
+      // guidedtour.markStepDone or markStepShown(step)
+    },
+    onDestroyed: function (_element, _step, _options) {
+      console.debug("onDestroyed", _element, _step, _options);
+      // TODO: Add back the commented code, when you find a way to reliably detect whether a task was skipped.
+      // The state is empty when this function is called.
+      // const status =
+      //   (options.state.activeIndex ?? -1 >= task.steps!.length)
+      //     ? TourTaskStatus.DONE
+      //     : TourTaskStatus.SKIPPED;
+      // guidedTourManager.setTaskStatus(task, status);
+    },
+
+    // TODO: Remove this linter disable and refactor the function.
+    onNextClick: async (_element, _step, options) => {
+      if (options.state.activeIndex! + 1 == options.config.steps!.length) {
+        console.debug(
+          "No next step. We're probably in the last step attempting to go next.",
+        );
+        guidedTourManager.setTaskStatus(task, TourTaskStatus.DONE);
+        // guidedTourManager.activeTask!.destroy();
+        guidedTourManager.activeTask!.moveNext();
+        return;
+      } else {
+        // FIXME: Refactor this
+        const nextStep = task.steps![options.state.activeIndex! + 1];
+        if (task.steps![options.state.activeIndex!].path == nextStep.path) {
+          // FIXME: Is getActiveIndex() needed, or should I use options.activeIndex instead?
+          const activeIndex = guidedTourManager.activeTask!.getActiveIndex()!;
+          if (nextStep.element !== undefined) {
+            const targetedElement = await util.waitForElement(nextStep.element);
+            if (targetedElement) {
+              bindReflexEvents(
+                targetedElement,
+                nextStep,
+                guidedTourManager,
+                () => {
+                  console.warn(
+                    "Calling callback for next step move (hopefully)",
+                  );
+                  guidedTourManager.activeTask?.moveNext();
+                },
+              );
+            } else {
+              if (
+                activeIndex == guidedTourManager.activeTask!.getActiveIndex()
+              ) {
+                // The task is still at the step we expect.
+                // We had an error, so the task is probably broken, so skip it.
+                guidedTourManager.setTaskStatus(task, TourTaskStatus.SKIPPED);
+                guidedTourManager.activeTask!.destroy();
+                return;
+              } else {
+                // The task moved to some previous step while we were waiting, so no need to do anything.
+                return;
+              }
+            }
+          }
+          if (activeIndex == guidedTourManager.activeTask!.getActiveIndex()) {
+            console.log(
+              `OnNextClick for step ${activeIndex + 1}, since reflex is ${
+                task.steps![activeIndex + 1].reflex
+              }, I'll set the buttons to ${(options.config.showButtons = task
+                .steps![activeIndex + 1].reflex
+                ? ["close"]
+                : ["previous", "next", "close"])}`,
+            );
+            options.config.showButtons = task.steps![activeIndex + 1].reflex
+              ? ["close"]
+              : ["previous", "next", "close"];
+            guidedTourManager.activeTask!.moveNext();
+            return;
+          } else {
+            console.debug(
+              `Tried to move from ${activeIndex} to next , but the step is actually now ${guidedTourManager.activeTask!.getActiveIndex()}`,
+            );
+            return;
+          }
+        } else {
+          console.debug(
+            "Attempted to go to next step, but that one is on another page.",
+          );
+          // TODO: Maybe add a redirect here.
+          return;
+        }
+      }
+    },
+    onPrevClick: async (_highlightedElement, _step, options) => {
+      // Cache the current step index, so we can check later (after async operations) if we are in the same step we started in.
+      const activeIndex = guidedTourManager.activeTask!.getActiveIndex()!;
+      if (options.state.activeIndex == 0) {
+        console.debug(
+          "No previous step. We're probably in the first step attempting to go back.",
+        );
+        guidedTourManager.activeTask!.movePrevious();
+        return;
+      } else {
+        const prevStep = task.steps![options.state.activeIndex! - 1];
+        const targetedElement = await util.waitForElement(prevStep.element!);
+        if (targetedElement) {
+          bindReflexEvents(targetedElement, prevStep, guidedTourManager, () => {
+            console.warn("Calling callback for prev step move (hopefully)");
+            guidedTourManager.activeTask?.movePrevious();
+          });
+          if (task.steps![options.state.activeIndex!].path == prevStep.path) {
+            console.log(
+              `OnPrevClick for step ${activeIndex - 1}, since reflex is ${
+                task.steps![activeIndex - 1].reflex
+              }, I'll set the buttons to ${(options.config.showButtons = task
+                .steps![activeIndex - 1].reflex
+                ? ["close"]
+                : ["previous", "next", "close"])}`,
+            );
+            options.config.showButtons = task.steps![activeIndex - 1].reflex
+              ? ["close"]
+              : ["previous", "next", "close"];
+            guidedTourManager.activeTask!.movePrevious();
+            return;
+          } else {
+            console.debug(
+              "Attempted to go to prev step, but that one is on another page.",
+            );
+            // TODO: Maybe add a redirect here.
+            return;
+          }
+        } else {
+          if (activeIndex == guidedTourManager.activeTask!.getActiveIndex()) {
+            // The task is still at the step we expect.
+            // We had an error, so the task is probably broken, so skip it.
+            console.error(
+              `Failed to find ${prevStep.element} element in the page when going back to step ${prevStep.order}`,
+              prevStep,
+            );
+            guidedTourManager.setTaskStatus(task, TourTaskStatus.SKIPPED);
+            guidedTourManager.activeTask!.destroy();
+            return;
+          } else {
+            // The task moved to some previous step while we were waiting, so no need to do anything.
+            return;
+          }
+        }
+      }
     },
   };
 }
 
-function convertToDriverStep(step: TourStep): DriveStep {
+function convertToDriverStep(step: TourStep, task: TourTask): DriveStep {
   return {
     element: step.element,
     popover: {
-      title: step.title,
+      title: step.title ?? task.title,
       description: step.content,
     },
   };
@@ -51,15 +290,75 @@ function convertToDriverStep(step: TourStep): DriveStep {
 
 function getDriverConfigForSteps(
   steps: TourStep[],
+  task: TourTask,
   guidedTourManager: GuidedTourManager,
 ) {
   console.log(steps);
-  const config = XWikiDriverConfig(guidedTourManager);
-  config.steps = steps.map(convertToDriverStep);
+  const config = XWikiDriverConfig(guidedTourManager, task);
+  config.steps = steps.map((step) => convertToDriverStep(step, task));
   return config;
 }
 
 export { XWikiDriverConfig, driver, getDriverConfigForSteps };
+
+function bindReflexEvents(
+  element: Element,
+  step: TourStep,
+  guidedTourManager: GuidedTourManager,
+  callbackFn: () => void,
+) {
+  const callback = (event: Event) => {
+    console.debug(event);
+    if (
+      event.target instanceof HTMLInputElement &&
+      event.target.type == "text"
+    ) {
+      // Special case for text inputs.
+      // Right now, the text input awaits for 5s before continuing, to allow the user to type stuff.
+      // TODO: Maybe add a 'match text' setting for going next.
+      const msTimeout = 5000;
+      new Promise((resolve) => setTimeout(resolve, msTimeout))
+        .then(() => {
+          console.debug("sloip awoked");
+          // Increment the local storage step. (For cases when clicking the element leads to a redirect.)
+          // window.localStorage.setItem(tour.getConfig().name + '_current_step', 1 + activeIndex);
+          // if (window.localStorage.getItem(tour.getConfig().name + '_current_step') == tour.getConfig().steps.length) {
+          //   window.localStorage.setItem(tour.getConfig().name + '_end', 'yes');
+          //   window.guidedTourInProgress = false;
+          // }
+          // The localStorage item should theoretically be set to the same value in the moveNext(), so no harm done
+          // Fire onNext ?
+          // document.fire('arrowRightPress');
+          // guidedTourManager.activeTask?.emit
+          if (step.order != guidedTourManager.activeTask?.getActiveIndex()) {
+            // FIXME: This might not work.
+            element.removeEventListener("click", callback);
+            callbackFn();
+          }
+          return;
+        })
+        .catch(console.error);
+    } else {
+      // Increment the local storage step. (For cases when clicking the element leads to a redirect.)
+      // window.localStorage.setItem(tour.getConfig().name + '_current_step', 1 + activeIndex);
+      // if (window.localStorage.getItem(tour.getConfig().name + '_current_step') == tour.getConfig().steps.length) {
+      //   window.localStorage.setItem(tour.getConfig().name + '_end', 'yes');
+      //   window.guidedTourInProgress = false;
+      // }
+      // FIXME: This might not work.
+      element.removeEventListener("click", callback);
+      callbackFn();
+      /* The localStorage item should theoretically be set to the same value in the moveNext(), so no harm done
+      new Promise(resolve => setTimeout(resolve, 1500)).then(() => {
+        // Wait a bit to see if the clicked element was actually a redirect.
+        if (!beforeUnloadFired) {
+          tour.moveNext();
+        }
+      });*/
+    }
+  };
+  element.addEventListener("click", callback);
+}
 
 // if (activeStep.reflex) {
 //   document.querySelector(String(activeStep.element))?.addEventListener('click', (event) => {
@@ -109,87 +408,7 @@ export { XWikiDriverConfig, driver, getDriverConfigForSteps };
 /* = {
       // name    : tourName,
       // storage : window.localStorage,
-    // onPopoverRender: (popDOM, options) => {
-    //     const activeIndex = (options.state.activeIndex ?? -1) + 1;
-    //     const activeStep = options.state.activeStep!;
-
-    //     // console.info(popDOM, options, window.localStorage.getItem(tour.getConfig().name + '_current_step'));
-    //     // window.localStorage.setItem(tour.getConfig().name + '_current_step', activeIndex); // This should be config.activeIndex instead.
-    //     popDOM.progress.innerHTML = '⬤ '.repeat(activeIndex) + '◯ '.repeat(stepCount - activeIndex);
-    //     popDOM.progress.style = 'display: flex; justify-content: center;';
-    //     popDOM.footer.className = '';
-    //     popDOM.footer.innerHTML = '';
-    //     const customSkipAll = new Element('a');
-    //     $(customSkipAll).on('click', () => {
-    //       window.localStorage.setItem(tour.getConfig().name + '_end', 'yes'); // Maybe add a special 'skipped' value to differentiate.
-    //       window.guidedTourInProgress = false;
-    //       tour.destroy();
-    //     });
-    //     customSkipAll.innerHTML = 'Skip All';
-    //     customSkipAll.style.cursor = 'pointer';
-    //     popDOM.footer.appendChild(customSkipAll);
-    //     if (!activeStep.reflex) {
-    //       popDOM.footer.appendChild(popDOM.footerButtons);
-    //     }
-    //     popDOM.nextButton.className = 'driver-popover-next-btn btn btn-primary btn-sm';
-    //     popDOM.previousButton.className = 'driver-popover-prev-btn btn btn-sm';
-    //     popDOM.wrapper.innerHTML = '';
-    //     [popDOM.closeButton as Node, popDOM.arrow as Node, popDOM.progress as Node, popDOM.title as Node, popDOM.description as Node, popDOM.footer as Node].forEach(element => {
-    //       popDOM.wrapper.appendChild(element);
-    //     });
-    //   },
-      
       //overlayClickBehavior: () => {},
-      onNextClick: (highlightedElement, step, options) => {
-        console.debug(1, highlightedElement, step, options);
-        let nextStep = options.config.steps![options.state.activeIndex! + 1];
-        if (nextStep.length == 0) {
-          console.debug('No next step. We\'re probably in the last step attempting to go next.');
-          tour.moveNext();
-        } else {
-          nextStep = nextStep[0];
-          if (step.path == nextStep.path) {
-            const activeIndex = tour.getActiveIndex();
-            utils.waitForElement(nextStep.element).then((element) => {
-              if (activeIndex == tour.getActiveIndex()) {
-                // debugger;
-                tour.moveNext();
-              } else {
-                console.debug(`Tried to move from ${activeIndex} to next , but the step is actually now ${tour.getActiveIndex()}`)
-              }
-            }).catch(() => {
-              console.error("Idk what to do. Skip the step? FIXME")
-            });
-          } else {
-            console.debug('Attempted to go to next step, but that one is on another page.');
-            // TODO: Maybe add a redirect here.
-          }
-        }
-      },
-      onPrevClick: (highlightedElement, step, options) => {
-        console.debug(2, highlightedElement, step, options)
-        let previousStep = options.config.steps.filter((el) => {return el.order == step.order - 1});
-        if (previousStep.length == 0) {
-          console.debug('No previous step. We\'re probably in the first step attempting to go back.');
-          tour.movePrevious();
-        } else {
-          previousStep = previousStep[0];
-          if (step.path == previousStep.path) {
-            tour.movePrevious();
-          } else {
-            console.debug('Attempted to go to prev step, but that one is on another page.');
-            // TODO: Maybe add a redirect here.
-          }
-        }
-      },
-      
-      onDestroyed : function() {
-        if (window.localStorage.getItem(tour.getConfig().name + '_current_step') == tour.getConfig().steps.length) {
-          window.localStorage.setItem(tour.getConfig().name + '_end', 'yes');
-          window.guidedTourInProgress = false;
-        }
-        window.guidedTourInProgress = false;
-      }
     }*/
 
 /*
@@ -299,7 +518,7 @@ window.guidedTourInProgress = false;
      * The tour is not adapted for little screen sizes like mobile phones have.
      * The value 768 is taken from bootstrap in order to be consistent with their media queries.
      *\/
-    if ($(window).innerWidth() &lt;= 768) {
+    if ($(window).innerWidth() <= 768) {
       // return; // This is so annoying when debugging.
     }
 
@@ -308,7 +527,7 @@ window.guidedTourInProgress = false;
       outputSyntax: 'plain',
       tourDoc: xm.document
     }).done(function(json) {
-      for (var i = 0; i &lt; json.tours.length; ++i) {
+      for (var i = 0; i < json.tours.length; ++i) {
         var tour = json.tours[i];
         let tourName = utils.escapeTourName('tour_' + tour.name);
         tour.steps = tour.steps.map(step => {
@@ -450,45 +669,5 @@ define('guidedtour-widget', ['jquery', 'guidedtour-utils'], function($, utils) {
       window.localStorage.setItem('guidedtour-widget-position-x', elmnt.style.left);
     }
   }
-
-  utils.getTourData().then((data) => {
-    console.info(data);
-    const groups = data['groups'];
-    // TODO: Maybe re-enable this and improve the functionality.
-    // dragElement(document.querySelector('.draggable'));
-    for (group in groups) {
-      let groupEl = document.createElement('section');
-      groupEl.setAttribute('data-gid', group);
-      groupEl.classList.add('guidedtour-tour');
-      if (window.localStorage.getItem('tour_95_' + utils.escapeTourName(groupEl['dataset'].gid) + '_TourFloaterTourCollapsed') == 'true') {
-        groupEl.classList.add('collapsed');
-      }
-      console.debug(groups[group])
-      // FIXME: Add HTML escapes (maybe use purify?)
-      groupEl.innerHTML = '&lt;div class="guidedtour-tour-header">&lt;i class="fa-solid fa-chevron-right chevron">&lt;/i>' + groups[group]['displayTitle'] + '&lt;/div>&lt;div class="guidedtour-content">&lt;/div>';
-      // Chevron collapse section.
-      groupEl.getElementsByClassName('guidedtour-tour-header')[0].onclick = (event) => {
-        const contentElement = event.target.closest('.guidedtour-tour');
-        window.localStorage.setItem('tour_95_' + utils.escapeTourName(contentElement['dataset'].gid) + '_TourFloaterTourCollapsed', contentElement.classList.toggle('collapsed'));
-      };
-      // TODO: Replace divs with actual ARIA/WCAG stuff, ul, etc
-      groups[group]['tasks'].forEach(task => {
-        if (!task.raw.isActive || task.raw.isHidden) {
-          return;
-        }
-        let taskEl = document.createElement('div');
-        taskEl.innerHTML = '&lt;button class="pre-btn">&lt;i class="fa fa-arrow-right">&lt;/i>&lt;/button>' + task['title'] + '&lt;button class="post-btn">&lt;i class="fa fa-rotate-right">&lt;/i>&lt;/button>';
-        taskEl.setAttribute('data-id', task['id']);
-        taskEl.className = 'guidedtour-task';
-        if (task['done']) {
-          taskEl.classList.add('task-done')
-        }
-        groupEl.querySelector('.guidedtour-content').appendChild(taskEl);
-      });
-      if (groupEl.querySelector('.guidedtour-content').childElementCount > 0) {
-        document.querySelector('.guidedtour-container').appendChild(groupEl);
-      }
-    }
-  });
 });
 */

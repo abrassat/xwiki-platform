@@ -87,43 +87,6 @@ define('guidedtour-utils', [], function() {
     }
   }
 
-  /**
-   * For use in {waitForElement} below.
-   *\/
-  function isElementVisible(element) {
-    let style = window.getComputedStyle(element);
-
-    if (style.display == 'none') {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  /**
-   * Wait until an element is visible on the page.
-   * @param selector: css selector for the element to wait for (should be compatible with document.querySelector)
-   * @param probeInterval: time (in ms) to wait after a failed check for the specified element
-   * @param maxIntervals: how many probe intervals to wait until rejecting
-   * @return: a promise which succeeds if the element is found within the time limit, and fails otherwise
-   *\/
-  var waitForElement = function(selector, probeInterval=500, maxIntervals=6) {
-    // TODO: Could maybe use MutationObservers here?
-    return new Promise(async (resolve, reject) =&gt; {
-      console.debug(`waiting for ${selector}...`)
-      for (let i = 0; i &lt; maxIntervals; i += 1) {
-        let queriedElement = document.querySelector(selector);
-        if (queriedElement &amp;&amp; isElementVisible(queriedElement)) {
-          return resolve(queriedElement);
-        }
-        console.debug(`(${i}/${maxIntervals}) waiting for ${selector}...`);
-        await new Promise((resolve) =&gt; setTimeout(resolve, probeInterval));
-      }
-      console.debug(`Failed to find element &lt;${selector}&gt; in the page after waiting ${probeInterval * maxIntervals} (${probeInterval} * ${maxIntervals}) ms.`);
-      return reject(selector);
-    });
-  };
-
   return {
     escapeTourName: escapeTourName,
     waitForElement: waitForElement,

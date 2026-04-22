@@ -22,6 +22,7 @@ import { driver, getDriverConfigForSteps } from "./driverjsMain";
 // import { TourTaskStatus } from "@xwiki/platform-guidedtour-api";
 // @ts-expect-error this is a JavaScript file, it is expected to not have types.
 import { XWiki } from "./services/xwiki.js";
+import { TourTaskStatus } from "@xwiki/platform-guidedtour-api";
 import { DocumentReference } from "@xwiki/platform-model-api";
 import type {
   GuidedTourManagerApi,
@@ -40,13 +41,27 @@ export class GuidedTourManager implements GuidedTourManagerApi {
   private _cache = {
     tours: undefined as TourTour[] | undefined,
     toursMap: undefined as Map<string, TourTour> | undefined,
-    stepsMap: {} as Map<string, TourStep[]>,
   };
   private baseRestUrl = `${XWiki.contextPath}/rest/guidedTour`;
   // @ts-expect-error xm is any
   private xm: Promise;
 
-  activeTour?: Driver;
+  activeTask?: Driver;
+
+  async getCSRFToken(): Promise<string> {
+    return (this.xm instanceof Promise ? await this.xm : this.xm).form_token;
+  }
+
+  async saveTaskStatus(
+    tourId: string,
+    taskId: string,
+    status: TourTaskStatus,
+  ): Promise<void> {
+    console.log(tourId, taskId, status);
+    await fetch(`${this.baseRestUrl}/?csrf=${await this.getCSRFToken()}`, {
+      method: "PUT",
+    });
+  }
 
   // FIXME: This would be a singleton ideally.
   // @ts-expect-error xm is Promise<any>
@@ -77,18 +92,20 @@ export class GuidedTourManager implements GuidedTourManagerApi {
 
   async startTask(task: TourTask): Promise<void> {
     const steps = await this.getSteps(task.tourId!, task.id);
-    this.setupStep(steps[0]);
+    const rememberstepIndex = Number.parseInt(
+      window.sessionStorage.getItem(this.getSessionStorageKey(task)) ?? "0",
+    );
+    this.setupStep(steps[rememberstepIndex]);
     // Should have a way to preserve this across the page loads (aka. localStorage)
-    const tour = driver(getDriverConfigForSteps(steps, this));
-    this.activeTour = tour;
+    const tour = driver(getDriverConfigForSteps(steps, task, this));
+    this.activeTask = tour;
     tour.drive();
   }
 
   async resetTask(task: TourTask): Promise<void> {
-    const xm = this.xm instanceof Promise ? await this.xm : this.xm;
     const params = new URLSearchParams();
-    params.append("csrf", xm.form_token);
-    console.log(xm, task);
+    params.append("csrf", await this.getCSRFToken());
+    console.log(task);
 
     // await fetch(`${this.baseRestUrl}/user?${params}`, {
     //   method: "POST",
@@ -109,17 +126,19 @@ export class GuidedTourManager implements GuidedTourManagerApi {
    */
   async fetchTours(): Promise<TourTour[]> {
     if (this._cache.tours == undefined) {
-      const xm = this.xm instanceof Promise ? await this.xm : this.xm;
       const params = new URLSearchParams();
-      params.append("csrf", xm.form_token);
-      console.log(xm);
+      params.append("csrf", await this.getCSRFToken());
       return fetch(`/xwiki/rest/guidedTour/tours?${params}`, {
         method: "GET",
-      }).then((data) => data.json())
+      })
+        .then((data) => data.json())
         .then((data: TourTour[]) => {
           for (const tour of data) {
             for (const task of tour.tasksList ?? []) {
               task.tourId = tour.id;
+              if (undefined === task.status) {
+                task.status = TourTaskStatus.TODO;
+              }
             }
           }
 
@@ -130,8 +149,8 @@ export class GuidedTourManager implements GuidedTourManagerApi {
           this._cache.toursMap = toursMap;
           return data;
         });
-      }
-      return this._cache.tours;
+    }
+    return this._cache.tours;
   }
 
   async getTours(): Promise<TourTour[]> {
@@ -149,7 +168,7 @@ export class GuidedTourManager implements GuidedTourManagerApi {
       await this.getTours();
     }
     const toursMap = this._cache.toursMap;
-    return Promise.resolve(toursMap?.get(tourId));
+    return Promise.resolve(toursMap!.get(tourId));
   }
 
   async getTasks(tourId: string): Promise<TourTask[]> {
@@ -165,23 +184,53 @@ export class GuidedTourManager implements GuidedTourManagerApi {
       return tour.tasksList ?? [];
     }
   }
+  async setTaskStatus(task: TourTask, status: TourTaskStatus): Promise<void> {
+    task.status = status;
+    // TODO: Some other checks for the status, and persistence.
+    // guidedTourManager.markStepDone(activeDriverTask.getActiveStep() as TourStep, task as TourTask);
+    // if (window.localStorage.getItem(activeDriverTask.getConfig().name + '_current_step') == activeDriverTask.getConfig().steps?.length.toString()) {
+    //   window.localStorage.setItem(activeDriverTask.getConfig().name + '_end', 'yes');
+    //   window.guidedTourInProgress = false;
+    // }
+    // window.guidedTourInProgress = false;
+  }
+  async getTask(
+    taskId: string,
+    tourId?: string,
+  ): Promise<TourTask | undefined> {
+    await this.getTours();
+    const toursMap = this._cache.toursMap!;
+    if (tourId) {
+      return toursMap
+        .get(tourId)
+        ?.tasksList?.find((task: TourTask) => task.id == taskId);
+    } else {
+      for (tourId in toursMap.keys()) {
+        const found = toursMap
+          .get(tourId)
+          ?.tasksList?.find((task: TourTask) => task.id == taskId);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return undefined;
+  }
 
   async getSteps(tourId: string, taskId: string): Promise<TourStep[]> {
     const tourSteps: TourStep[] = await this.fetchSteps(tourId, taskId);
     return Promise.resolve(tourSteps);
   }
 
-  getStepsMapKey(tourId: string, taskId: string): string {
-    return `${tourId}#<>#${taskId}`;
-  }
+  // private getStepsMapKey(tourId: string, taskId: string): string {
+  //   return `${tourId}#<>#${taskId}`;
+  // }
 
   async fetchSteps(tourId: string, taskId: string): Promise<TourStep[]> {
-    const maybeCached = this._cache.stepsMap.get(this.getStepsMapKey(tourId, taskId));
+    const maybeCached = (await this.getTask(taskId, tourId))!.steps;
     if (undefined == maybeCached) {
-      const xm = this.xm instanceof Promise ? await this.xm : this.xm;
       const params = new URLSearchParams();
-      params.append("csrf", xm.form_token);
-      console.log(xm);
+      params.append("csrf", await this.getCSRFToken());
       const response = await fetch(
         `${this.baseRestUrl}/tour/${tourId}/tasks/${taskId}/steps?${params}`,
         {
@@ -189,19 +238,36 @@ export class GuidedTourManager implements GuidedTourManagerApi {
         },
       );
       const data = (await response.json()) as TourStep[];
-      this._cache.stepsMap.set(this.getStepsMapKey(tourId, taskId), data);
+      data.forEach((step: TourStep) => {
+        // Driver doesn't know what to do with an empty selector, but handles undefined values fine.
+        if (step.element == "") {
+          step.element = undefined;
+        }
+      });
+      (await this.getTask(taskId, tourId))!.steps = data; //.set(this.getStepsMapKey(tourId, taskId), data);
       return data;
     } else {
       return maybeCached;
     }
   }
 
-  markStepDone(step: TourStep, status: string): Promise<void> {
-    // TODO: storage.setKey("step", "done");
-    if (status && step) {
-      // FIXME: Actually do something with the parameters.
-      console.debug("Hi");
-    }
+  getSessionStorageKey(task: TourTask): string {
+    return `${task.tourId}__${task.id}_currentStep`;
+  }
+
+  async markTaskDone(task: TourTask, skipped: boolean): Promise<void> {
+    await fetch("");
+    // TODO: Either refetch, or mark the task as completed locally (might lead to desync)
+    task.status = skipped ? TourTaskStatus.SKIPPED : TourTaskStatus.DONE;
+  }
+
+  markStepDone(step: TourStep, task: TourTask): Promise<void> {
+    // if (step.isLast)
+    // Mark entire task as done
+    window.sessionStorage.setItem(
+      this.getSessionStorageKey(task),
+      (step.order + 1).toString(),
+    );
     return Promise.resolve();
   }
 }

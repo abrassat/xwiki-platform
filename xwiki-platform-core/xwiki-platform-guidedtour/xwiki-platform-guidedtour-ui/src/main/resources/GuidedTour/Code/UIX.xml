@@ -163,13 +163,14 @@
     <property type="LargeString">
       <content>{{velocity}}
 {{html}}
-&lt;script type="module" src="$services.webjars.url('org.xwiki.platform:xwiki-platform-guidedtour-webjar', 'index.es.js')"/&gt;
+&lt;!--&lt;script type="module" src="$services.webjars.url('org.xwiki.platform:xwiki-platform-guidedtour-webjar', 'index.es.js')"/&gt;--&gt;
+&lt;script type="module" src="/xwiki/resources/guidedtour-liveserver-dir-uniquename/index.es.js?r=1"/&gt;
 &lt;div id="guidedtour-uix"/&gt;
 {{/html}}
 {{/velocity}}</content>
     </property>
     <property type="String">
-      <extensionPointId>org.xwiki.platform.template.contentFooter</extensionPointId>
+      <extensionPointId>org.xwiki.platform.template.header.after</extensionPointId>
     </property>
     <property type="String">
       <name>org.xwiki.platform.guidedtour</name>

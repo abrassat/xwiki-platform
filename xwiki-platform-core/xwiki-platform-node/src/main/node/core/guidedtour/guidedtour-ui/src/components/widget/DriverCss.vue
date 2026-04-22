@@ -96,6 +96,10 @@
   margin: 0;
 }
 
+.driver-xwiki-skip-all-button {
+  cursor: pointer;
+}
+
 .driver-popover-close-btn {
   all: unset;
   position: absolute;
@@ -144,8 +148,12 @@
   font-weight: 400;
   color: #727272;
   zoom: 1;
+  /* Added in XWiki */
+  display: flex;
+  justify-content: center;
 }
 
+/** Not used in XWiki, since we want to use the standard XWiki styles
 .driver-popover-footer button {
   all: unset;
   display: inline-block;
@@ -163,6 +171,7 @@
   border: 1px solid #ccc;
   border-radius: 3px;
 }
+*/
 
 .driver-popover-footer .driver-popover-btn-disabled {
   opacity: 0.5;
@@ -179,15 +188,16 @@
   pointer-events: none !important;
 }
 
+/*
 .driver-popover-footer button:hover,
 .driver-popover-footer button:focus {
   background-color: #f7f7f7;
-}
+} */
 
 .driver-popover-navigation-btns {
   display: flex;
   flex-grow: 1;
-  justify-content: flex-end;
+  /* justify-content: flex-end; */
 }
 
 .driver-popover-navigation-btns button + button {

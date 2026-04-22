@@ -25,44 +25,53 @@
 -->
 
 <template>
-  <section
-    :id="tour.id"
-    class="guidedtour-tour"
-    :class="{
-      'tour-done': tour.status == TourTaskStatus.DONE,
-      'tour-skipped': tour.status == TourTaskStatus.SKIPPED,
-      'tour-todo': tour.status == TourTaskStatus.TODO,
-      collapsed: tour.isCollapsed,
-    }"
-  >
-    <div
-      class="guidedtour-tour-header"
-      @click="
-        console.log('clicked', tour);
-        $emit('toggleCollapseTour', tour);
-      "
+  <template v-if="tour">
+    <section
+      :id="tour!.id"
+      class="guidedtour-tour"
+      :class="{
+        'tour-done': tour!.status == TourTaskStatus.DONE,
+        'tour-skipped': tour!.status == TourTaskStatus.SKIPPED,
+        'tour-todo': tour!.status == TourTaskStatus.TODO,
+        collapsed: tour!.isCollapsed,
+      }"
     >
-      <!-- FIXME: Replace font-awesome with some vue component-->
-      <i class="fa-solid fa-chevron-right chevron" />
-      {{ tour.title }}
-      <!-- <GuidedTourWidgetProgressBar :progress="0.5" :width="150" /> -->
-    </div>
-    <div class="guidedtour-content">
-      <Suspense>
-        <template #default>
-          <GuidedTourWidgetTask
-            v-for="task in state.tasks"
-            :key="task.id"
-            :task="task"
-            :tour-id="tour.id"
-          />
-        </template>
-        <template #fallback>
-          <div>Loading ...</div>
-        </template>
-      </Suspense>
-    </div>
-  </section>
+      <div
+        class="guidedtour-tour-header"
+        @click="
+          console.log('clicked', tour);
+          $emit('toggleCollapseTour', tour);
+        "
+      >
+        <!-- FIXME: Replace font-awesome with some vue component-->
+        <i class="fa-solid fa-chevron-right chevron" />
+        {{ tour!.title }}
+        <!-- <GuidedTourWidgetProgressBar :progress="0.5" :width="150" /> -->
+      </div>
+      <div class="guidedtour-content">
+        <Suspense>
+          <template #default>
+            <GuidedTourWidgetTask
+              v-for="task in state.tasks"
+              :key="task.id"
+              :task="task"
+              :tour-id="tour!.id"
+            />
+          </template>
+          <template #fallback>
+            <!-- Have some placeholders loading -->
+            <GuidedTourWidgetTask :tour-id="placeholderTourId" />
+            <GuidedTourWidgetTask :tour-id="placeholderTourId" />
+            <GuidedTourWidgetTask :tour-id="placeholderTourId" />
+          </template>
+        </Suspense>
+      </div>
+    </section>
+  </template>
+  <template v-else>
+    <!-- Show nice loading animation for placeholders -->
+    <section class="guidedtour-tour loading-content" />
+  </template>
 </template>
 
 <script setup lang="ts">
@@ -75,8 +84,9 @@ import type {
   TourTour,
 } from "@xwiki/platform-guidedtour-api";
 import type { Ref } from "vue";
-const props = defineProps<{ tour: Ref<TourTour> }>();
-const tour: Ref<TourTour> = props.tour; // reactive read-only ref
+const props = defineProps<{ tour?: Ref<TourTour> }>();
+const tour = props.tour; // reactive read-only ref
+const placeholderTourId = "";
 defineEmits(["toggleCollapseTour"]);
 const guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager")!;
 console.info("In tour setup.");
@@ -85,19 +95,55 @@ const state = reactive({
 });
 
 onMounted(async () => {
-  state.tasks = await guidedTourManager.getTasks(tour.value.id);
+  if (tour === undefined) {
+    // We're in a placeholder element.
+    return;
+  }
+  const tasks = await guidedTourManager.getTasks(tour!.value.id);
+  state.tasks = tasks ?? [];
+  if (!tasks) {
+    console.error("No tasks");
+  }
   console.log("async loaded tasks", state.tasks);
 });
 </script>
 
 <style>
+:root {
+  --guidedtour-text-color: #b0b0b0;
+  --guidedtour-background-color-secondary: #f2f2f2;
+}
+
+.guidedtour-tour.loading-content {
+  /* width: 100%;
+  height: 8px;
+  border-radius: 4px; */
+  content: "";
+  background: linear-gradient(
+    90deg,
+    var(--guidedtour-text-color) 0%,
+    var(--guidedtour-text-color) 25%,
+    var(--guidedtour-background-color-secondary) 30%,
+    var(--guidedtour-background-color-secondary) 35%,
+    var(--guidedtour-text-color) 40%,
+    var(--guidedtour-text-color) 75%,
+    var(--guidedtour-background-color-secondary) 80%,
+    var(--guidedtour-background-color-secondary) 85%,
+    var(--guidedtour-text-color) 90%
+  );
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.5s ease-in-out infinite;
+}
+
 .guidedtour-tour.tour-done {
   text-decoration: line-through;
-  color: #b0b0b0; /* This is not WCAG-compliant, but idk how to do faded out text with good contrast. */
+  color: var(
+    --guidedtour-background-color
+  ); /* This is not WCAG-compliant, but idk how to do faded out text with good contrast. */
 }
 
 .guidedtour-tour.tour-skipped {
-  color: #b0b0b0;
+  color: var(--guidedtour-text-color);
 }
 
 /* FIXME: guidedtour-content should be renamed to -collapsible or something. */
@@ -105,7 +151,13 @@ onMounted(async () => {
   max-height: 0;
 }
 
+.guidedtour-tour {
+  min-height: 2em;
+  margin: 0.2em;
+}
+
 .guidedtour-tour .chevron {
+  text-decoration: none;
   cursor: pointer;
   display: inline-block;
   height: 16px;
@@ -118,7 +170,7 @@ onMounted(async () => {
 }
 
 .guidedtour-tour-header:hover {
-  background: #f2f2f2ff 100%;
+  background: var(--guidedtour-background-color-secondary) 100%;
 }
 
 .guidedtour-tour-header {

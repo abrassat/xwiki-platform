@@ -17,6 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+import type { TourStep } from "./step";
 import type { TourTaskStatus } from "./tourTaskStatus";
 /**
  * Representation of a guidedtour Task.
@@ -36,7 +37,7 @@ export interface TourTask {
   /**
    * Status of the task.
    */
-  status?: TourTaskStatus;
+  status: TourTaskStatus;
   /**
    * Whether this Task is completable or not.
    */
@@ -48,9 +49,13 @@ export interface TourTask {
   /**
    * The id of other tasks which must be completed before this task can be started.
    */
-  dependsOn?: string[];
+  dependsOn: string[];
   /**
    * The order of the task in the tour.
    */
   order?: number;
+  /**
+   * The steps which are part of this task.
+   */
+  steps?: TourStep[];
 }

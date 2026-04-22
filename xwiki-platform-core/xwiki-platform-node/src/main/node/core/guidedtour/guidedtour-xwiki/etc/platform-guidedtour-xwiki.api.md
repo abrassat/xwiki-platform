@@ -8,19 +8,27 @@ import { Driver } from 'driver.js';
 import { GuidedTourManagerApi } from '@xwiki/platform-guidedtour-api';
 import { TourStep } from '@xwiki/platform-guidedtour-api';
 import { TourTask } from '@xwiki/platform-guidedtour-api';
+import { TourTaskStatus } from '@xwiki/platform-guidedtour-api';
 import { TourTour } from '@xwiki/platform-guidedtour-api';
 
 // @beta
 export class GuidedTourManager implements GuidedTourManagerApi {
     constructor(xm: any);
     // (undocumented)
-    activeTour?: Driver;
+    activeTask?: Driver;
     // (undocumented)
     fetchSteps(tourId: string, taskId: string): Promise<TourStep[]>;
+    fetchTours(): Promise<TourTour[]>;
+    // (undocumented)
+    getCSRFToken(): Promise<string>;
     // (undocumented)
     getSandboxSpace(): Promise<string>;
     // (undocumented)
+    getSessionStorageKey(task: TourTask): string;
+    // (undocumented)
     getSteps(tourId: string, taskId: string): Promise<TourStep[]>;
+    // (undocumented)
+    getTask(taskId: string, tourId?: string): Promise<TourTask | undefined>;
     // (undocumented)
     getTasks(tourId: string): Promise<TourTask[]>;
     // (undocumented)
@@ -30,9 +38,15 @@ export class GuidedTourManager implements GuidedTourManagerApi {
     // (undocumented)
     getUsefulLinks(): Promise<string[]>;
     // (undocumented)
-    markStepDone(step: TourStep, status: string): Promise<void>;
+    markStepDone(step: TourStep, task: TourTask): Promise<void>;
+    // (undocumented)
+    markTaskDone(task: TourTask, skipped: boolean): Promise<void>;
     // (undocumented)
     resetTask(task: TourTask): Promise<void>;
+    // (undocumented)
+    saveTaskStatus(tourId: string, taskId: string, status: TourTaskStatus): Promise<void>;
+    // (undocumented)
+    setTaskStatus(task: TourTask, status: TourTaskStatus): Promise<void>;
     // (undocumented)
     setupStep(step: TourStep): void;
     // (undocumented)
