@@ -1,0 +1,5 @@
+org.xwiki.guidedtour.internal.UserStatusManager
+org.xwiki.guidedtour.internal.TasksManager
+org.xwiki.guidedtour.internal.ToursManager
+org.xwiki.guidedtour.internal.StepsManager
+org.xwiki.guidedtour.internal.util.SolrQueryUtil

@@ -1,4 +1,4 @@
-/*
+/**
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -17,9 +17,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-/* TODO: replace with CSS variables (XWIKI-23664). */
-.xwiki-livedata {
-  -/**/-table-cell-padding: @table-cell-padding;
-  -/**/-screen-xs-max: @screen-xs-max;
-  -/**/-panel-default-heading-bg: @panel-default-heading-bg;
-}
+// TODO: move to a dedicated module (see XWIKI-24006)
+/**
+ * A translation query, as an array of keys. A prefix can also be provided to reduce the query size. The prefix is
+ * concatenated before each key.
+ * @since 18.2.0RC1
+ * @beta
+ */
+type TranslationQuery = { prefix: string; keys: string[] };
+export type { TranslationQuery };

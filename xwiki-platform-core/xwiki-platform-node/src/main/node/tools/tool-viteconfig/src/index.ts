@@ -120,6 +120,10 @@ function generateWebjarNodeConfig(
       },
     },
     plugins: [flattenSourceMaps(WEBJAR_NODE_OUT_DIR)],
+    define: {
+      // define process to avoid runtime error with jquery
+      "process.env": {},
+    },
   });
 }
 
