@@ -46,11 +46,11 @@ export interface TourTask {
 // @beta
 export enum TourTaskStatus {
     // (undocumented)
-    DONE = 2,
+    DONE = "DONE",
     // (undocumented)
-    SKIPPED = 1,
+    SKIPPED = "SKIPPED",
     // (undocumented)
-    TODO = 0
+    TODO = "TODO"
 }
 
 // @beta

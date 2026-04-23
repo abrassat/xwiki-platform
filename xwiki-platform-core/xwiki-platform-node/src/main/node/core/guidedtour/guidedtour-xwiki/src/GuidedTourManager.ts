@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
+/* eslint-disable max-statements */
 import { driver, getDriverConfigForSteps } from "./driverjsMain";
 // import { TourTaskStatus } from "@xwiki/platform-guidedtour-api";
 // @ts-expect-error this is a JavaScript file, it is expected to not have types.
@@ -136,9 +136,19 @@ export class GuidedTourManager implements GuidedTourManagerApi {
           for (const tour of data) {
             for (const task of tour.tasksList ?? []) {
               task.tourId = tour.id;
+              console.log(
+                "When parsing the task:",
+                task.status,
+                TourTaskStatus[task.status],
+              );
               if (undefined === task.status) {
                 task.status = TourTaskStatus.TODO;
               }
+              // else if ((task.status as any) instanceof String) {
+              //   // The REST API returns the status as a string, but typescript stores it as an int.
+              //   // This is a conversion from string to the enum, but typescript is being weird about it so cast to unknown.
+              //   task.status = TourTaskStatus[task.status] as unknown as TourTaskStatus;
+              // }
             }
           }
 

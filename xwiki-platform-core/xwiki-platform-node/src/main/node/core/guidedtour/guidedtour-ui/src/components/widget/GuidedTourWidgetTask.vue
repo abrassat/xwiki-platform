@@ -47,7 +47,7 @@
       />
       <!-- TODO: pull these buttons out into a reuseable element to reset tours & tasks -->
       <button
-        v-if="task.status == TourTaskStatus.TODO"
+        v-if="dummy(task) || task.status == TourTaskStatus.TODO"
         class="post-btn"
         @click.stop="onSkipTask"
       >
@@ -76,7 +76,18 @@ const { task, tourId } = defineProps<{
   tourId: string;
 }>();
 
-console.info("In task setup.");
+function dummy(task: TourTask): boolean {
+  console.log(
+    "Debugging task",
+    task.status,
+    task,
+    TourTaskStatus.TODO,
+    task.status == TourTaskStatus.TODO,
+  );
+  return false;
+}
+
+console.info("In task setup.", task?.status, task);
 
 const state = reactive({
   isWaitingAsync: false,

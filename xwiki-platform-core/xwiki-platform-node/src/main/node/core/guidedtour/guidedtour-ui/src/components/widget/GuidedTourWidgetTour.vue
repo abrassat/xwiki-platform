@@ -45,7 +45,7 @@
       >
         <!-- FIXME: Replace font-awesome with some vue component-->
         <i class="fa-solid fa-chevron-right chevron" />
-        {{ tour!.title }}
+        {{ tour.title }}
         <!-- <GuidedTourWidgetProgressBar :progress="0.5" :width="150" /> -->
       </div>
       <div class="guidedtour-content">
