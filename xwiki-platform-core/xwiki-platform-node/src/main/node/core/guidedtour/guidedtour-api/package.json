@@ -40,6 +40,9 @@
   "peerDependencies": {
     "vue": "3.x"
   },
+  "dependencies": {
+    "driver.js": "catalog:"
+  },
   "devDependencies": {
     "@microsoft/api-extractor": "catalog:",
     "@xwiki/platform-dev-config": "workspace:*",

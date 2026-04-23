@@ -36,14 +36,16 @@
     <xwiki.extension.name>Guided Tour REST Services - Default Implementation</xwiki.extension.name>
   </properties>
   <dependencies>
+    <!-- TODO: Check what dependencies are actually needed -->
+    <!-- FIXME: These versioned dependencies are workarounds for the upgrade, they should be removed and fixed in the origin dependency -->
     <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-component-api</artifactId>
-      <version>${commons.version}</version>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.14.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
-      <artifactId>pdfbox-tools</artifactId>
+      <artifactId>fontbox</artifactId>
       <version>3.0.7</version>
     </dependency>
     <dependency>
@@ -53,27 +55,33 @@
     </dependency>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
-      <artifactId>fontbox</artifactId>
+      <artifactId>pdfbox-tools</artifactId>
       <version>3.0.7</version>
-    </dependency>
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-      <version>2.14.1</version>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>jquery</artifactId>
       <version>4.0.0</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-rest-server</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-api</artifactId>
+      <version>${commons.version}</version>
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-model-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-guidedtour-rest-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-guidedtour-default</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- Test dependencies. -->
@@ -82,12 +90,6 @@
       <artifactId>xwiki-commons-tool-test-component</artifactId>
       <version>${commons.version}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-guidedtour-rest-api</artifactId>
-      <version>${project.version}</version>
-      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>

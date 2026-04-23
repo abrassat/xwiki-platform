@@ -87,6 +87,9 @@ catalogs:
     dompurify:
       specifier: 3.3.1
       version: 3.3.1
+    driver.js:
+      specifier: 1.3.0
+      version: 1.3.0
     eslint:
       specifier: 9.39.3
       version: 9.39.3
@@ -397,6 +400,110 @@ importers:
         specifier: 'catalog:'
         version: 3.2.5(typescript@5.9.3)
 
+  xwiki-platform-core/xwiki-platform-guidedtour/xwiki-platform-guidedtour-node/xwiki-platform-guidedtour-node-ui/src/main/node:
+    dependencies:
+      '@xwiki/platform-guidedtour-ui':
+        specifier: workspace:*
+        version: link:../../../../../../xwiki-platform-node/src/main/node/core/guidedtour/guidedtour-ui
+      '@xwiki/platform-guidedtour-xwiki':
+        specifier: workspace:*
+        version: link:../../../../../../xwiki-platform-node/src/main/node/core/guidedtour/guidedtour-xwiki
+    devDependencies:
+      '@xwiki/platform-tool-eslintconfig':
+        specifier: workspace:*
+        version: link:../../../../../../xwiki-platform-node/src/main/node/tools/tool-eslintconfig
+      '@xwiki/platform-tool-viteconfig':
+        specifier: workspace:*
+        version: link:../../../../../../xwiki-platform-node/src/main/node/tools/tool-viteconfig
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.3(jiti@2.6.1)
+      vite:
+        specifier: 'catalog:'
+        version: 7.3.1(@types/node@24.10.13)(jiti@2.6.1)(sugarss@5.0.1(postcss@8.5.6))(yaml@2.8.2)
+
+  xwiki-platform-core/xwiki-platform-guidedtour/xwiki-platform-guidedtour-webjar/src/main/node:
+    dependencies:
+      '@xwiki/platform-guidedtour-ui':
+        specifier: workspace:*
+        version: link:../../../../../xwiki-platform-node/src/main/node/core/guidedtour/guidedtour-ui
+      '@xwiki/platform-guidedtour-xwiki':
+        specifier: workspace:*
+        version: link:../../../../../xwiki-platform-node/src/main/node/core/guidedtour/guidedtour-xwiki
+      vue-i18n:
+        specifier: 'catalog:'
+        version: 11.2.8(vue@3.5.29(typescript@5.9.3))
+    devDependencies:
+      '@tsconfig/node24':
+        specifier: 'catalog:'
+        version: 24.0.4
+      '@types/jsdom':
+        specifier: 'catalog:'
+        version: 28.0.0
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.10.13
+      '@vitejs/plugin-vue':
+        specifier: 'catalog:'
+        version: 6.0.4(vite@7.3.1(@types/node@24.10.13)(jiti@2.6.1)(sugarss@5.0.1(postcss@8.5.6))(yaml@2.8.2))(vue@3.5.29(typescript@5.9.3))
+      '@vitest/eslint-plugin':
+        specifier: 'catalog:'
+        version: 1.6.9(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.18(@types/node@24.10.13)(happy-dom@20.7.0)(jiti@2.6.1)(jsdom@28.1.0)(sugarss@5.0.1(postcss@8.5.6))(yaml@2.8.2))
+      '@vue/eslint-config-prettier':
+        specifier: 'catalog:'
+        version: 10.2.0(eslint@9.39.3(jiti@2.6.1))(prettier@3.6.2)
+      '@vue/eslint-config-typescript':
+        specifier: 'catalog:'
+        version: 14.7.0(eslint-plugin-vue@10.8.0(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(vue-eslint-parser@10.4.0(eslint@9.39.3(jiti@2.6.1))))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      '@vue/test-utils':
+        specifier: 'catalog:'
+        version: 2.4.6
+      '@vue/tsconfig':
+        specifier: 'catalog:'
+        version: 0.8.1(typescript@5.9.3)(vue@3.5.29(typescript@5.9.3))
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.3(jiti@2.6.1)
+      eslint-plugin-vue:
+        specifier: 'catalog:'
+        version: 10.8.0(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(vue-eslint-parser@10.4.0(eslint@9.39.3(jiti@2.6.1)))
+      flush-promises:
+        specifier: 'catalog:'
+        version: 1.0.2
+      jiti:
+        specifier: 'catalog:'
+        version: 2.6.1
+      jquery:
+        specifier: 'catalog:'
+        version: 3.7.1
+      jsdom:
+        specifier: 'catalog:'
+        version: 28.1.0
+      lodash-es:
+        specifier: 'catalog:'
+        version: 4.17.23
+      npm-run-all2:
+        specifier: 'catalog:'
+        version: 8.0.4
+      sinon:
+        specifier: 'catalog:'
+        version: 21.0.1
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
+        version: 7.3.1(@types/node@24.10.13)(jiti@2.6.1)(sugarss@5.0.1(postcss@8.5.6))(yaml@2.8.2)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.18(@types/node@24.10.13)(happy-dom@20.7.0)(jiti@2.6.1)(jsdom@28.1.0)(sugarss@5.0.1(postcss@8.5.6))(yaml@2.8.2)
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.29(typescript@5.9.3)
+      vue-tsc:
+        specifier: 'catalog:'
+        version: 3.2.5(typescript@5.9.3)
+
   xwiki-platform-core/xwiki-platform-livedata/xwiki-platform-livedata-node/xwiki-platform-livedata-node-componentstore/src/main/node:
     dependencies:
       '@xwiki/platform-livedata-componentstore':
@@ -470,7 +577,7 @@ importers:
         version: 10.2.0(eslint@9.39.3(jiti@2.6.1))(prettier@3.6.2)
       '@vue/eslint-config-typescript':
         specifier: 'catalog:'
-        version: 14.7.0(eslint-plugin-vue@10.8.0(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(vue-eslint-parser@10.4.0(eslint@9.39.3(jiti@2.6.1))))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 14.7.0(eslint-plugin-vue@10.8.0(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(vue-eslint-parser@10.4.0(eslint@9.39.3(jiti@2.6.1))))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       '@vue/test-utils':
         specifier: 'catalog:'
         version: 2.4.6
@@ -482,7 +589,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-plugin-vue:
         specifier: 'catalog:'
-        version: 10.8.0(@typescript-eslint/parser@8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(vue-eslint-parser@10.4.0(eslint@9.39.3(jiti@2.6.1)))
+        version: 10.8.0(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(vue-eslint-parser@10.4.0(eslint@9.39.3(jiti@2.6.1)))
       flush-promises:
         specifier: 'catalog:'
         version: 1.0.2
@@ -920,6 +1027,165 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.0.18(@types/node@24.10.13)(happy-dom@20.7.0)(jiti@2.6.1)(jsdom@28.1.0)(sugarss@5.0.1(postcss@8.5.6))(yaml@2.8.2)
+
+  xwiki-platform-core/xwiki-platform-node/src/main/node/core/guidedtour/guidedtour-api:
+    dependencies:
+      driver.js:
+        specifier: 'catalog:'
+        version: 1.3.0
+    devDependencies:
+      '@microsoft/api-extractor':
+        specifier: 'catalog:'
+        version: 7.57.4(@types/node@24.10.13)
+      '@xwiki/platform-dev-config':
+        specifier: workspace:*
+        version: link:../../../dev/config
+      '@xwiki/platform-tool-tsconfig':
+        specifier: workspace:*
+        version: link:../../../tools/tool-tsconfig
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.3(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
+        version: 7.3.1(@types/node@24.10.13)(jiti@2.6.1)(sugarss@5.0.1(postcss@8.5.6))(yaml@2.8.2)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.18(@types/node@24.10.13)(happy-dom@20.7.0)(jiti@2.6.1)(jsdom@28.1.0)(sugarss@5.0.1(postcss@8.5.6))(yaml@2.8.2)
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.29(typescript@5.9.3)
+
+  xwiki-platform-core/xwiki-platform-node/src/main/node/core/guidedtour/guidedtour-ui:
+    dependencies:
+      '@xwiki/platform-guidedtour-api':
+        specifier: workspace:*
+        version: link:../guidedtour-api
+      dompurify:
+        specifier: 'catalog:'
+        version: 3.3.1
+      driver.js:
+        specifier: 'catalog:'
+        version: 1.3.0
+      eventemitter3:
+        specifier: 'catalog:'
+        version: 5.0.4
+      lz-string:
+        specifier: 'catalog:'
+        version: 1.5.0
+      tippy.js:
+        specifier: 'catalog:'
+        version: 6.3.7
+      u-node:
+        specifier: 'catalog:'
+        version: 0.0.2
+      vue-tippy:
+        specifier: 'catalog:'
+        version: 6.7.1(vue@3.5.29(typescript@5.9.3))
+      vuedraggable:
+        specifier: 'catalog:'
+        version: 4.1.0(vue@3.5.29(typescript@5.9.3))
+    devDependencies:
+      '@microsoft/api-extractor':
+        specifier: 'catalog:'
+        version: 7.57.4(@types/node@24.10.13)
+      '@types/jquery':
+        specifier: 'catalog:'
+        version: 3.5.33
+      '@vue/test-utils':
+        specifier: 'catalog:'
+        version: 2.4.6
+      '@xwiki/platform-dev-config':
+        specifier: workspace:*
+        version: link:../../../dev/config
+      '@xwiki/platform-tool-tsconfig':
+        specifier: workspace:*
+        version: link:../../../tools/tool-tsconfig
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.3(jiti@2.6.1)
+      flush-promises:
+        specifier: 'catalog:'
+        version: 1.0.2
+      jquery:
+        specifier: 'catalog:'
+        version: 3.7.1
+      lodash-es:
+        specifier: 'catalog:'
+        version: 4.17.23
+      sinon:
+        specifier: 'catalog:'
+        version: 21.0.1
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
+        version: 7.3.1(@types/node@24.10.13)(jiti@2.6.1)(sugarss@5.0.1(postcss@8.5.6))(yaml@2.8.2)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.18(@types/node@24.10.13)(happy-dom@20.7.0)(jiti@2.6.1)(jsdom@28.1.0)(sugarss@5.0.1(postcss@8.5.6))(yaml@2.8.2)
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.29(typescript@5.9.3)
+      vue-i18n:
+        specifier: 'catalog:'
+        version: 11.2.8(vue@3.5.29(typescript@5.9.3))
+      vue-tsc:
+        specifier: 'catalog:'
+        version: 3.2.5(typescript@5.9.3)
+
+  xwiki-platform-core/xwiki-platform-node/src/main/node/core/guidedtour/guidedtour-xwiki:
+    dependencies:
+      '@xwiki/platform-guidedtour-api':
+        specifier: workspace:*
+        version: link:../guidedtour-api
+      '@xwiki/platform-model-api':
+        specifier: workspace:*
+        version: link:../../model/model-api
+      driver.js:
+        specifier: 'catalog:'
+        version: 1.3.0
+    devDependencies:
+      '@microsoft/api-extractor':
+        specifier: 'catalog:'
+        version: 7.57.4(@types/node@24.10.13)
+      '@types/jquery':
+        specifier: 'catalog:'
+        version: 3.5.33
+      '@types/sinon':
+        specifier: 'catalog:'
+        version: 21.0.0
+      '@xwiki/platform-dev-config':
+        specifier: workspace:*
+        version: link:../../../dev/config
+      '@xwiki/platform-tool-tsconfig':
+        specifier: workspace:*
+        version: link:../../../tools/tool-tsconfig
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.3(jiti@2.6.1)
+      jquery:
+        specifier: 'catalog:'
+        version: 3.7.1
+      sinon:
+        specifier: 'catalog:'
+        version: 21.0.1
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
+        version: 7.3.1(@types/node@24.10.13)(jiti@2.6.1)(sugarss@5.0.1(postcss@8.5.6))(yaml@2.8.2)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.18(@types/node@24.10.13)(happy-dom@20.7.0)(jiti@2.6.1)(jsdom@28.1.0)(sugarss@5.0.1(postcss@8.5.6))(yaml@2.8.2)
+      vue-i18n:
+        specifier: 'catalog:'
+        version: 11.2.8(vue@3.5.29(typescript@5.9.3))
 
   xwiki-platform-core/xwiki-platform-node/src/main/node/core/icons:
     dependencies:
@@ -4012,6 +4278,9 @@ packages:
   dotenv@16.4.7:
     resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
     engines: {node: '>=12'}
+
+  driver.js@1.3.0:
+    resolution: {integrity: sha512-ilUkVc5iMIYfMd8FdWy8n5Wv//gsJuRP+lo8QfWpwP9c0UGOgD7P9nVQMZwcdW84aqAZHHUHrV7GgiopAN6HUQ==}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -8341,6 +8610,19 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@vue/eslint-config-typescript@14.7.0(eslint-plugin-vue@10.8.0(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(vue-eslint-parser@10.4.0(eslint@9.39.3(jiti@2.6.1))))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)':
+    dependencies:
+      '@typescript-eslint/utils': 8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      eslint: 9.39.3(jiti@2.6.1)
+      eslint-plugin-vue: 10.8.0(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(vue-eslint-parser@10.4.0(eslint@9.39.3(jiti@2.6.1)))
+      fast-glob: 3.3.3
+      typescript-eslint: 8.56.0(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      vue-eslint-parser: 10.4.0(eslint@9.39.3(jiti@2.6.1))
+    optionalDependencies:
+      typescript: 5.9.3
+    transitivePeerDependencies:
+      - supports-color
+
   '@vue/language-core@2.2.0(typescript@5.9.3)':
     dependencies:
       '@volar/language-core': 2.4.27
@@ -8815,6 +9097,8 @@ snapshots:
       dotenv: 16.4.7
 
   dotenv@16.4.7: {}
+
+  driver.js@1.3.0: {}
 
   dunder-proto@1.0.1:
     dependencies:

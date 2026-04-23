@@ -17,11 +17,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-import { placeholder } from "./components/placeholder.ts";
-// @ts-expect-error this is a JavaScript file, it is expected to not have types.
-import { loadById } from "./services/require.js";
+import GuidedTourWidget from "./components/widget/GuidedTourWidget.vue";
 
-export {
-  placeholder,
-  loadById,
-};
+export { GuidedTourWidget };

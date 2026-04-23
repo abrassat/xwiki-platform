@@ -38,7 +38,9 @@
   },
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "@xwiki/platform-guidedtour-api": "workspace:*"
+    "@xwiki/platform-guidedtour-api": "workspace:*",
+    "@xwiki/platform-model-api": "workspace:*",
+    "driver.js": "catalog:"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "catalog:",

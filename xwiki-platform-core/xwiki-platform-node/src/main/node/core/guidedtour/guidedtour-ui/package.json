@@ -34,6 +34,7 @@
     "!src/**/__tests__"
   ],
   "scripts": {
+    "dev": "vite",
     "api-extractor:ci": "api-extractor run",
     "api-extractor:local": "api-extractor run --local",
     "build": "vite build",
@@ -45,12 +46,16 @@
   "dependencies": {
     "@xwiki/platform-guidedtour-api": "workspace:*",
     "dompurify": "catalog:",
+    "driver.js": "catalog:",
     "eventemitter3": "catalog:",
     "lz-string": "catalog:",
     "tippy.js": "catalog:",
     "u-node": "catalog:",
     "vue-tippy": "catalog:",
     "vuedraggable": "catalog:"
+  },
+  "peerDependencies": {
+    "vue": "3.x"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "catalog:",
