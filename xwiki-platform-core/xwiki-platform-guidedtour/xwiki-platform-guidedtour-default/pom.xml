@@ -32,6 +32,8 @@
 <description>XWiki Platform - Guided Tour - Default Implementation</description>
 <dependencies>
   <!-- Testing dependencies -->
+  <!-- TODO: Check what dependencies are actually needed -->
+  <!-- FIXME: These versioned dependencies are workarounds for the upgrade, they should be removed and fixed in the origin dependency -->
   <dependency>
     <groupId>joda-time</groupId>
     <artifactId>joda-time</artifactId>
