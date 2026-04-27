@@ -150,6 +150,7 @@ export class GuidedTourManager implements GuidedTourManagerApi {
               //   task.status = TourTaskStatus[task.status] as unknown as TourTaskStatus;
               // }
             }
+            this.computeTourStatus(tour);
           }
 
           this._cache.tours = data;
@@ -194,8 +195,38 @@ export class GuidedTourManager implements GuidedTourManagerApi {
       return tour.tasksList ?? [];
     }
   }
+
+  computeTourStatus(tour: TourTour) {
+    console.log("Computing for tour ", tour.id, tour.tasksList, tour.status);
+    if (tour.tasksList?.length == 0) {
+      tour.status = TourTaskStatus.SKIPPED;
+    } else if (
+      tour.tasksList!.find((t: TourTask) => t.status == TourTaskStatus.TODO) !==
+      undefined
+    ) {
+      tour.status = TourTaskStatus.TODO;
+    } else if (
+      tour.tasksList!.find(
+        (t: TourTask) => t.status == TourTaskStatus.SKIPPED,
+      ) !== undefined
+    ) {
+      tour.status = TourTaskStatus.SKIPPED;
+    } else {
+      tour.status = TourTaskStatus.DONE;
+    }
+    console.log(tour.status);
+    return tour.status;
+  }
+
+  isInEditMode() {
+    return XWiki.editor != "";
+  }
+
   async setTaskStatus(task: TourTask, status: TourTaskStatus): Promise<void> {
+    // FIXME: Workaround for vue reactive elements not detecting changes unless the tours array is modified directly,
+    // and the task vue component not updating unless the task object is modified directly.
     task.status = status;
+    this.computeTourStatus((await this.getTour(task.tourId!))!);
     // TODO: Some other checks for the status, and persistence.
     // guidedTourManager.markStepDone(activeDriverTask.getActiveStep() as TourStep, task as TourTask);
     // if (window.localStorage.getItem(activeDriverTask.getConfig().name + '_current_step') == activeDriverTask.getConfig().steps?.length.toString()) {

@@ -34,7 +34,7 @@
     <DriverCss />
     <GuidedTourWidgetHeader
       @closeGuidedTourWidget="onCloseGuidedTourWidget"
-      :progress="progress"
+      :progress="progress.val"
     />
     <div class="guidedtour-widget-content">
       <div class="guidedtour-container">
@@ -102,6 +102,7 @@ import { TourTaskStatus } from "@xwiki/platform-guidedtour-api";
 import { computed, onMounted, provide, reactive, ref } from "vue";
 import type {
   GuidedTourManagerApi,
+  TourTask,
   TourTour,
 } from "@xwiki/platform-guidedtour-api";
 
@@ -121,6 +122,7 @@ const state = reactive({
   toursLoadError: "",
   waitingLoadAsync: 0,
 });
+provide("GuidedTourWidgetState", state!);
 function onCloseGuidedTourWidget(buttonClicked: boolean) {
   console.info("toggle colapse in parent", buttonClicked);
   if (state.isWidgetCollapsed && buttonClicked) {
@@ -136,7 +138,6 @@ onMounted(async () => {
     .getTours()
     .then((tours) => {
       // In order for the progress to be reactive, we need to preserve the original tours array. Thus, the elements need to be pushed into the old array.
-      // FIXME: It doesn't woooooooork.
       state.tours.push(...tours);
       state.waitingLoadAsync++;
       return tours;
@@ -162,16 +163,19 @@ onMounted(async () => {
   // state.isWidgetShown = await guidedTourManager.isWidgetShown();
   console.log("async loaded", state.tours);
 });
-
-let progress = computed(() => {
-  console.debug("Computing progress...", state.tours);
-  return state.tours
-    ? state.tours.filter(
-        (tour: TourTour) =>
-          tour.status != undefined && tour.status != TourTaskStatus.TODO,
-      ).length / state.tours.length
-    : 0;
-});
+// FIXME: The .val property is a workaround, so vue doesn't auto-unwrap the progress, thus making it non-reactive.
+const progress = {
+  val: computed(() => {
+    console.debug("Computing progress...", state.tours);
+    const allTasks: TourTask[] = state.tours.flatMap((t) => t.tasksList!);
+    return (
+      allTasks.filter(
+        (task: TourTask) =>
+          task.status != undefined && task.status != TourTaskStatus.TODO,
+      ).length / allTasks.length
+    );
+  }),
+};
 </script>
 
 <style>

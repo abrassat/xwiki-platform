@@ -102,9 +102,7 @@ function XWikiDriverConfig(
     nextBtnText: "Next >", // TODO: Add translation.
     prevBtnText: "< Previous", // TODO: Add translation.
     showProgress: true,
-    showButtons: task.steps![0].reflex
-      ? ["close"]
-      : ["previous", "next", "close"], // FIXME: Idk about this
+    showButtons: ["previous", "next", "close"], // FIXME: Idk about this
     overlayOpacity: 0.3,
     onPopoverRender: (popDOM, options) => {
       // TODO: Need to handle this better
@@ -112,11 +110,20 @@ function XWikiDriverConfig(
       // const activeStep = options.state.activeStep!;
       // console.info(popDOM, options, window.localStorage.getItem(tour.getConfig().name + '_current_step'));
       // window.localStorage.setItem(tour.getConfig().name + '_current_step', activeIndex); // This should be config.activeIndex instead.
+      const showButtons = task.steps![activeIndex].reflex
+        ? ["close"]
+        : ["previous", "next", "close"];
+      if (!showButtons?.includes("next")) {
+        popDOM.footerButtons.removeChild(popDOM.nextButton);
+      }
+      if (!showButtons?.includes("previous")) {
+        popDOM.footerButtons.removeChild(popDOM.previousButton);
+      }
       console.log(
         `Reflex is ${task.steps![activeIndex].reflex} for step ${activeIndex}`,
         task.steps![activeIndex],
         options.config.steps![activeIndex],
-        options.config.showButtons,
+        showButtons,
       );
       popDOM.progress.style.display = "";
       popDOM.progress.innerText =
@@ -146,7 +153,7 @@ function XWikiDriverConfig(
     },
 
     // TODO: Remove this linter disable and refactor the function.
-    onNextClick: async (_element, _step, options) => {
+    onNextClick: async (_highlightedElement, _step, options) => {
       if (options.state.activeIndex! + 1 == options.config.steps!.length) {
         console.debug(
           "No next step. We're probably in the last step attempting to go next.",
@@ -168,11 +175,17 @@ function XWikiDriverConfig(
                 targetedElement,
                 nextStep,
                 guidedTourManager,
-                () => {
+                async () => {
                   console.warn(
                     "Calling callback for next step move (hopefully)",
                   );
-                  guidedTourManager.activeTask?.moveNext();
+                  // FIXME: This recursion should be guarded better, lest there be an infinite recursion.
+                  await options.config.onNextClick!(
+                    _highlightedElement,
+                    _step,
+                    options,
+                  );
+                  // guidedTourManager.activeTask?.moveNext();
                 },
               );
             } else {
@@ -191,17 +204,6 @@ function XWikiDriverConfig(
             }
           }
           if (activeIndex == guidedTourManager.activeTask!.getActiveIndex()) {
-            console.log(
-              `OnNextClick for step ${activeIndex + 1}, since reflex is ${
-                task.steps![activeIndex + 1].reflex
-              }, I'll set the buttons to ${(options.config.showButtons = task
-                .steps![activeIndex + 1].reflex
-                ? ["close"]
-                : ["previous", "next", "close"])}`,
-            );
-            options.config.showButtons = task.steps![activeIndex + 1].reflex
-              ? ["close"]
-              : ["previous", "next", "close"];
             guidedTourManager.activeTask!.moveNext();
             return;
           } else {
@@ -230,48 +232,50 @@ function XWikiDriverConfig(
         return;
       } else {
         const prevStep = task.steps![options.state.activeIndex! - 1];
-        const targetedElement = await util.waitForElement(prevStep.element!);
-        if (targetedElement) {
-          bindReflexEvents(targetedElement, prevStep, guidedTourManager, () => {
-            console.warn("Calling callback for prev step move (hopefully)");
-            guidedTourManager.activeTask?.movePrevious();
-          });
-          if (task.steps![options.state.activeIndex!].path == prevStep.path) {
-            console.log(
-              `OnPrevClick for step ${activeIndex - 1}, since reflex is ${
-                task.steps![activeIndex - 1].reflex
-              }, I'll set the buttons to ${(options.config.showButtons = task
-                .steps![activeIndex - 1].reflex
-                ? ["close"]
-                : ["previous", "next", "close"])}`,
-            );
-            options.config.showButtons = task.steps![activeIndex - 1].reflex
-              ? ["close"]
-              : ["previous", "next", "close"];
-            guidedTourManager.activeTask!.movePrevious();
-            return;
-          } else {
-            console.debug(
-              "Attempted to go to prev step, but that one is on another page.",
-            );
-            // TODO: Maybe add a redirect here.
-            return;
-          }
-        } else {
-          if (activeIndex == guidedTourManager.activeTask!.getActiveIndex()) {
-            // The task is still at the step we expect.
-            // We had an error, so the task is probably broken, so skip it.
-            console.error(
-              `Failed to find ${prevStep.element} element in the page when going back to step ${prevStep.order}`,
+        if (prevStep.element !== undefined) {
+          const targetedElement = await util.waitForElement(prevStep.element!);
+          if (targetedElement) {
+            bindReflexEvents(
+              targetedElement,
               prevStep,
+              guidedTourManager,
+              async () => {
+                // FIXME: This recursion should be guarded better, lest there be an infinite recursion.
+                await options.config.onPrevClick!(
+                  _highlightedElement,
+                  _step,
+                  options,
+                );
+                console.warn("Calling callback for prev step move (hopefully)");
+                // guidedTourManager.activeTask?.movePrevious();
+              },
             );
-            guidedTourManager.setTaskStatus(task, TourTaskStatus.SKIPPED);
-            guidedTourManager.activeTask!.destroy();
-            return;
           } else {
-            // The task moved to some previous step while we were waiting, so no need to do anything.
-            return;
+            if (activeIndex == guidedTourManager.activeTask!.getActiveIndex()) {
+              // The task is still at the step we expect.
+              // We had an error, so the task is probably broken, so skip it.
+              console.error(
+                `Failed to find ${prevStep.element} element in the page when going back to step ${prevStep.order}`,
+                prevStep,
+              );
+              guidedTourManager.setTaskStatus(task, TourTaskStatus.SKIPPED);
+              guidedTourManager.activeTask!.destroy();
+              return; // TODO: Make this complicated stuff a promise, and resolve it only when we get here, so the caller can just .then() it to decide what to do next.
+            } else {
+              // The task moved to some previous step while we were waiting, so no need to do anything.
+              return;
+            }
           }
+        }
+        if (task.steps![options.state.activeIndex!].path == prevStep.path) {
+          guidedTourManager.activeTask!.movePrevious();
+          return;
+        } else {
+          console.debug(
+            "Attempted to go to prev step, but that one is on another page.",
+          );
+          // TODO: Maybe add a redirect here.
+          return;
         }
       }
     },

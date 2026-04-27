@@ -30,24 +30,43 @@
       :id="tour!.id"
       class="guidedtour-tour"
       :class="{
-        'tour-done': tour!.status == TourTaskStatus.DONE,
-        'tour-skipped': tour!.status == TourTaskStatus.SKIPPED,
-        'tour-todo': tour!.status == TourTaskStatus.TODO,
-        collapsed: tour!.isCollapsed,
+        ['tour-' + tour.status]: true,
+        collapsed: tour.isCollapsed,
       }"
     >
-      <div
+      <GuidedTourWidgetItem
+        :loading="false"
+        :waiting="ref(false)"
         class="guidedtour-tour-header"
         @click="
           console.log('clicked', tour);
           $emit('toggleCollapseTour', tour);
         "
       >
-        <!-- FIXME: Replace font-awesome with some vue component-->
-        <i class="fa-solid fa-chevron-right chevron" />
-        {{ tour.title }}
-        <!-- <GuidedTourWidgetProgressBar :progress="0.5" :width="150" /> -->
-      </div>
+        <!-- @click="
+        console.log('clicked', tour);
+        $emit('toggleCollapseTour', tour);
+      " -->
+        <template v-slot:pre-btns>
+          <!-- This is just for show, it shouldn't do anything. -->
+          <i class="fa-solid fa-chevron-right chevron always-show" />
+        </template>
+        <template v-slot:item-title>
+          <span class="tour-title">{{ tour.title }}</span>
+        </template>
+        <template v-slot:post-btns>
+          <button
+            v-if="tour!.status == TourTaskStatus.TODO"
+            class="post-btn"
+            @click.stop="onSkipTour"
+          >
+            <i class="fa-solid fa-x" />
+          </button>
+          <button v-else class="post-btn" @click.stop="onResetTour">
+            <i class="fa fa-rotate-right" />
+          </button>
+        </template>
+      </GuidedTourWidgetItem>
       <div class="guidedtour-content">
         <Suspense>
           <template #default>
@@ -60,9 +79,9 @@
           </template>
           <template #fallback>
             <!-- Have some placeholders loading -->
-            <GuidedTourWidgetTask :tour-id="placeholderTourId" />
-            <GuidedTourWidgetTask :tour-id="placeholderTourId" />
-            <GuidedTourWidgetTask :tour-id="placeholderTourId" />
+            <GuidedTourWidgetItem :loading="true" :waiting="ref(false)" />
+            <GuidedTourWidgetItem :loading="true" :waiting="ref(false)" />
+            <GuidedTourWidgetItem :loading="true" :waiting="ref(false)" />
           </template>
         </Suspense>
       </div>
@@ -75,9 +94,10 @@
 </template>
 
 <script setup lang="ts">
+import GuidedTourWidgetItem from "./GuidedTourWidgetItem.vue";
 import GuidedTourWidgetTask from "./GuidedTourWidgetTask.vue";
 import { TourTaskStatus } from "@xwiki/platform-guidedtour-api";
-import { inject, onMounted, reactive } from "vue";
+import { inject, onMounted, reactive, ref } from "vue";
 import type {
   GuidedTourManagerApi,
   TourTask,
@@ -86,13 +106,20 @@ import type {
 import type { Ref } from "vue";
 const props = defineProps<{ tour?: Ref<TourTour> }>();
 const tour = props.tour; // reactive read-only ref
-const placeholderTourId = "";
 defineEmits(["toggleCollapseTour"]);
 const guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager")!;
 console.info("In tour setup.");
 const state = reactive({
   tasks: [] as TourTask[],
 });
+
+function onSkipTour() {
+  console.warn("Unimplemented onSkipTour");
+}
+
+function onResetTour() {
+  console.warn("Unimplemented onResetTour");
+}
 
 onMounted(async () => {
   if (tour === undefined) {
@@ -135,14 +162,14 @@ onMounted(async () => {
   animation: loading-shimmer 1.5s ease-in-out infinite;
 }
 
-.guidedtour-tour.tour-done {
+.guidedtour-tour.tour-DONE .guidedtour-tour-header .tour-title {
   text-decoration: line-through;
   color: var(
     --guidedtour-background-color
   ); /* This is not WCAG-compliant, but idk how to do faded out text with good contrast. */
 }
 
-.guidedtour-tour.tour-skipped {
+.guidedtour-tour.tour-SKIPPED .guidedtour-tour-header .tour-title {
   color: var(--guidedtour-text-color);
 }
 
@@ -157,6 +184,7 @@ onMounted(async () => {
 }
 
 .guidedtour-tour .chevron {
+  /* Disable strikethrough for the chevron icon. */
   text-decoration: none;
   cursor: pointer;
   display: inline-block;

@@ -17,6 +17,8 @@ export class GuidedTourManager implements GuidedTourManagerApi {
     // (undocumented)
     activeTask?: Driver;
     // (undocumented)
+    computeTourStatus(tour: TourTour): TourTaskStatus;
+    // (undocumented)
     fetchSteps(tourId: string, taskId: string): Promise<TourStep[]>;
     fetchTours(): Promise<TourTour[]>;
     // (undocumented)
@@ -37,6 +39,8 @@ export class GuidedTourManager implements GuidedTourManagerApi {
     getTours(): Promise<TourTour[]>;
     // (undocumented)
     getUsefulLinks(): Promise<string[]>;
+    // (undocumented)
+    isInEditMode(): boolean;
     // (undocumented)
     markStepDone(step: TourStep, task: TourTask): Promise<void>;
     // (undocumented)

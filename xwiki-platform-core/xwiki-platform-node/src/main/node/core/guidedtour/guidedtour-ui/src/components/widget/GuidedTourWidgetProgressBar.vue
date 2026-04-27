@@ -30,10 +30,13 @@
 </template>
 
 <script setup lang="ts">
-const { progress } = defineProps<{
-  progress: number;
+import type { ComputedRef } from "vue";
+
+const props = defineProps<{
+  progress: ComputedRef<number>;
   width?: number;
 }>();
+const progress = props.progress; // reactive read-only ref
 console.info("In pbar setup.");
 </script>
 
@@ -71,5 +74,6 @@ console.info("In pbar setup.");
   top: 0px;
   height: 9px;
   background: #7698ffff;
+  transition: width 0.15s ease-out;
 }
 </style>

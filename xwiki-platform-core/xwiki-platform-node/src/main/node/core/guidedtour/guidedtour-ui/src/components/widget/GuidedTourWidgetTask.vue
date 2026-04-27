@@ -25,29 +25,30 @@
 -->
 
 <template>
-  <template v-if="task">
-    <div
-      :id="task.id"
-      class="guidedtour-task"
-      v-bind:class="{
-        'task-done': task.status == TourTaskStatus.DONE,
-        'task-todo': task.status == TourTaskStatus.TODO,
-        'task-skipped': task.status == TourTaskStatus.SKIPPED,
-      }"
-      @click="onStartTask"
-    >
-      <button class="pre-btn">
+  <GuidedTourWidgetItem
+    :loading="false"
+    :waiting="ref(isWaitingAsync)"
+    v-bind:class="{
+      ['task-' + task!.status]: true,
+      'guidedtour-task': true,
+    }"
+    @vue:unmounted="onStartTask"
+    id="task.id"
+    @click="onStartTask"
+  >
+    <!-- :loading="loading.val" -->
+    <template v-slot:pre-btns>
+      <!-- This is just for show, it shouldn't do anything. -->
+      <button>
         <i class="fa fa-arrow-right" />
       </button>
-      {{ task.title }}
-      <i
-        class="fa-solid fa-circle-notch fa-spin"
-        style="--fa-animation-timing: ease-in-out"
-        v-if="state.isWaitingAsync"
-      />
-      <!-- TODO: pull these buttons out into a reuseable element to reset tours & tasks -->
+    </template>
+    <template v-slot:item-title>
+      {{ task!.title }}
+    </template>
+    <template v-slot:post-btns>
       <button
-        v-if="dummy(task) || task.status == TourTaskStatus.TODO"
+        v-if="task!.status == TourTaskStatus.TODO"
         class="post-btn"
         @click.stop="onSkipTask"
       >
@@ -56,68 +57,62 @@
       <button v-else class="post-btn" @click.stop="onResetTask">
         <i class="fa fa-rotate-right" />
       </button>
-    </div>
-  </template>
-  <template v-else>
-    <div class="guidedtour-task loading-content"></div>
-  </template>
+    </template>
+  </GuidedTourWidgetItem>
 </template>
 
 <script setup lang="ts">
+import GuidedTourWidgetItem from "./GuidedTourWidgetItem.vue";
 import { TourTaskStatus } from "@xwiki/platform-guidedtour-api";
-import { inject, reactive } from "vue";
+import { inject, reactive, ref, toRefs } from "vue";
 import type {
   GuidedTourManagerApi,
   TourTask,
 } from "@xwiki/platform-guidedtour-api";
+
+// const loading = {
+//   val: computed(() => {
+//     console.error("ayeee", task, task == undefined, task === undefined);
+//     return task == undefined;
+//   }),
+// };
 // import XWiki from "../../services/xwiki.js";
 const { task, tourId } = defineProps<{
   task?: TourTask;
   tourId: string;
 }>();
 
-function dummy(task: TourTask): boolean {
-  console.log(
-    "Debugging task",
-    task.status,
-    task,
-    TourTaskStatus.TODO,
-    task.status == TourTaskStatus.TODO,
-  );
-  return false;
-}
-
 console.info("In task setup.", task?.status, task);
-
 const state = reactive({
   isWaitingAsync: false,
 });
-
+// const isWaitingAsync: Ref<boolean> = ref<boolean>(false);
+const { isWaitingAsync } = toRefs(state);
 const guidedTourManager: GuidedTourManagerApi = inject("GuidedTourManager")!;
 
 async function onResetTask() {
   console.info("You clicked to reset this task:", task);
-  state.isWaitingAsync = true;
+  isWaitingAsync.value = true;
   // TODO: Would need some kind of setter defined in XWiki, so saving the state to the server is handled here.
   await guidedTourManager.setTaskStatus(task!, TourTaskStatus.TODO);
-  // await guidedTourManager.getTask(task, TourTaskStatus.TODO);
-  state.isWaitingAsync = false;
+  // await guidedTourManager.getTask(task, TourTaskStatus.TODO);onResetTour
+  isWaitingAsync.value = false;
   // new XWiki.notification("Task reset! You can start it again to retake the tour.", "success");
 }
 
 async function onSkipTask() {
   console.info("You clicked to skip this task:", task);
-  state.isWaitingAsync = true;
+  isWaitingAsync.value = true;
   await guidedTourManager.setTaskStatus(task!, TourTaskStatus.SKIPPED);
-  state.isWaitingAsync = false;
+  isWaitingAsync.value = false;
   // new XWiki.notification("Task reset! You can start it again to retake the tour.", "success");
 }
 
 async function onStartTask() {
   console.info("You clicked to start this task:", task);
-  state.isWaitingAsync = true;
+  isWaitingAsync.value = true;
   const steps = await guidedTourManager.getSteps(tourId, task!.id);
-  state.isWaitingAsync = false;
+  isWaitingAsync.value = false;
   guidedTourManager.startTask(task!);
   console.log("Fetched steps:", steps);
   // driver(getDriverConfigForSteps(steps));
@@ -162,52 +157,14 @@ async function onStartTask() {
   background: var(--guidedtour-background-color-secondary) 100%;
 }
 
-.guidedtour-task {
-  min-height: 2em;
-  margin: 0.2em;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  /* padding: 6px 0; */
-  border-radius: 0.65em;
-  transition: background-color 0.1s ease;
-  padding: 0.5em;
-  cursor: pointer;
-}
-
-.guidedtour-task.task-done {
+.guidedtour-task.task-DONE {
   text-decoration: line-through;
   color: var(
-    --guidedtour-background-color-bg
+    --guidedtour-text-color
   ); /* This is not WCAG-compliant, but idk how to do faded out text with good contrast. */
 }
 
-.guidedtour-task.task-skipped {
+.guidedtour-task.task-SKIPPED {
   color: var(--guidedtour-text-color);
-}
-
-.guidedtour-task:hover .pre-btn,
-.guidedtour-task:hover .post-btn {
-  opacity: 1;
-}
-
-.pre-btn,
-.post-btn {
-  text-decoration: none;
-  color: var(--guidedtour-text-color);
-  width: 20px;
-  flex-shrink: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.post-btn {
-  margin-left: auto;
-}
-.post-bt:hover {
-  margin-left: auto;
 }
 </style>

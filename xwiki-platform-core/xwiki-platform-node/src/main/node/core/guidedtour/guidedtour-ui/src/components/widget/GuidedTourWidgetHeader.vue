@@ -46,12 +46,14 @@
         </button>
       </div>
     </div>
-    <GuidedTourWidgetProgressBar :progress="progress" />
+    <GuidedTourWidgetProgressBar :progress="computed(() => progress)" />
   </div>
 </template>
 
 <script setup lang="ts">
 import GuidedTourWidgetProgressBar from "./GuidedTourWidgetProgressBar.vue";
+import { computed } from "vue";
+import type { ComputedRef } from "vue";
 const emit = defineEmits(["closeGuidedTourWidget"]);
 console.info("In header setup.");
 
@@ -60,7 +62,8 @@ function onCloseButtonClicked(buttonClicked: boolean) {
   emit("closeGuidedTourWidget", buttonClicked);
 }
 
-const { progress } = defineProps<{ progress: number }>();
+const props = defineProps<{ progress: ComputedRef<number> }>();
+const progress = props.progress; // reactive read-only ref
 </script>
 
 <style>
